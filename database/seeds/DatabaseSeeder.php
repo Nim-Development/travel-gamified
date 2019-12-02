@@ -19,5 +19,15 @@ class DatabaseSeeder extends Seeder
         $this->call(TripSeeder::class);
         $this->call(TeamSeeder::class);
         $this->call(UserSeeder::class);
+
+        // $this->call(GameQuizSeeder::class);
+        $this->call(GameTextAnswereSeeder::class);
+        $this->call(GameMediaUploadSeeder::class);
+        $this->call(GameMultipleChoiceSeeder::class);
+        $this->call(GameMultipleChoiceOptionSeeder::class);
+        $this->call(ChallengeSeeder::class);
+        $this->call(AnswereCheckedSeeder::class);
+        $this->call(AnswereUncheckedSeeder::class);
+
     }
 }
