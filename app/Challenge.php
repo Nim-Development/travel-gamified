@@ -8,8 +8,8 @@ class Challenge extends Model
 {
     public function game()
     {
-        // Here we return the game contents from one of the game type models by id (the model/game type is specified in db as game_model attribute)
-        return $this->hasOne('App\\'.$this->game_model, 'id', 'game_id');
+        // Here we return the game contents from one of the game type models based on type value in db
+        return $this->hasOne(config('games.'.$this->type), 'id', 'game_id');
     }
 
     public function city()

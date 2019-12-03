@@ -15,9 +15,10 @@ class CreateChallengesTable extends Migration
     {
         Schema::create('challenges', function (Blueprint $table) {
             $table->bigIncrements('id');
+            $table->integer('sort_order');
             $table->bigInteger('city_id')->nullable();
             $table->bigInteger('route_id')->nullable();
-            $table->string('game_model');
+            $table->string('type');
             $table->bigInteger('game_id');
             $table->timestamps();
         });
