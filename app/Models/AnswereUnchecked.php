@@ -4,11 +4,11 @@ namespace App;
 
 use Illuminate\Database\Eloquent\Model;
 
-class AnswereChecked extends Model
+class AnswereUnchecked extends Model
 {
     public function challenge()
     {
-        return $this->hasOne('App\Challenge', 'id', 'challenge_id');
+        return $this->hasOne('App\Games\Challenge', 'id', 'challenge_id');
     }
 
     public function user()

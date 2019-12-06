@@ -30,8 +30,10 @@ Route::get('transits/{id}', 'Admin\TransitController@single');
 Route::get('routes', 'Admin\RouteController@all');
 Route::get('routes/{id}', 'Admin\RouteController@single');
 
-Route::get('challenges', 'Admin\ChallengeController@all');
-Route::get('challenges/{id}', 'Admin\ChallengeController@single');
+Route::get('challenges', 'Admin\ChallengeController@all'); // returns all challenges
+Route::get('challenges/{id}', 'Admin\ChallengeController@single'); // gets single challenge by id
+Route::get('challenges/playfield/{type}', 'Admin\ChallengeController@all_by_playfield'); // gets all challenges with the playfield type of {playfield}
+Route::get('challenges/game/{type}', 'Admin\ChallengeController@all_by_game'); // gets all challenges with the game type of {game}
 
 Route::get('answeres/{filter}', 'Admin\AnswereController@all'); // filter: all, unchecked, checked
 Route::get('answeres/{filter}/{id}', 'Admin\AnswereController@single'); // filter: all, unchecked, checked
@@ -39,5 +41,12 @@ Route::get('answeres/{filter}/{id}', 'Admin\AnswereController@single'); // filte
 Route::get('games/multiple_choice/options', 'Admin\GameController@ALL_multiple_choice_options');
 Route::get('games/multiple_choice/{id}/options', 'Admin\GameController@SINGLE_multiple_choice_options');
 
-Route::get('games/{filter}', 'Admin\GameController@all'); // filter: all, media_upload, text_answere, multiple_choice
-Route::get('games/{filter}/{id}', 'Admin\GameController@single'); // filter: all, media_upload, text_answere, multiple_choice
+// Route::get('games/type/{filter}', 'Admin\GameController@all'); // filter: all, media_upload, text_answere, multiple_choice
+// Route::get('games/{filter}/{id}', 'Admin\GameController@single'); // filter: all, media_upload, text_answere, multiple_choice
+
+
+/**
+ * POST
+ */
+
+ Route::post('challenges/add', 'Admin\ChallengeController@add');

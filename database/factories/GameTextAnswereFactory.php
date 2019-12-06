@@ -1,7 +1,7 @@
 <?php
 
 /** @var \Illuminate\Database\Eloquent\Factory $factory */
-use App\GameTextAnswere;
+use App\Games\GameTextAnswere;
 use Faker\Generator as Faker;
 use Illuminate\Support\Str;
 
@@ -14,7 +14,7 @@ use Illuminate\Support\Str;
 // $table->bigInteger('points_max');
 // $table->timestamps();
 
-$factory->define(GameTextAnswere::class, function (Faker $faker) {    
+$factory->define(GameTextAnswere::class, function (Faker $faker) {
     return [
         'title' => $faker->name,
         'content_media' => $faker->imageUrl($width = 640, $height = 640), // cant fake this.

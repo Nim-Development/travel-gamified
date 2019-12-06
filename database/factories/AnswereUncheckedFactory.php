@@ -5,7 +5,7 @@ use App\AnswereUnchecked;
 use Faker\Generator as Faker;
 use Illuminate\Support\Str;
 
-use App\Challenge;
+use App\Games\Challenge;
 use App\User;
 
 // $table->bigIncrements('id');
@@ -16,14 +16,14 @@ use App\User;
 // $table->timestamps();
 
 $factory->define(AnswereUnchecked::class, function (Faker $faker) {
-    
+
     $challenge = Challenge::all()->random(1)->first();
     $user = User::all()->random(1)->first();
-    
+
     return [
         'challenge_id' => $challenge->id,
         'user_id' => $user->id,
-        'answere' => $challenge->game_model == "GameMediaUpload" ? $faker->imageUrl($width = 640, $height = 640) : $faker->sentence($nbWords = 6, $variableNbWords = true), 
+        'answere' => $challenge->game_model == "GameMediaUpload" ? $faker->imageUrl($width = 640, $height = 640) : $faker->sentence($nbWords = 6, $variableNbWords = true),
         'score' => null
     ];
 });

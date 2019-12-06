@@ -1,6 +1,6 @@
 <?php
 
-namespace App;
+namespace App\Playfields;
 
 use Illuminate\Database\Eloquent\Model;
 

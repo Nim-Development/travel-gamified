@@ -1,11 +1,11 @@
 <?php
 
 /** @var \Illuminate\Database\Eloquent\Factory $factory */
-use App\Transit;
+use App\Playfields\Transit;
 use Faker\Generator as Faker;
 use Illuminate\Support\Str;
 
-use App\City;
+use App\Playfields\City;
 
 /*
 |--------------------------------------------------------------------------
@@ -25,10 +25,10 @@ use App\City;
 // $table->timestamps();
 
 $factory->define(Transit::class, function (Faker $faker) {
-    
+
     $city_1 = City::all()->random(1)->first()->id;
     $city_2 = City::all()->random(1)->first()->id;
-    
+
     return [
         'name' => $faker->name,
         'from' => $city_1,

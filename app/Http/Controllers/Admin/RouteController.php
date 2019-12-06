@@ -5,7 +5,7 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 
-use App\Route;
+use App\Playfields\Route;
 
 class RouteController extends Controller
 {
@@ -14,7 +14,7 @@ class RouteController extends Controller
     {
         $data = Route::all();
         $code = 200;
-        
+
         return response()->json($data, $code);
     }
 

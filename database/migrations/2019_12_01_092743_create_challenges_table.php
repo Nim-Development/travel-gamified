@@ -16,9 +16,9 @@ class CreateChallengesTable extends Migration
         Schema::create('challenges', function (Blueprint $table) {
             $table->bigIncrements('id');
             $table->integer('sort_order');
-            $table->bigInteger('city_id')->nullable();
-            $table->bigInteger('route_id')->nullable();
-            $table->string('type');
+            $table->string('playfield_type');
+            $table->bigInteger('playfield_id');
+            $table->string('game_type');
             $table->bigInteger('game_id');
             $table->timestamps();
         });

@@ -5,7 +5,7 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 
-use App\Transit;
+use App\Playfields\Transit;
 
 class TransitController extends Controller
 {
@@ -14,7 +14,7 @@ class TransitController extends Controller
     {
         $data = Transit::all();
         $code = 200;
-        
+
         return response()->json($data, $code);
     }
 

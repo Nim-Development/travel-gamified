@@ -1,7 +1,7 @@
 <?php
 
 /** @var \Illuminate\Database\Eloquent\Factory $factory */
-use App\City;
+use App\Playfields\City;
 use Faker\Generator as Faker;
 use Illuminate\Support\Str;
 
@@ -25,6 +25,6 @@ use Illuminate\Support\Str;
 $factory->define(City::class, function (Faker $faker) {
     return [
         'short_code' => $faker->city,
-        'name' => $faker->name  
+        'name' => $faker->name
     ];
 });

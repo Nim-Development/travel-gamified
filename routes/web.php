@@ -17,5 +17,6 @@ Route::get('/', function () {
 
 
 Route::get('test', function () {
-    GameHelper::saySomething();
+    //GameHelper::saySomething();
+    ConfigHelper::validate_keyname('1', '2');
 });

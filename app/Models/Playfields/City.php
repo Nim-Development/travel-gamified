@@ -1,10 +1,10 @@
 <?php
 
-namespace App;
+namespace App\Playfields;
 
 use Illuminate\Database\Eloquent\Model;
 
-class Route extends Model
+class City extends Model
 {
     //
 }

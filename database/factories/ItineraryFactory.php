@@ -6,8 +6,8 @@ use Faker\Generator as Faker;
 use Illuminate\Support\Str;
 
 use App\Tour;
-use App\City;
-use App\Transit;
+use App\Playfields\City;
+use App\Playfields\Transit;
 
 /*
 |--------------------------------------------------------------------------
@@ -29,13 +29,13 @@ use App\Transit;
 // $table->timestamps();
 
 $factory->define(Itinerary::class, function (Faker $faker) {
-    
+
     $tour_id = Tour::all()->random(1)->first()->id;
     $city_id = City::all()->random(1)->first()->id;
     $transit_id = Transit::all()->random(1)->first()->id;
 
     $city_or_transit = (bool)random_int(0, 1);
-    
+
     return [
         'tour_id' => $tour_id,
         'step' => 1, // cant fake this.

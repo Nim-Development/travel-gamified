@@ -11,6 +11,6 @@ class GameMediaUploadSeeder extends Seeder
      */
     public function run()
     {
-        factory(App\GameMediaUpload::class, 30)->create();
+        factory(App\Games\GameMediaUpload::class, 30)->create();
     }
 }

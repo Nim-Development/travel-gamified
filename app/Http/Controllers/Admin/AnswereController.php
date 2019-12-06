@@ -24,7 +24,7 @@ class AnswereController extends Controller
                 break;
             case 'unchecked': # return all from AnswereUnchecked
                 $data = AnswereUnchecked::all();
-                $code = 200;               
+                $code = 200;
                 break;
             default: # return error
                 $data = null;
@@ -50,7 +50,7 @@ class AnswereController extends Controller
                 break;
             case 'unchecked': # return all from AnswereUnchecked
                 $data = AnswereUnchecked::find($id);
-                $code = 200;               
+                $code = 200;
                 break;
             default: # return error
                 $data = null;

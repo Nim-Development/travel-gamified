@@ -5,40 +5,19 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 
-use App\GameMediaUpload;
-use App\GameTextAnswere;
-use App\GameMultipleChoice;
+use App\Games\GameMediaUpload;
+use App\Games\GameTextAnswere;
+use App\Games\GameMultipleChoice;
 
-use App\GameMultipleChoiceOption;
+use App\Games\GameMultipleChoiceOption;
 
 class GameController extends Controller
 {
-    // all, media_upload, text_answere, multiple_choice
-    public function all($filter)
+    // $type: media_upload, text_answere, multiple_choice
+    public function all($type)
     {
-        switch ($filter) {
-            case 'all': # return all from all game Models
-                $data = null;
-                $code = null;
-                break;
-            case 'media_upload': # return all from AnswereChecked
-                $data = GameMediaUpload::all();
-                $code = 200;
-                break;
-            case 'text_answere': # return all from AnswereUnchecked
-                $data = GameTextAnswere::all();
-                $code = 200;           
-                break;
-            case 'multiple_choice': # return all from AnswereUnchecked
-                $data = GameMultipleChoice::all();
-                $code = 200;              
-                break;
-            default: # return error
-                $data = null;
-                $code = 500;
-                break;
-        }
-
+        $data = config('models.games.'.$filter)::all())
+        $code = 200;
         // return response
         return response()->json($data, $code);
     }
@@ -57,11 +36,11 @@ class GameController extends Controller
                 break;
             case 'text_answere': # return all from AnswereUnchecked
                 $data = GameTextAnswere::find($id);
-                $code = 200;               
+                $code = 200;
                 break;
             case 'multiple_choice': # return all from AnswereUnchecked
                 $data = GameMultipleChoice::find($id);
-                $code = 200;               
+                $code = 200;
                 break;
             default: # return error
                 $data = null;
@@ -76,14 +55,14 @@ class GameController extends Controller
     public function ALL_multiple_choice_options(){
         $data = GameMultipleChoiceOption::all();
         $code = 200;
-        
+
         return response()->json($data, $code);
     }
 
     public function SINGLE_multiple_choice_options($id){
         $data = GameMultipleChoice::find($id)->options;
         $code = 200;
-        
+
         return response()->json($data, $code);
     }
 }

@@ -18,8 +18,8 @@ class CreateItinerariesTable extends Migration
                 $table->bigInteger('tour_id');
                 $table->integer('step');
                 $table->float('duration');
-                $table->bigInteger('city_id')->nullable();
-                $table->bigInteger('transit_id')->nullable();
+                $table->string('playfield_type');
+                $table->bigInteger('playfield_id');
             $table->timestamps();
         });
     }

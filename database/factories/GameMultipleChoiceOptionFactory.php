@@ -1,11 +1,11 @@
 <?php
 
 /** @var \Illuminate\Database\Eloquent\Factory $factory */
-use App\GameMultipleChoiceOption;
+use App\Games\GameMultipleChoiceOption;
 use Faker\Generator as Faker;
 use Illuminate\Support\Str;
 
-use App\GameMultipleChoice;
+use App\Games\GameMultipleChoice;
 
 // $table->bigIncrements('id');
 // $table->bigInteger('game_id');
