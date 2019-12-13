@@ -8,6 +8,6 @@ class Itinerary extends Model
 {
     public function playfield()
     {
-        return $this->hasOne(config('models.playfields.'.$this->playfield_type), 'id', 'playfield_id');
+        return $this->morphTo('playfield');
     }
 }
