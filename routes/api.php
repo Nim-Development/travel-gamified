@@ -38,7 +38,7 @@ Route::get('challenges/game/{type}', 'Admin\ChallengeController@all_by_game'); /
 Route::get('answeres/{filter}', 'Admin\AnswereController@all'); // filter: all, unchecked, checked
 Route::get('answeres/{filter}/{id}', 'Admin\AnswereController@single'); // filter: all, unchecked, checked
 
-Route::get('games/multiple_choice/options', 'Admin\GameController@ALL_multiple_choice_options');
+Route::get('games/multiple_choice/options/{qty?}', 'Admin\GameController@ALL_multiple_choice_options');
 Route::get('games/multiple_choice/{id}/options', 'Admin\GameController@SINGLE_multiple_choice_options');
 
 // Route::get('games/type/{filter}', 'Admin\GameController@all'); // filter: all, media_upload, text_answere, multiple_choice

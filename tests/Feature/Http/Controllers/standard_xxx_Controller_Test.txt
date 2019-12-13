@@ -1,0 +1,181 @@
+<?php
+
+namespace Tests\Feature\Http\Controllers\Admin;
+
+use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Foundation\Testing\WithFaker;
+use Tests\TestCase;
+
+class !!!ControllerTest extends TestCase
+{
+
+    use RefreshDatabase;
+
+    /**
+     * @test
+     */
+    public function non_authenticated_user_can_not_access_xxx_api_endpoints()
+    {
+        $this->json('GET', '/api/xxxs')->assertStatus(401);
+        $this->json('GET', 'api/xxxs/1')->assertStatus(401);
+        $this->json('PUT', 'api/xxxs/1')->assertStatus(401);
+        $this->json('DELETE', 'api/xxxs/1')->assertStatus(401);
+        $this->json('POST', '/api/xxxs')->assertStatus(401);
+    }
+
+    /**
+     * @test
+     */
+    public function will_fail_with_a_404_if_xxx_is_not_found()
+    {
+        $res = $this->json('GET', 'api/xxxs/-1');
+        $res->assertStatus(404);
+    }
+
+    /**
+     * @test
+     */
+    public function will_fail_with_a_404_if_the_xxx_we_want_to_update_is_not_found()
+    {
+        $res = $this->json('PUT', 'api/xxxs/-1');
+        $res->assertStatus(404);
+    }
+
+        /**
+     * @test
+     */
+    public function will_fail_with_a_404_if_the_xxx_we_want_to_delete_is_not_found()
+    {
+        $res = $this->json('DELETE', 'api/xxxs/-1');
+        $res->assertStatus(404);
+    }
+
+    /**
+     * A basic feature test example.
+     * // @test << ::nk Makes it so that we dont have to add test prefix infront of each method!!
+     *
+     * @test
+     *
+     */
+    public function can_create_a_xxx()
+    {
+
+        $faker = Factory::create();
+
+        $xxx_data = [
+
+        ];
+
+        $res = $this->json('POST', '/api/xxxs', $xxx_data);
+
+        // Then
+            // Describes the outcome of Action according to conditions in Given
+
+        $res->assertJsonStructure([])
+            ->assertJson($xxx_data)
+            ->assertStatus(201);
+
+        // assert if the xxx has been added to the database
+        $this->assertDatabaseHas('xxxs', $xxx_data);
+
+    }
+
+    /**
+     * @test
+     */
+    public function can_update_a_xxx()
+    {
+        // Given
+        $old_xxx = $this->create('!!!');
+
+        $new_xxx = [
+            'name' => $old_xxx->name.'_update',
+            'slug' => $old_xxx->slug.'_update',
+            'price' => $old_xxx->price + 3
+        ];
+
+        // When
+        $response = $this->json('PUT',
+                                'api/xxxs/'.$old_xxx->id,
+                                $new_xxx);
+        // Then
+        $response->assertStatus(200)
+                 ->assertJsonFragment($new_xxx);
+        $this->assertDatabaseHas('xxxs', $new_xxx);
+
+    }
+
+    /**
+     * @test
+     */
+    public function can_delete_a_xxx()
+    {
+        // Given
+        // first create a xxx in the database to delete
+        $xxx = $this->create('!!!');
+
+        // When
+        // call the delete api
+        $res = $this->json('DELETE', '/api/xxxs/'.$xxx->id);
+
+        // Then
+        $res->assertStatus(204)
+            ->assertSee(null);
+
+        // check if $xxx is deleted from database
+        $this->assertDatabaseMissing('xxxs', ['id' => $xxx->id]);
+    }
+
+    /**
+     * @test
+     */
+    public function can_return_a_xxx()
+    {
+        // Given
+        // inserting a model into the database (we know this will work because test can_create_a_xxx() was asserted succesfully)
+        $xxx = $this->create('!!!');
+
+        // When
+        $response = $this->json('GET', '/api/xxxs/'.$xxx->id);
+
+        // Then
+        // assert status code
+        $response->assertStatus(200)
+                 ->assertExactJson([
+                    'id' => $xxx->id,
+                    'name' => $xxx->name,
+                    'slug' => $xxx->slug,
+                    'price' => $xxx->price,
+                    'created_at' => (string)$xxx->created_at,
+                    // 'updated_at' => (string)$xxx->updated_at
+                ]);
+
+    }
+
+    /**
+     * @test
+     */
+    public function can_return_a_collection_of_paginated_xxxs()
+    {
+        $xxx_1 = $this->create('!!!');
+        $xxx_2 = $this->create('!!!');
+        $xxx_3 = $this->create('!!!');
+
+        $response = $this->json('GET', '/api/xxxs');
+
+        $response->assertStatus(200)
+                ->assertJsonStructure([
+                    'data' => [
+                        '*' => [ //* to say we checking keys of multiple collections
+
+                        ]
+                    ],
+                    // Check if it is paginated
+                    'links' => ['first', 'last', 'prev', 'next'],
+                    'meta' => [
+                        'current_page', 'last_page', 'from', 'to',
+                        'path', 'per_page', 'total'
+                    ]
+                ]);
+    }
+}

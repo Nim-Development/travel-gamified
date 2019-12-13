@@ -11,12 +11,15 @@ use App\Games\GameMultipleChoice;
 
 use App\Games\GameMultipleChoiceOption;
 
+use App\Http\Resources\Games\GameMultipleChoiceOption as GameMultipleChoiceOptionResource;
+use App\Http\Resources\Games\GameMultipleChoiceOptionCollection;
+
 class GameController extends Controller
 {
     // $type: media_upload, text_answere, multiple_choice
     public function all($type)
     {
-        $data = config('models.games.'.$filter)::all())
+        $data = config('models.games.'.$filter)::all();
         $code = 200;
         // return response
         return response()->json($data, $code);
@@ -52,11 +55,16 @@ class GameController extends Controller
         return response()->json($data, $code);
     }
 
-    public function ALL_multiple_choice_options(){
-        $data = GameMultipleChoiceOption::all();
-        $code = 200;
+    public function ALL_multiple_choice_options($paginate_qty = null){
+        if($paginate_qty){
+            $data = GameMultipleChoiceOption::paginate($paginate_qty);
+        }else{
+            $data = GameMultipleChoiceOption::all();
 
-        return response()->json($data, $code);
+            return new GameMultipleChoiceOptionCollection($data);
+        }
+
+        return new GameMultipleChoiceOptionCollection($data);
     }
 
     public function SINGLE_multiple_choice_options($id){

@@ -14,10 +14,9 @@ use App\Games\GameMultipleChoice;
 // $table->timestamps();
 
 $factory->define(GameMultipleChoiceOption::class, function (Faker $faker) {
-    $game = GameMultipleChoice::all()->random(1)->first();
     return [
-        'game_id' => $game->id, // Change manually (only 1 per game)
-        'sort_order' => 1, // cant fake this.
+        'game_id' => random_int(0, 60), // Change manually (only 1 per game)
+        'sort_order' => random_int(0, 3), // cant fake this.
         'text' => $faker->sentence($nbWords = 6, $variableNbWords = true)
     ];
 });

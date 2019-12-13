@@ -17,6 +17,20 @@ Route::get('/', function () {
 
 
 Route::get('test', function () {
+
+
+    //Loop over config keys:
+    $res = false;
+    foreach(config('models.games') as $key => $value){
+        echo $key . '<br>';
+        echo substr(get_class($value), 4);
+        // if($key == $check_value){
+        //     $res = true;
+        // }
+    }
+    die;
+
+
     //GameHelper::saySomething();
     ConfigHelper::validate_keyname('1', '2');
 });
