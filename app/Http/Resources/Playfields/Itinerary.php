@@ -1,10 +1,10 @@
 <?php
 
-namespace App\Http\Resources\Games;
+namespace App\Http\Resources\Playfields;
 
 use Illuminate\Http\Resources\Json\JsonResource;
 
-class GameMultipleChoiceOption extends JsonResource
+class Itinerary extends JsonResource
 {
     /**
      * Transform the resource into an array.

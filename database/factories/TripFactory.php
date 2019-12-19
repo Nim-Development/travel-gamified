@@ -29,11 +29,8 @@ use App\Tour;
 // $table->timestamps();
 
 $factory->define(Trip::class, function (Faker $faker) {
-
-    $tour_id = Tour::all()->random(1)->first()->id;
-
     return [
-        'tour_id' => $tour_id,
+        'tour_id' => 1,
         'name' => $faker->name,
         'timezone' => 'GMT+7',
         'start_date_time' => $faker->dateTime($max = NULL, $timezone = NULL),

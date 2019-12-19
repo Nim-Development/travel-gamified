@@ -16,14 +16,10 @@ use App\User;
 // $table->timestamps();
 
 $factory->define(AnswereUnchecked::class, function (Faker $faker) {
-
-    $challenge = Challenge::all()->random(1)->first();
-    $user = User::all()->random(1)->first();
-
     return [
-        'challenge_id' => $challenge->id,
-        'user_id' => $user->id,
-        'answere' => $challenge->game_model == "GameMediaUpload" ? $faker->imageUrl($width = 640, $height = 640) : $faker->sentence($nbWords = 6, $variableNbWords = true),
+        'challenge_id' => 1,
+        'user_id' => 1,
+        'answere' => 'Lorem ipsum dolor sit amet consectetur adipisicing elit.',
         'score' => null
     ];
 });

@@ -179,7 +179,7 @@ class TripControllerTest extends TestCase
         $response = $this->json('GET', '/api/trips');
 
         $response->assertStatus(200)
-                ->assertJsonCount(6, 'data.*')
+                ->assertJsonCount(6, 'data')
                 ->assertJsonStructure([
                     'data' => [
                         '*' => [
@@ -217,7 +217,7 @@ class TripControllerTest extends TestCase
         $response = $this->json('GET', '/api/trips/paginate/3');
 
         $response->assertStatus(200)
-                ->assertJsonCount(3, 'data.*')
+                ->assertJsonCount(3, 'data')
                 ->assertJsonStructure([
                     'data' => [
                         '*' => [

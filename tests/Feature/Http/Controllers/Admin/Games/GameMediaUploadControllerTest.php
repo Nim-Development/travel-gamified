@@ -9,7 +9,7 @@ use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Foundation\Testing\WithFaker;
 use Tests\TestCase;
 
-class GameControllerTest extends TestCase
+class GameMediaUploadControllerTest extends TestCase
 {
 
     use RefreshDatabase;
@@ -26,14 +26,14 @@ class GameControllerTest extends TestCase
     //     $this->json('POST', '/api/games')->assertStatus(401);
     // }
 
-    // /**
-    //  * @test
-    //  */
-    // public function will_fail_with_a_404_if_game_is_not_found()
-    // {
-    //     $res = $this->json('GET', 'api/games/-1');
-    //     $res->assertStatus(404);
-    // }
+    /**
+     * @test
+     */
+    public function will_fail_with_a_404_if_game_of_type_media_upload_is_not_found()
+    {
+        $res = $this->json('GET', 'api/games/media_upload/-1');
+        $res->assertStatus(404);
+    }
 
     // /**
     //  * @test
@@ -186,21 +186,30 @@ class GameControllerTest extends TestCase
     /**
      * @test
      */
-    public function can_return_all_multiple_choice_game_options()
+    public function can_return_all_games_of_type_media_upload()
     {
         // Given, multiple multiple choice options
-        $option_1 = $this->create('Games\GameMultipleChoiceOption');
-        $option_2 = $this->create('Games\GameMultipleChoiceOption');
-        $option_3 = $this->create('Games\GameMultipleChoiceOption');
+        $this->create_collection('Games\GameMediaUpload', [], true, $qty = 6);
 
         // When
-        $result = $this->json('GET', '/api/games/multiple_choice/options');
+        $result = $this->json('GET', '/api/games/media_upload');
 
         // Then
         $result->assertStatus(200)
+               ->assertJsonCount(6, 'data')
                ->assertJsonStructure([
                 'data' => [
-                    '*' => ['id','game_id', 'sort_order', 'text','created_at']
+                    '*' => [
+                        'id',
+                        'title',
+                        'content_media',
+                        'content_text',
+                        'media_type',
+                        'correct_answere',
+                        'points_min',
+                        'points_max',
+                        'created_at'
+                    ]
                 ],
             ]);
     }
@@ -208,24 +217,30 @@ class GameControllerTest extends TestCase
         /**
      * @test
      */
-    public function can_return_all_multiple_choice_game_options_paginated()
+    public function can_return_all_games_of_type_media_upload_paginated()
     {
-        // Given, multiple multiple choice options
-        $option_1 = $this->create('Games\GameMultipleChoiceOption');
-        $option_2 = $this->create('Games\GameMultipleChoiceOption');
-        $option_3 = $this->create('Games\GameMultipleChoiceOption');
-        $option_4 = $this->create('Games\GameMultipleChoiceOption');
-        $option_5 = $this->create('Games\GameMultipleChoiceOption');
-        $option_6 = $this->create('Games\GameMultipleChoiceOption');
+        //Given
+        $this->create_collection('Games\GameMediaUpload', [], true, $qty = 6);
 
         // When
-        $result = $this->json('GET', '/api/games/multiple_choice/options/2');
+        $result = $this->json('GET', '/api/games/media_upload/paginate/3');
 
         // Then
         $result->assertStatus(200)
+               ->assertJsonCount(3, 'data')
                ->assertJsonStructure([
                 'data' => [
-                    '*' => ['game_id', 'sort_order', 'text']
+                    '*' => [
+                        'id',
+                        'title',
+                        'content_media',
+                        'content_text',
+                        'media_type',
+                        'correct_answere',
+                        'points_min',
+                        'points_max',
+                        'created_at'
+                    ]
                 ],
                 // Check if it is paginated
                 'links' => ['first', 'last', 'prev', 'next'],
@@ -240,38 +255,29 @@ class GameControllerTest extends TestCase
     /**
      * @test
      */
-    public function get_options_from_a_single_multiple_choice_game()
+    public function can_get_a_single_game_of_type_media_upload()
     {
         // Given
-        $game = $this->create('Games\GameMultipleChoice');
-
-        GameMultipleChoiceOption::create([
-            'game_id' => $game->id,
-            'sort_order' => 1,
-            'text' => 'lorem ipsum'
-        ]);
-        GameMultipleChoiceOption::create([
-            'game_id' => $game->id,
-            'sort_order' => 2,
-            'text' => 'lorem ipsum'
-        ]);
-        GameMultipleChoiceOption::create([
-            'game_id' => $game->id,
-            'sort_order' => 3,
-            'text' => 'lorem ipsum'
-        ]);
+        $game = $this->create('Games\GameMediaUpload');
 
         // When
-        $result = $this->json('GET', "games/multiple_choice/$game->id/options");
+        $result = $this->json('GET', "/api/games/media_upload/$game->id");
 
         // Then
         $result->assertStatus(200)
-               ->assertJsonStructure([
+               ->assertExactJson([
                 'data' => [
-                    '*' => ['id', 'game_id', 'sort_order', 'text']
+                    'id' => $game->id,
+                    'title' => $game->title,
+                    'content_media' => $game->content_media,
+                    'content_text' => $game->content_text,
+                    'media_type' => $game->media_type,
+                    'correct_answere' => $game->correct_answere,
+                    'points_min' => $game->points_min,
+                    'points_max' => $game->points_max,
+                    'created_at' => (string)$game->created_at
                 ]
-            ]
-        );
+            ]);
 
     }
 

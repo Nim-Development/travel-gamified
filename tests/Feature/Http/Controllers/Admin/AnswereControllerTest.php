@@ -29,11 +29,11 @@ class AnswereControllerTest extends TestCase
     // /**
     //  * @test
     //  */
-    // public function will_fail_with_a_404_if_answere_is_not_found()
-    // {
-    //     $res = $this->json('GET', 'api/answeres/-1');
-    //     $res->assertStatus(404);
-    // }
+    public function will_fail_with_a_404_if_answere_is_not_found()
+    {
+        $res = $this->json('GET', '/api/answeres/checked/-1');
+        $res->assertStatus(404);
+    }
 
     // /**
     //  * @test
@@ -43,6 +43,33 @@ class AnswereControllerTest extends TestCase
     //     $res = $this->json('PUT', 'api/answeres/-1');
     //     $res->assertStatus(404);
     // }
+
+    /**
+     * @test
+     */
+    public function will_fail_with_a_400_if_we_try_to_return_a_single_answere_of_an_invalid_type()
+    {
+        $res = $this->json('GET', '/api/answeres/xxxx/1');
+        $res->assertStatus(400);
+    }
+
+    /**
+     * @test
+     */
+    public function will_fail_with_a_400_if_we_try_to_return_all_answeres_of_an_invalid_type()
+    {
+        $res = $this->json('GET', '/api/answeres/xxxx');
+        $res->assertStatus(400);
+    }
+
+    /**
+     * @test
+     */
+    public function will_fail_with_a_400_if_we_try_to_return_paginated_answeres_of_an_invalid_type()
+    {
+        $res = $this->json('GET', '/api/answeres/xxxx/paginate/3');
+        $res->assertStatus(400);
+    }
 
     //     /**
     //  * @test
@@ -185,83 +212,228 @@ class AnswereControllerTest extends TestCase
     /**
      * @test
      */
-    public function can_get_all_answeres()
-    {
-        $fragment_1 = $this->create('AnswereChecked');
-                      $this->create('AnswereChecked');
-        $fragment_2 = $this->create('AnswereUnchecked');
-                      $this->create('AnswereUnchecked');
+    // public function can_get_all_answeres()
+    // {
+    //     // creates 6 answeres, and also creates + inserts relational data
+    //     $this->collection_of_answeres('AnswereChecked', 6);
 
-        $response = $this->json('GET', '/api/answeres/all');
+    //     $response = $this->json('GET', '/api/answeres/all');
 
-        $response->assertStatus(200)
-                 ->assertJsonFragment($fragment_1)
-                 ->assertJsonFragment($fragment_2)
-                 ->assertJsonStructure([
-                    'data' => [
-                        '*' => ['id', 'challenge_id', 'user_id', 'answere', 'score']
-                    ]
-                 ]);
-    }
+    //     $response->assertStatus(200)
+    //             ->assertJsonCount(6, 'data')
+    //             ->assertJsonStructure([
+    //                 'data' => [
+    //                     '*' => [
+    //                         'id',
+    //                         'answere',
+    //                         'score',
+    //                         'user' => [
+    //                             'id',
+    //                             'email',
+    //                             'phone',
+    //                             'email_verified_at',
+    //                             'first_name',
+    //                             'family_name',
+    //                             'age',
+    //                             'gender',
+    //                             'score',
+    //                             'created_at'
+    //                         ],
+    //                         'challenge' => [
+    //                             'id',
+    //                             'sort_order',
+    //                             'playfield' => [
+    //                                 'id',
+    //                                 'short_code',
+    //                                 'name'
+    //                             ],
+    //                             'game' => [
+    //                                 'id',
+    //                                 'title',
+    //                                 'content_media',
+    //                                 'content_text',
+    //                                 'correct_answere',
+    //                                 'points_min',
+    //                                 'points_max',
+    //                                 'created_at'
+    //                             ]
+    //                         ]
+    //                     ]
+    //                 ]
+    //             ]);
+    // }
 
-    public function can_get_all_answeres_paginated()
-    {
-        $fragment_1 = $this->create('AnswereChecked');
-                      $this->create('AnswereChecked');
-        $fragment_2 = $this->create('AnswereUnchecked');
-                      $this->create('AnswereUnchecked');
+    // public function can_get_all_answeres_paginated()
+    // {
+    //     $this->collection_of_answeres('AnswereChecked', 6);
 
-        $response = $this->json('GET', '/api/answeres/{filter}/paginate/3');
+    //     $response = $this->json('GET', '/api/answeres/{filter}/paginate/3');
 
-        $response->assertStatus(200)
-                 ->assertJsonFragment($fragment_1)
-                 ->assertJsonFragment($fragment_2)
-                 ->assertJsonStructure([
-                    'data' => [
-                        '*' => ['id', 'challenge_id', 'user_id', 'answere', 'score']
-                    ],
-                    'links' => ['first', 'last', 'prev', 'next'],
-                    'meta' => [
-                        'current_page', 'last_page', 'from', 'to',
-                        'path', 'per_page', 'total'
-                    ]
-                 ]);
-    }
+    //     $response->assertStatus(200)
+    //              ->assertJsonCount(3, 'data')
+    //              ->assertJsonStructure([
+    //                 'data' => [
+    //                     '*' => [
+    //                         'id',
+    //                         'answere',
+    //                         'score',
+    //                         'user' => [
+    //                             'id',
+    //                             'email',
+    //                             'phone',
+    //                             'email_verified_at',
+    //                             'first_name',
+    //                             'family_name',
+    //                             'age',
+    //                             'gender',
+    //                             'score',
+    //                             'created_at'
+    //                         ],
+    //                         'challenge' => [
+    //                             'id',
+    //                             'sort_order',
+    //                             'playfield' => [
+    //                                 'id',
+    //                                 'short_code',
+    //                                 'name'
+    //                             ],
+    //                             'game' => [
+    //                                 'id',
+    //                                 'title',
+    //                                 'content_media',
+    //                                 'content_text',
+    //                                 'correct_answere',
+    //                                 'points_min',
+    //                                 'points_max',
+    //                                 'created_at'
+    //                             ]
+    //                         ]
+    //                     ]
+    //                 ],
+    //                 'links' => ['first', 'last', 'prev', 'next'],
+    //                 'meta' => [
+    //                     'current_page', 'last_page', 'from', 'to',
+    //                     'path', 'per_page', 'total'
+    //                 ]
+    //              ]);
+    // }
 
+    /**
+     * @test
+     */
     public function can_get_all_unchecked_answeres()
     {
-        $fragment_1 = $this->create('AnswereChecked');
-                      $this->create('AnswereChecked');
-        $fragment_2 = $this->create('AnswereUnchecked');
-                      $this->create('AnswereUnchecked');
+
+        // Create 3 Checked
+        $this->collection_of_answeres('AnswereChecked', 3);
+
+        // Create 3 Unchecked
+        $this->collection_of_answeres('AnswereUnchecked', 3);
 
         $response = $this->json('GET', '/api/answeres/unchecked');
 
         $response->assertStatus(200)
-                 ->assertJsonFragment($fragment_1)
-                 ->assertJsonFragment($fragment_2)
+                 ->assertJsonCount(3, 'data')
                  ->assertJsonStructure([
                     'data' => [
-                        '*' => ['id', 'challenge_id', 'user_id', 'answere', 'score']
+                        '*' => [
+                            'id',
+                            'answere',
+                            'score',
+                            'user' => [
+                                'id',
+                                'email',
+                                'phone',
+                                'email_verified_at',
+                                'first_name',
+                                'family_name',
+                                'age',
+                                'gender',
+                                'score',
+                                'created_at'
+                            ],
+                            'challenge' => [
+                                'id',
+                                'sort_order',
+                                'playfield' => [
+                                    'id',
+                                    'type',
+                                    'short_code',
+                                    'name'
+                                ],
+                                'game' => [
+                                    'id',
+                                    'type',
+                                    'title',
+                                    'content_media',
+                                    'content_text',
+                                    'correct_answere',
+                                    'points_min',
+                                    'points_max',
+                                    'created_at'
+                                ]
+                            ]
+                        ]
                     ]
                  ]);
+
     }
 
+    /**
+     * @test
+     */
     public function can_get_all_unchecked_answeres_paginated()
     {
-        $fragment_1 = $this->create('AnswereChecked');
-                      $this->create('AnswereChecked');
-        $fragment_2 = $this->create('AnswereUnchecked');
-                      $this->create('AnswereUnchecked');
+        // Create 3 Checked
+        $this->collection_of_answeres('AnswereChecked', 3);
+
+        // Create 3 Unchecked
+        $this->collection_of_answeres('AnswereUnchecked', 6);
 
         $response = $this->json('GET', '/api/answeres/unchecked/paginate/3');
 
         $response->assertStatus(200)
-                 ->assertJsonFragment($fragment_1)
-                 ->assertJsonFragment($fragment_2)
+                 ->assertJsonCount(3, 'data')
                  ->assertJsonStructure([
                     'data' => [
-                        '*' => ['id', 'challenge_id', 'user_id', 'answere', 'score']
+                        '*' => [
+                            'id',
+                            'answere',
+                            'score',
+                            'user' => [
+                                'id',
+                                'email',
+                                'phone',
+                                'email_verified_at',
+                                'first_name',
+                                'family_name',
+                                'age',
+                                'gender',
+                                'score',
+                                'created_at'
+                            ],
+                            'challenge' => [
+                                'id',
+                                'sort_order',
+                                'playfield' => [
+                                    'id',
+                                    'type',
+                                    'short_code',
+                                    'name'
+                                ],
+                                'game' => [
+                                    'id',
+                                    'type',
+                                    'title',
+                                    'content_media',
+                                    'content_text',
+                                    'correct_answere',
+                                    'points_min',
+                                    'points_max',
+                                    'created_at'
+                                ]
+                            ]
+                        ]
                     ],
                     'links' => ['first', 'last', 'prev', 'next'],
                     'meta' => [
@@ -271,40 +443,120 @@ class AnswereControllerTest extends TestCase
                  ]);
     }
 
+    /**
+     * @test
+     */
     public function can_get_all_checked_answeres()
     {
-        $fragment_1 = $this->create('AnswereChecked');
-                      $this->create('AnswereChecked');
-        $fragment_2 = $this->create('AnswereUnchecked');
-                      $this->create('AnswereUnchecked');
+        // Create 3 Checked
+        $this->collection_of_answeres('AnswereChecked', 3);
+
+        // Create 3 Unchecked
+        $this->collection_of_answeres('AnswereUnchecked', 3);
 
         $response = $this->json('GET', '/api/answeres/checked');
 
         $response->assertStatus(200)
-                 ->assertJsonFragment($fragment_1)
-                 ->assertJsonFragment($fragment_2)
+                 ->assertJsonCount(3, 'data')
                  ->assertJsonStructure([
                     'data' => [
-                        '*' => ['id', 'challenge_id', 'user_id', 'answere', 'score']
+                        '*' => [
+                            'id',
+                            'answere',
+                            'score',
+                            'user' => [
+                                'id',
+                                'email',
+                                'phone',
+                                'email_verified_at',
+                                'first_name',
+                                'family_name',
+                                'age',
+                                'gender',
+                                'score',
+                                'created_at'
+                            ],
+                            'challenge' => [
+                                'id',
+                                'sort_order',
+                                'playfield' => [
+                                    'id',
+                                    'type',
+                                    'short_code',
+                                    'name'
+                                ],
+                                'game' => [
+                                    'id',
+                                    'type',
+                                    'title',
+                                    'content_media',
+                                    'content_text',
+                                    'correct_answere',
+                                    'points_min',
+                                    'points_max',
+                                    'created_at'
+                                ]
+                            ]
+                        ]
                     ]
                  ]);
     }
 
+    /**
+     * @test
+     */
     public function can_get_all_checked_answeres_paginated()
     {
-        $fragment_1 = $this->create('AnswereChecked');
-                      $this->create('AnswereChecked');
-        $fragment_2 = $this->create('AnswereUnchecked');
-                      $this->create('AnswereUnchecked');
+        // Create 3 Checked
+        $this->collection_of_answeres('AnswereChecked', 3);
+
+        // Create 3 Unchecked
+        $this->collection_of_answeres('AnswereUnchecked', 6);
 
         $response = $this->json('GET', '/api/answeres/checked/paginate/3');
 
         $response->assertStatus(200)
-                 ->assertJsonFragment($fragment_1)
-                 ->assertJsonFragment($fragment_2)
+                 ->assertJsonCount(3, 'data')
                  ->assertJsonStructure([
                     'data' => [
-                        '*' => ['id', 'challenge_id', 'user_id', 'answere', 'score']
+                        '*' => [
+                            'id',
+                            'answere',
+                            'score',
+                            'user' => [
+                                'id',
+                                'email',
+                                'phone',
+                                'email_verified_at',
+                                'first_name',
+                                'family_name',
+                                'age',
+                                'gender',
+                                'score',
+                                'created_at'
+                            ],
+                            'challenge' => [
+                                'id',
+                                'sort_order',
+                                'playfield' => [
+                                    'id',
+                                    'type',
+                                    'short_code',
+                                    'name'
+                                ],
+                                'game' => [
+                                    'id',
+                                    'type',
+                                    'title',
+                                    'content_media',
+                                    'content_text',
+                                    'correct_answere',
+                                    'points_min',
+                                    'points_max',
+                                    'created_at'
+                                ]
+                            ]
+                        ]
                     ],
                     'links' => ['first', 'last', 'prev', 'next'],
                     'meta' => [
@@ -314,20 +566,168 @@ class AnswereControllerTest extends TestCase
                  ]);
     }
 
+    /**
+     * @test
+     */
     public function can_get_a_single_checked_answere_by_id()
     {
-        $answere = $this->create('AnswereChecked');
+
+        $challenge = $this->create('Games\Challenge',
+            [
+                'game_type' => 'text_answere',
+                'game_id' => $this->create('Games\GameTextAnswere', [], false)->id,
+                'playfield_type' => 'city',
+                'playfield_id' => $this->create('Playfields\City', [], false)->id
+            ],
+            false);
+        $user = $this->create('User', [], false);
+
+        $answere = $this->create('AnswereChecked', [
+            'challenge_id' => $challenge->id,
+            'user_id' => $user->id
+        ], false);
+
         $response = $this->json('GET', "/api/answeres/checked/$answere->id");
+
         $response->assertStatus(200)
-                 ->assertJsonFragment($answere);
+                ->assertJsonFragment(['id' => $answere->id])
+                ->assertJsonStructure([
+                    'data' => [
+                            'id',
+                            'answere',
+                            'score',
+                            'user' => [
+                                'id',
+                                'email',
+                                'phone',
+                                'email_verified_at',
+                                'first_name',
+                                'family_name',
+                                'age',
+                                'gender',
+                                'score',
+                                'created_at'
+                            ],
+                            'challenge' => [
+                                'id',
+                                'sort_order',
+                                'playfield' => [
+                                    'id',
+                                    'type',
+                                    'short_code',
+                                    'name'
+                                ],
+                                'game' => [
+                                    'id',
+                                    'type',
+                                    'title',
+                                    'content_media',
+                                    'content_text',
+                                    'correct_answere',
+                                    'points_min',
+                                    'points_max',
+                                    'created_at'
+                                ]
+                            ]
+                        ]
+                ]);
     }
 
+    /**
+     * @test
+     */
     public function can_get_a_single_unchecked_answere_by_id()
     {
-        $answere = $this->create('AnswereChecked');
+        $challenge = $this->create('Games\Challenge',
+            [
+                'game_type' => 'text_answere',
+                'game_id' => $this->create('Games\GameTextAnswere', [], false)->id,
+                'playfield_type' => 'city',
+                'playfield_id' => $this->create('Playfields\City', [], false)->id
+            ],
+            false);
+
+        $user = $this->create('User', [], false);
+
+        $answere = $this->create('AnswereUnchecked', [
+            'challenge_id' => $challenge->id,
+            'user_id' => $user->id
+        ], false);
+
         $response = $this->json('GET', "/api/answeres/unchecked/$answere->id");
+
         $response->assertStatus(200)
-                 ->assertJsonFragment($answere);
+        ->assertJsonFragment(['id' => $answere->id])
+        ->assertJsonStructure([
+            'data' => [
+                    'id',
+                    'answere',
+                    'score',
+                    'user' => [
+                        'id',
+                        'email',
+                        'phone',
+                        'email_verified_at',
+                        'first_name',
+                        'family_name',
+                        'age',
+                        'gender',
+                        'score',
+                        'created_at'
+                    ],
+                    'challenge' => [
+                        'id',
+                        'sort_order',
+                        'playfield' => [
+                            'id',
+                            'type',
+                            'short_code',
+                            'name'
+                        ],
+                        'game' => [
+                            'id',
+                            'type',
+                            'title',
+                            'content_media',
+                            'content_text',
+                            'correct_answere',
+                            'points_min',
+                            'points_max',
+                            'created_at'
+                        ]
+                    ]
+                ]
+        ]);
+    }
+
+
+
+
+
+
+    // PRIVATE HELPERS
+    private function collection_of_answeres($type, $qty)
+    {
+        // Create a full challenge with all of its relational data inserted.
+        $challenge = $this->create(
+            'Games\Challenge',
+            [
+                'game_type' => 'text_answere',
+                'game_id' => $this->create('Games\GameTextAnswere', [], false)->id,
+                'playfield_type' => 'city',
+                'playfield_id' => $this->create('Playfields\City', [], false)->id
+            ],
+            false
+        );
+
+        $user = $this->create('User', [], false);
+
+        return $this->create_collection(
+            "$type",
+            ['challenge_id' => $challenge->id, 'user_id' => $user->id],
+            true,
+            $qty
+        );
     }
 
 }

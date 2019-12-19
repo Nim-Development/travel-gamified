@@ -197,7 +197,7 @@ class UserControllerTest extends TestCase
         $response = $this->json('GET', '/api/users');
 
         $response->assertStatus(200)
-                ->assertJsonCount(6, 'data.*')
+                ->assertJsonCount(6, 'data')
                 ->assertJsonStructure([
                     'data' => [
                         '*' => [ //* to say we checking keys of multiple collections
@@ -250,7 +250,7 @@ class UserControllerTest extends TestCase
         $response = $this->json('GET', '/api/users/paginate/3');
 
         $response->assertStatus(200)
-                ->assertJsonCount(3, 'data.*')
+                ->assertJsonCount(3, 'data')
                 ->assertJsonStructure([
                     'data' => [
                         '*' => [ //* to say we checking keys of multiple collections

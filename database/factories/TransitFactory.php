@@ -25,13 +25,9 @@ use App\Playfields\City;
 // $table->timestamps();
 
 $factory->define(Transit::class, function (Faker $faker) {
-
-    $city_1 = City::all()->random(1)->first()->id;
-    $city_2 = City::all()->random(1)->first()->id;
-
     return [
         'name' => $faker->name,
-        'from' => $city_1,
-        'to' => $city_2
+        'from' => 1,
+        'to' => 2
     ];
 });

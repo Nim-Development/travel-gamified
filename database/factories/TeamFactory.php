@@ -27,12 +27,9 @@ use App\Trip;
 // $table->timestamps();
 
 $factory->define(Team::class, function (Faker $faker) {
-
-    $trip_id = Trip::all()->random(1)->first()->id;
-
     return [
 
-        'trip_id' => $trip_id,
+        'trip_id' => 1,
         'name' => $faker->name,
         'color' => $faker->hexcolor,
         'badge' => $faker->imageUrl($width = 640, $height = 640),

@@ -141,17 +141,12 @@ class ItineraryControllerTest extends TestCase
     {
         // Given
         // Create playfield
-        $playfield_type = 'city';
-
-        // strip App\ model class namespace path
-        $playfield_model_str = substr(get_class(config("models.playfields.$playfield_type")), 4);
-        $playfield = $this->create($playfield_model_str, [], false);
+        $playfield = $this->create('Playfields\City', [], false);
 
         $itinerary = $this->create('Itinerary', [
-            'playfield_type' => $playfield_type,
+            'playfield_type' => 'city',
             'playfield_id' => $playfield->id
         ]);
-
 
         // When
         $response = $this->json('GET', '/api/itineraries/'.$itinerary->id);
@@ -184,17 +179,12 @@ class ItineraryControllerTest extends TestCase
     {
         // Given
         // Create playfield
-        $playfield_type = 'route';
-
-        // strip App\ model class namespace path
-        $playfield_model_str = substr(get_class(config("models.playfields.$playfield_type")), 4);
-        $playfield = $this->create($playfield_model_str, [], false);
+        $playfield = $this->create('Playfields\Route', [], false);
 
         $itinerary = $this->create('Itinerary', [
-            'playfield_type' => $playfield_type,
+            'playfield_type' => 'route',
             'playfield_id' => $playfield->id
         ]);
-
 
         // When
         $response = $this->json('GET', '/api/itineraries/'.$itinerary->id);
@@ -233,14 +223,10 @@ class ItineraryControllerTest extends TestCase
     {
         // Given
         // Create playfield
-        $playfield_type = 'transit';
-
-        // strip App\ model class namespace path
-        $playfield_model_str = substr(get_class(config("models.playfields.$playfield_type")), 4);
-        $playfield = $this->create($playfield_model_str, [], false);
+        $playfield = $this->create('Playfields\Transit', [], false);
 
         $itinerary = $this->create('Itinerary', [
-            'playfield_type' => $playfield_type,
+            'playfield_type' => 'transit',
             'playfield_id' => $playfield->id
         ]);
 
@@ -277,20 +263,35 @@ class ItineraryControllerTest extends TestCase
      */
     public function can_return_a_collection_of_all_itineraries()
     {
-        $playfield_type = 'city';
-        $qty = 3;
-        // create 3 challenges with game type of multple_choice
-        $itineraries = $this->populate_itineraries_with_playfield_type($playfield_type, $qty);
 
-        // create 1 more challenge with other playfield type
-        $this->create('Itinerary', ['playfield_type' => 'xxxx']);
+        $city = $this->create('Playfields\City');
 
+        $this->create_collection('Itinerary', ['playfield_type' => 'city', 'playfield_id' => $city->id], false, 3);
 
         $response = $this->json('GET', "api/initineraries");
 
         $response->assertStatus(200)
-                 ->assertJsonCount($qty, 'data.*')
-                 ->assertJsonHas($itineraries);
+                 ->assertJsonCount(3, 'data')
+                 ->assertJsonStructure([
+                     'data' => [
+                         '*' => [
+                            'id',
+                            'tour_id',
+                            'step',
+                            'duration',
+                            'playfield_type',
+                            'playfield_id',
+                            'playfield' => [
+                                'id',
+                                'name',
+                                'from',
+                                'to',
+                                'created_at'
+                            ],
+                            'created_at'
+                        ]
+                    ]
+                 ]);
     }
 
         /**
@@ -298,24 +299,30 @@ class ItineraryControllerTest extends TestCase
      */
     public function can_return_a_collection_of_all_itineraries_paginated()
     {
-        $playfield_type = 'city';
-        $qty = 3;
-        // create 3 challenges with game type of multple_choice
-        $itineraries = $this->populate_itineraries_with_playfield_type($playfield_type, $qty);
 
-        // create 1 more challenge with other playfield type
-        $this->create('Itinerary', ['playfield_type' => 'xxxx']);
+        $city = $this->create('Playfields\City');
+        $this->create_collection('Itinerary', ['playfield_type' => 'city', 'playfield_id' => $city->id], false, 6);
 
-
-        $response = $this->json('GET', "api/initineraries/paginate/$qty");
+        $response = $this->json('GET', "api/initineraries/paginate/3");
 
         $response->assertStatus(200)
-                 ->assertJsonCount($qty, 'data.*')
-                 ->assertJsonHas($itineraries)
+                 ->assertJsonCount(3, 'data')
                  ->assertJsonStructure([
                      'data' => [
                         '*' => [ //* to say we checking keys of multiple collections
-
+                                'id',
+                                'tour_id',
+                                'step',
+                                'duration',
+                                'playfield_type',
+                                'playfield_id',
+                                'playfield' => [
+                                    'id',
+                                    'short_code',
+                                    'name',
+                                    'created_at'
+                                ],
+                                'created_at'
                             ]
                     ],
                     // Check if it is paginated
@@ -332,20 +339,38 @@ class ItineraryControllerTest extends TestCase
      */
     public function can_return_a_collection_of_all_itineraries_with_playfield_OFF_city()
     {
-        $playfield_type = 'transit';
-        $qty = 3;
-        // create 3 challenges with game type of multple_choice
-        $itineraries = $this->populate_itineraries_with_playfield_type($playfield_type, $qty);
+        $transit = $this->create('Playfields\Transit');
+        $this->create_collection('Itinerary', ['playfield_type' => 'transit', 'playfield_id' => $transit->id], false, 6);
 
-        // create 1 more challenge with other playfield type
-        $this->create('Itinerary', ['playfield_type' => 'xxxx']);
-
+        // create 1 more itinerary with other playfield type
+        $this->create('Itinerary', ['playfield_type' => 'city']);
 
         $response = $this->json('GET', "api/initineraries/playfield/$playfield_type");
 
+        // Assert if all itineraries have relation of type Transit
+        $this->assert_if_all_objects_have_same_type_in_specified_relation($response, 'playfield', 'transit');
         $response->assertStatus(200)
-                 ->assertJsonCount($qty, 'data.*')
-                 ->assertJsonHas($itineraries);
+                 ->assertJsonCount(6, 'data')
+                 ->assertJsonStructure([
+                     'data' => [
+                         '*' => [
+                            'id',
+                            'tour_id',
+                            'step',
+                            'duration',
+                            'playfield_type',
+                            'playfield_id',
+                            'playfield' => [
+                                'id',
+                                'name',
+                                'from',
+                                'to',
+                                'created_at'
+                            ],
+                            'created_at'
+                         ]
+                     ]
+                 ]);
     }
 
         /**
@@ -365,7 +390,7 @@ class ItineraryControllerTest extends TestCase
         $response = $this->json('GET', "api/initineraries/playfield/$playfield_type");
 
         $response->assertStatus(200)
-                 ->assertJsonCount($qty, 'data.*')
+                 ->assertJsonCount($qty, 'data')
                  ->assertJsonHas($itineraries);
     }
 
@@ -385,34 +410,21 @@ class ItineraryControllerTest extends TestCase
         $response = $this->json('GET', "api/initineraries/playfield/$playfield_type");
 
         $response->assertStatus(200)
-                 ->assertJsonCount($qty, 'data.*')
+                 ->assertJsonCount($qty, 'data')
                  ->assertJsonHas($itineraries);
     }
 
-    /**
-     * @test
-     */
-    public function can_return_a_collection_of_paginated_itineraries()
+
+
+    /////////////
+    // PRIVATE //
+    /////////////
+    private function assert_if_all_objects_have_same_type_in_specified_relation($response, $relation_type, $given)
     {
-        $itinerarie_1 = $this->create('Itinerary');
-        $itinerarie_2 = $this->create('Itinerary');
-        $itinerarie_3 = $this->create('Itinerary');
-
-        $response = $this->json('GET', '/api/itineraries');
-
-        $response->assertStatus(200)
-                ->assertJsonStructure([
-                    'data' => [
-                        '*' => [ //* to say we checking keys of multiple collections
-
-                        ]
-                    ],
-                    // Check if it is paginated
-                    'links' => ['first', 'last', 'prev', 'next'],
-                    'meta' => [
-                        'current_page', 'last_page', 'from', 'to',
-                        'path', 'per_page', 'total'
-                    ]
-                ]);
+        // asserts the nested $type property for game or playfield.
+        foreach($response->getData()->data as $itinerary){
+            $this->assertSame($given, $itinerary->$relation_type->type);
+        }
     }
+
 }

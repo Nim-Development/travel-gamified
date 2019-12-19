@@ -11,18 +11,38 @@ abstract class TestCase extends BaseTestCase
     // now we can use $this->create('Model') inside our tests to return a product
     public function create(string $model, array $attributes = [], $resource = true)
     {
-        $resource_model = factory("App\\$model")->create($attributes);
 
+        $resource_model = factory("App\\$model")->create($attributes);
         //construct the API resource with $model name
         $resource_class = "App\\Http\\Resources\\$model";
 
         if(!$resource){
+
+
             // simply return created object instead of Api Resource
             return $resource_model;
         }
 
         return new $resource_class($resource_model);
     }
+
+    public function create_collection(string $model, array $attributes = [], $resource = true, $qty = 1)
+    {
+
+        $resource_model_array = factory("App\\$model", $qty)->create($attributes);
+
+        //construct the API resource collection with $model name
+        $resource_collection_class = "App\\Http\\Resources\\".$model;
+
+        if(!$resource){
+            // simply return array of model objects instead of as resource collection
+            return $resource_model_array;
+        }
+
+        // return resource collection
+        return $resource_collection_class::collection($resource_model_array);
+    }
+
 
     public function populate_challenges_with_relations($playfield_type, $game_type, $qty = 1)
     {
@@ -46,25 +66,4 @@ abstract class TestCase extends BaseTestCase
 
         return $challenge_array;
     }
-
-    public function populate_itineraries_with_playfield_type($playfield_type, $qty = 1)
-    {
-        $playfield_model_str = substr(get_class(config("models.games.$playfield_type")), 4);
-        $playfield = $this->create($playfield_model_str, [], false);
-
-        $itineraries_array = array();
-        $count = 0;
-        while ($count <= $qty) {
-            // create challenge and push to array
-            array_push($itineraries_array,
-                $this->create('Itinerary', [
-                    'playfield_type' => $playfield_type,
-                    'playfield_id' => $playfield->id
-                ])
-            );
-        }
-
-        return $itineraries_array;
-    }
-
 }

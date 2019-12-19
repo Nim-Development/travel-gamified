@@ -8,6 +8,8 @@ use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\DB;
 use App\Games\Challenge;
 
+use App\Http\Resources\Games\Challenge as ChallengeResource;
+
 class ChallengeController extends Controller
 {
 
@@ -16,58 +18,48 @@ class ChallengeController extends Controller
      * GET
      */
     // Collection of all entries
-    public function all()
+    public function all($type = null)
     {
-        $data = Challenge::all();
-        $code = 200;
+        return ChallengeResource::collection(Challenge::all());
+    }
 
-        return response()->json($data, $code);
+    public function paginated($qty)
+    {
+        return ChallengeResource::collection(Challenge::paginate($qty));
     }
 
     // Single entry by id
     public function single($id)
     {
-        $data = Challenge::find($id);
-        $code = 200;
-
-        return response()->json($data, $code);
+        return new ChallengeResource(Challenge::findOrFail($id));
     }
 
-
-    public function all_by_playfield($type)
+    public function all_by_playfield($type, $paginate = null, $qty = null)
     {
-        // check if $type actually exists withing config(models.playfields) array.
-        $valid = \ConfigHelper::validate_keyname(config('models.playfields'), $type);
-
-        if(!$valid){
-            // error
-            return response()->json(['error' => 'playfield with keyname: '.$type.' does not exist'], 200);
-        }
-
-        $data = Challenge::where('playfield_type', $type)->get();
-        if(count($data) == 0){
-            // error
-            return response()->json(['error' => '0 challenges exist with playfield_type: '.$type], 200);
-        }
-
-        return response()->json(['data' => $data], 200);
+        return ChallengeResource::collection(
+            Challenge::where('playfield_type', $type)->get()
+        );
     }
 
     public function all_by_game($type)
     {
-        // check if $type actually exists withing config(models.playfields) array.
-        if(\ConfigHelper::validate_keyname(config('models.games'), $type) == FALSE){
-            // error
-            return response()->json(['error' => 'game with keyname: '.$type.', does not exist'], 200);
-        }
+        return ChallengeResource::collection(
+            Challenge::where('game_type', $type)->get()
+        );
+    }
 
-        $data = Challenge::where('game_type', $type)->get();
-        if(count($data) == 0){
-            // error
-            return response()->json(['error' => '0 challenges exist with game_type: '.$type], 200);
-        }
+    public function paginated_by_playfield($type, $qty)
+    {
+        return ChallengeResource::collection(
+            Challenge::where('playfield_type', $type)->paginate($qty)
+        );
+    }
 
-        return response()->json(['data' => $data], 200);
+    public function paginated_by_game($type, $qty)
+    {
+        return ChallengeResource::collection(
+            Challenge::where('game_type', $type)->paginate($qty)
+        );
     }
 
     /**

@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 
+use App\Http\Resources\Playfields\City as CityResource;
 use App\Playfields\City;
 
 class CityController extends Controller
@@ -13,17 +14,19 @@ class CityController extends Controller
     public function all()
     {
         $data = City::all();
-        $code = 200;
+        return CityResource::collection($data);
+    }
 
-        return response()->json($data, $code);
+    public function paginate($qty)
+    {
+        $data = City::paginate($qty);
+        return CityResource::collection($data);
     }
 
     // Single entry by id
     public function single($id)
     {
-        $data = City::find($id);
-        $code = 200;
-
-        return response()->json($data, $code);
+        $data = City::findOrFail($id);
+        return new CityResource($data);
     }
 }

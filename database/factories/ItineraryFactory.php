@@ -29,18 +29,11 @@ use App\Playfields\Transit;
 // $table->timestamps();
 
 $factory->define(Itinerary::class, function (Faker $faker) {
-
-    $tour_id = Tour::all()->random(1)->first()->id;
-    $city_id = City::all()->random(1)->first()->id;
-    $transit_id = Transit::all()->random(1)->first()->id;
-
-    $city_or_transit = (bool)random_int(0, 1);
-
     return [
-        'tour_id' => $tour_id,
-        'step' => 1, // cant fake this.
+        'tour_id' => 1,
+        'step' => 1,
         'duration' => $faker->randomFloat($nbMaxDecimals = 2, $min = 24, $max = 72),
-        'city_id' => $city_or_transit ? NULL : $city_id,
-        'transit_id' => $city_or_transit ? $transit_id : NULL
+        'playfield_type' => 'city',
+        'playfield_id' => 1
     ];
 });

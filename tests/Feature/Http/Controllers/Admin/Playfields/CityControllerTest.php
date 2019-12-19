@@ -137,7 +137,7 @@ class CityControllerTest extends TestCase
     {
         // Given
         // inserting a model into the database (we know this will work because test can_create_a_citie() was asserted succesfully)
-        $city= $this->create('City');
+        $city = $this->create('Playfields\City');
 
         // When
         $response = $this->json('GET', "/api/cities/$city->id");
@@ -146,12 +146,13 @@ class CityControllerTest extends TestCase
         // assert status code
         $response->assertStatus(200)
                  ->assertExactJson([
-                    'id' => $city->id,
-                    'short_code' => $city->short_code,
-                    'name' => $city->name,
-                    'created_at' => (string)$city->created_at
+                     'data' => [
+                        'id' => $city->id,
+                        'short_code' => $city->short_code,
+                        'name' => $city->name,
+                        'created_at' => (string)$city->created_at
+                     ]
                 ]);
-
     }
 
     /**
@@ -159,16 +160,11 @@ class CityControllerTest extends TestCase
      */
     public function can_return_a_collection_of_all_cities()
     {
-        $citie_1 = $this->create('City');
-        $citie_2 = $this->create('City');
-        $citie_3 = $this->create('City');
-        $citie_4 = $this->create('City');
-        $citie_5 = $this->create('City');
-        $citie_6 = $this->create('City');
+        $this->create_collection('Playfields\City', [], $resource = true, $qty = 6);
 
         $response = $this->json('GET', '/api/cities');
-
         $response->assertStatus(200)
+                ->assertJsonCount(6, 'data')
                 ->assertJsonStructure([
                     'data' => [
                         '*' => [ //* to say we checking keys of multiple collections
@@ -183,16 +179,12 @@ class CityControllerTest extends TestCase
      */
     public function can_return_a_collection_of_paginated_cities()
     {
-        $citie_1 = $this->create('City');
-        $citie_2 = $this->create('City');
-        $citie_3 = $this->create('City');
-        $citie_4 = $this->create('City');
-        $citie_5 = $this->create('City');
-        $citie_6 = $this->create('City');
+        $this->create_collection('Playfields\City', [], $resource = true, $qty = 6);
 
         $response = $this->json('GET', '/api/cities/paginate/3');
 
         $response->assertStatus(200)
+                ->assertJsonCount(3, 'data')
                 ->assertJsonStructure([
                     'data' => [
                         '*' => [ //* to say we checking keys of multiple collections

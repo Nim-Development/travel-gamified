@@ -182,7 +182,7 @@ class TeamControllerTest extends TestCase
         $response = $this->json('GET', '/api/teams');
 
         $response->assertStatus(200)
-                ->assertJsonCount(6, 'data.*')
+                ->assertJsonCount(6, 'data')
                 ->assertJsonStructure([
                     'data' => [
                         '*' => [
@@ -224,7 +224,7 @@ class TeamControllerTest extends TestCase
         $response = $this->json('GET', '/api/teams/paginate/3');
 
         $response->assertStatus(200)
-                ->assertJsonCount(3, 'data.*')
+                ->assertJsonCount(3, 'data')
                 ->assertJsonStructure([
                     'data' => [
                         '*' => [
