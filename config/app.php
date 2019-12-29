@@ -178,8 +178,9 @@ return [
         App\Providers\RouteServiceProvider::class,
 
         App\Providers\GameServiceProvider::class,
-        App\Providers\ConfigServiceProvider::class
-
+        App\Providers\ConfigServiceProvider::class,
+        App\Providers\ValidateServiceProvider::class
+        
     ],
 
     /*
@@ -233,7 +234,7 @@ return [
 
         'GameHelper' => App\Helpers\Game\GameFacade::class,
         'ConfigHelper' => App\Helpers\Config\ConfigFacade::class,
-
+        'Validate' => App\Helpers\Validate\ValidateFacade::class,
     ],
 
 ];

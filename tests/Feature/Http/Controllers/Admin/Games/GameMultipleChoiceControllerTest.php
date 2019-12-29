@@ -38,31 +38,51 @@ class GameMultipleChoiceControllerTest extends TestCase
         /**
      * @test
      */
-    public function will_fail_with_a_404_if_requesting_options_from_a_game_that_has_no_options()
+    public function will_fail_with_a_204_if_requesting_options_from_a_game_that_has_no_options()
     {
         $game = $this->create('Games\GameMultipleChoice');
-
-        $res = $this->json('GET', "games/multiple_choice/$game->id/options");
-        $res->assertStatus(404);
+        $res = $this->json('GET', "api/games/multiple_choice/$game->id/options");
+        $res->assertStatus(204);
     }
 
     /**
      * @test
      */
-    public function will_fail_with_a_404_if_requesting_paginated_options_from_database_but_there_are_no_options()
+    public function will_fail_with_a_204_if_requesting_paginated_options_from_database_but_there_are_no_options()
     {
-        $res = $this->json('GET', "games/multiple_choice/options/paginate/1");
-        $res->assertStatus(404);
+        $res = $this->json('GET', "api/games/multiple_choice/options/paginate/1");
+        $res->assertStatus(204);
     }
 
         /**
      * @test
      */
-    public function will_fail_with_a_404_if_requesting_all_options_from_database_but_there_are_no_options()
+    public function will_fail_with_a_204_if_requesting_all_options_from_database_but_there_are_no_options()
     {
-        $res = $this->json('GET', "games/multiple_choice/options");
-        $res->assertStatus(404);
+        $res = $this->json('GET', "api/games/multiple_choice/options");
+        $res->assertStatus(204);
     }
+
+        /**
+     * @test
+     */
+    public function will_return_204_when_requesting_all_multiple_choice_whilst_no_entries_in_database()
+    {
+        // Skip any creates
+        $res = $this->json('GET', 'api/games/multiple_choice');
+        $res->assertStatus(204);
+    }
+
+    /**
+     * @test
+     */
+    public function will_return_204_when_requesting_paginated_multiple_choice_whilst_no_entries_in_database()
+    {
+        // Skip any creates
+        $res = $this->json('GET', 'api/games/multiple_choice/paginate/3');
+        $res->assertStatus(204);
+    }
+
 
     // /**
     //  * @test
@@ -215,6 +235,37 @@ class GameMultipleChoiceControllerTest extends TestCase
     /**
      * @test
      */
+    public function returns_a_null_value_on_options_relationship_if_there_are_no_options_available()
+    {
+        // create game without options
+        $game = $this->create('Games\GameMultipleChoice');
+
+        // When
+        $result = $this->json('GET', '/api/games/multiple_choice/'.$game->id);
+
+        // Then
+        $result->assertStatus(200)
+            ->assertExactJson([
+                'data' => [
+                    'id' => $game->id,
+                    'title' => $game->title,
+                    'content_media' => $game->content_media,
+                    'content_text' => $game->content_text,
+                    'correct_answere' => $game->correct_answere,
+                    'points_min' => $game->points_min,
+                    'points_max' => $game->points_max,
+                    'options' => null,
+                    'created_at' => (string)$game->created_at
+                ]
+            ]);
+    }
+
+     
+
+
+    /**
+     * @test
+     */
     public function can_get_all_GAMES_of_type_multiple_choice()
     {
         // Given
@@ -351,8 +402,6 @@ class GameMultipleChoiceControllerTest extends TestCase
         // Given, multiple multiple choice options
         $this->create_collection('Games\GameMultipleChoiceOption', [], true, $qty = 6);
 
-
-
         // When
         $result = $this->json('GET', '/api/games/multiple_choice/options');
         // Then
@@ -418,22 +467,7 @@ class GameMultipleChoiceControllerTest extends TestCase
         );
 
     }
-
-
-    /////////////
-    // PRIVATE //
-    /////////////
-    private function link_options_to_each_game_collection_item($game_collection, $options_qty)
-    {
-        // loop over each game in game collection
-        foreach ($game_collection as $game) {
-            // create $qty x options and give them game_id of currently looped game
-            $this->create_collection('Games\GameMultipleChoiceOption', ['game_id' => $game->id], true, $options_qty);
-        }
-    }
-
-
-
+    
     // Route::get('games/multiple_choice/options', 'Admin\GameController@ALL_multiple_choice_options');
     // Route::get('games/multiple_choice/{id}/options', 'Admin\GameController@SINGLE_multiple_choice_options');
 

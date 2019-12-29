@@ -20,4 +20,5 @@ class Trip extends Model
     {
         return $this->hasMany('App\User', 'trip_id', 'id');
     }
+
 }

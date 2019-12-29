@@ -8,11 +8,12 @@ use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\DB;
 use App\Games\Challenge;
 
+
+
 use App\Http\Resources\Games\Challenge as ChallengeResource;
 
 class ChallengeController extends Controller
 {
-
 
     /**
      * GET
@@ -20,12 +21,19 @@ class ChallengeController extends Controller
     // Collection of all entries
     public function all($type = null)
     {
-        return ChallengeResource::collection(Challenge::all());
+        // Returns a 204 response if collection is empty, else it returns the resource collection
+        return \Validate::collection(
+            $all = Challenge::all(), // resource to validate
+            ChallengeResource::collection($all) // return if validation passes
+        );
     }
 
     public function paginated($qty)
     {
-        return ChallengeResource::collection(Challenge::paginate($qty));
+        return \Validate::collection(
+            $all = Challenge::paginate($qty), 
+            ChallengeResource::collection($all)
+        );
     }
 
     // Single entry by id
@@ -36,29 +44,33 @@ class ChallengeController extends Controller
 
     public function all_by_playfield($type, $paginate = null, $qty = null)
     {
-        return ChallengeResource::collection(
-            Challenge::where('playfield_type', $type)->get()
+        return \Validate::collection(
+            $all = Challenge::where('playfield_type', $type)->get(), 
+            ChallengeResource::collection($all)
         );
     }
 
     public function all_by_game($type)
     {
-        return ChallengeResource::collection(
-            Challenge::where('game_type', $type)->get()
+        return \Validate::collection(
+            $all = Challenge::where('game_type', $type)->get(), 
+            ChallengeResource::collection($all)
         );
     }
 
     public function paginated_by_playfield($type, $qty)
     {
-        return ChallengeResource::collection(
-            Challenge::where('playfield_type', $type)->paginate($qty)
+        return \Validate::collection(
+            $all = Challenge::where('playfield_type', $type)->paginate($qty), 
+            ChallengeResource::collection($all)
         );
     }
 
     public function paginated_by_game($type, $qty)
     {
-        return ChallengeResource::collection(
-            Challenge::where('game_type', $type)->paginate($qty)
+        return \Validate::collection(
+            $all = Challenge::where('game_type', $type)->paginate($qty), 
+            ChallengeResource::collection($all)
         );
     }
 

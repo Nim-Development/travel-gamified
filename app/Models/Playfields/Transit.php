@@ -6,6 +6,12 @@ use Illuminate\Database\Eloquent\Model;
 
 class Transit extends Model
 {
+
+    public function routes()
+    {
+        return $this->hasMany('App\Playfields\Route');
+    }    
+    
     public function itinerary()
     {
         return $this->morphOne('App\Itinerary', 'playfield');

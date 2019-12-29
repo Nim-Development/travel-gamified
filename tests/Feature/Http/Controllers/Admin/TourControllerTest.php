@@ -37,6 +37,27 @@ class TourControllerTest extends TestCase
         $res->assertStatus(404);
     }
 
+        /**
+     * @test
+     */
+    public function will_return_204_when_requesting_all_tours_whilst_no_entries_in_database()
+    {
+        // Skip any creates
+        $res = $this->json('GET', 'api/tours');
+        $res->assertStatus(204);
+    }
+
+    /**
+     * @test
+     */
+    public function will_return_204_when_requesting_paginated_tours_whilst_no_entries_in_database()
+    {
+        // Skip any creates
+        $res = $this->json('GET', 'api/tours/paginate/3');
+        $res->assertStatus(204);
+    }
+
+
     /**
      * @test
      */
@@ -147,11 +168,12 @@ class TourControllerTest extends TestCase
         // assert status code
         $response->assertStatus(200)
                  ->assertExactJson([
-                    'id' => $tour->id,
-                    'name' => $tour->name,
-                    'duration' => $tour->duration,
-                    'created_at' => (string)$tour->created_at,
-
+                     'data' => [
+                        'id' => $tour->id,
+                        'name' => $tour->name,
+                        'duration' => $tour->duration,
+                        'created_at' => (string)$tour->created_at
+                     ]
                 ]);
     }
 
@@ -160,17 +182,20 @@ class TourControllerTest extends TestCase
      */
     public function can_return_a_collection_of_all_tours()
     {
-        $tour_1 = $this->create('Tour');
-        $tour_2 = $this->create('Tour');
-        $tour_3 = $this->create('Tour');
+
+        $this->create_collection('Tour', [], false, 6);
 
         $response = $this->json('GET', '/api/tours');
 
         $response->assertStatus(200)
+                ->assertJsonCount(6, 'data')
                 ->assertJsonStructure([
                     'data' => [
                         '*' => [
-                            'id', 'name', 'duration', 'created_at'
+                            'id', 
+                            'name', 
+                            'duration', 
+                            'created_at'
                         ]
                     ],
                 ]);
@@ -181,20 +206,18 @@ class TourControllerTest extends TestCase
      */
     public function can_return_a_collection_of_paginated_tours()
     {
-        $tour_1 = $this->create('Tour');
-        $tour_2 = $this->create('Tour');
-        $tour_3 = $this->create('Tour');
-        $tour_4 = $this->create('Tour');
-        $tour_5 = $this->create('Tour');
-        $tour_6 = $this->create('Tour');
+        $this->create_collection('Tour', [], false, 6);
 
         $response = $this->json('GET', '/api/tours/paginate/3');
-
         $response->assertStatus(200)
+                ->assertJsonCount(3, 'data')
                 ->assertJsonStructure([
                     'data' => [
-                        '*' => [ //* to say we checking keys of multiple collections
-                            'id', 'name', 'duration', 'created_at'
+                        '*' => [
+                            'id', 
+                            'name', 
+                            'duration', 
+                            'created_at'
                         ]
                     ],
                     // Check if it is paginated

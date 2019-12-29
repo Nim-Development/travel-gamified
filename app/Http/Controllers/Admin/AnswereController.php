@@ -17,13 +17,19 @@ class AnswereController extends Controller
     {
         switch ($type) {
             case 'checked': # return all from AnswereChecked
-                return AnswereCheckedResource::collection(AnswereUnchecked::all());
+                return \Validate::collection(
+                    $all = AnswereChecked::all(),
+                    AnswereCheckedResource::collection($all)
+                );
 
             case 'unchecked': # return all from AnswereUnchecked
-                return AnswereUncheckedResource::collection(AnswereUnchecked::all());
+                return \Validate::collection(
+                    $all = AnswereUnchecked::all(),
+                    AnswereUncheckedResource::collection($all)
+                );
 
             default: # return error
-                return response()->json(['error' => "answere of type $type not found"], 400);
+                return response()->json(['error' => "answere type: $type does not exist"], 400);
         }
     }
 
@@ -32,13 +38,19 @@ class AnswereController extends Controller
     {
         switch ($type) {
             case 'checked': # return paginated from AnswereChecked
-                return AnswereCheckedResource::collection(AnswereUnchecked::paginate($qty));
+                return \Validate::collection(
+                    $all = AnswereChecked::paginate($qty),
+                    AnswereCheckedResource::collection($all)
+                );
 
             case 'unchecked': # return paginated from AnswereUnchecked
-                return AnswereUncheckedResource::collection(AnswereUnchecked::paginate($qty));
+                return \Validate::collection(
+                    $all = AnswereUnchecked::paginate($qty),
+                    AnswereUncheckedResource::collection($all)
+                );
 
             default: # return error
-                return response()->json(['error' => "answere of type $type not found"], 400);
+                return response()->json(['error' => "answere type: $type does not exist"], 400);
         }
     }
 
@@ -55,7 +67,7 @@ class AnswereController extends Controller
                 return new AnswereUncheckedResource($answere);
 
             default: # return error
-                return response()->json(['error' => "answere of type $type not found"], 400);
+                return response()->json(['error' => "answere type: $type does not exist"], 400);
         }
     }
 }

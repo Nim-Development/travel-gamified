@@ -19,6 +19,7 @@ class GameController extends Controller
     // $type: media_upload, text_answere, multiple_choice
     public function all($type)
     {
+        
         $data = config('models.games.'.$filter)::all();
         $code = 200;
         // return response

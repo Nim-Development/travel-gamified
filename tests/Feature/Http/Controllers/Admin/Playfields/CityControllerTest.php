@@ -36,6 +36,27 @@ class CityControllerTest extends TestCase
         $res->assertStatus(404);
     }
 
+        /**
+     * @test
+     */
+    public function will_return_204_when_requesting_all_cities_whilst_no_entries_in_database()
+    {
+        // Skip any creates
+        $res = $this->json('GET', 'api/cities');
+        $res->assertStatus(204);
+    }
+
+    /**
+     * @test
+     */
+    public function will_return_204_when_requesting_paginated_cities_whilst_no_entries_in_database()
+    {
+        // Skip any creates
+        $res = $this->json('GET', 'api/cities/paginate/3');
+        $res->assertStatus(204);
+    }
+
+
     /**
      * @test
      */

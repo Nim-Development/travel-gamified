@@ -35,6 +35,27 @@ class GameTextAnswereControllerTest extends TestCase
         $res->assertStatus(404);
     }
 
+        /**
+     * @test
+     */
+    public function will_return_204_when_requesting_all_text_answere_whilst_no_entries_in_database()
+    {
+        // Skip any creates
+        $res = $this->json('GET', 'api/games/text_answere');
+        $res->assertStatus(204);
+    }
+
+    /**
+     * @test
+     */
+    public function will_return_204_when_requesting_paginated_text_answere_whilst_no_entries_in_database()
+    {
+        // Skip any creates
+        $res = $this->json('GET', 'api/games/text_answere/paginate/3');
+        $res->assertStatus(204);
+    }
+
+
     // /**
     //  * @test
     //  */
@@ -181,7 +202,6 @@ class GameTextAnswereControllerTest extends TestCase
     //                 ]
     //             ]);
     // }
-
 
     /**
      * @test

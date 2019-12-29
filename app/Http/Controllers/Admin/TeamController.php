@@ -2,28 +2,34 @@
 
 namespace App\Http\Controllers\Admin;
 
-use App\Http\Controllers\Controller;
-use Illuminate\Http\Request;
-
 use App\Team;
+use App\Http\Resources\Team as TeamResource;
+
+use Illuminate\Http\Request;
+use App\Http\Controllers\Controller;
 
 class TeamController extends Controller
 {
     // Collection of all entries
     public function all()
     {
-        $data = Team::all();
-        $code = 200;
-        
-        return response()->json($data, $code);
+        return \Validate::collection(
+            $all = Team::all(),
+            TeamResource::collection($all)
+        );
     }
 
     // Single entry by id
     public function single($id)
     {
-        $data = Team::find($id);
-        $code = 200;
+        return new TeamResource(Team::findOrFail($id));
+    }
 
-        return response()->json($data, $code);
+    public function paginate($qty)
+    {
+        return \Validate::collection(
+            $all = Team::paginate($qty),
+            TeamResource::collection($all)
+        );
     }
 }

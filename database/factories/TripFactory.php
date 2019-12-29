@@ -33,7 +33,7 @@ $factory->define(Trip::class, function (Faker $faker) {
         'tour_id' => 1,
         'name' => $faker->name,
         'timezone' => 'GMT+7',
-        'start_date_time' => $faker->dateTime($max = NULL, $timezone = NULL),
+        'start_date_time' => now(),
         'score' => $faker->numberBetween($min = 3000000, $max = 12000000)
     ];
 });

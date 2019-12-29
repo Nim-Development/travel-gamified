@@ -2,35 +2,34 @@
 
 namespace App\Http\Controllers\Admin;
 
-use App\User;
-use App\Http\Resources\User as UserResource;
-
 use Illuminate\Http\Request;
+use App\Playfields\Route;
+
 use App\Http\Controllers\Controller;
+use App\Http\Resources\Playfields\Route as RouteResource;
 
-class UserController extends Controller
+class RouteController extends Controller
 {
-
     // Single entry by id
     public function single($id)
     {
-        return new UserResource(User::findOrFail($id));      
+        return new RouteResource(Route::findOrFail($id));
     }
     
     // Collection of all entries
     public function all()
     {
         return \Validate::collection(
-            $all = User::all(),
-            UserResource::collection($all)
+            $all = Route::all(),
+            RouteResource::collection($all)
         );
     }
 
     public function paginate($qty)
     {
         return \Validate::collection(
-            $all = User::paginate($qty),
-            UserResource::collection($all)
+            $all = Route::paginate($qty),
+            RouteResource::collection($all)
         );
     }
 }

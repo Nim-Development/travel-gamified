@@ -1,10 +1,10 @@
 <?php
 
-namespace App\Http\Resources\Games;
+namespace App\Http\Resources;
 
 use Illuminate\Http\Resources\Json\JsonResource;
 
-class Challenge extends JsonResource
+class Itinerary extends JsonResource
 {
 
     use \App\Http\Resources\_Traits\Insert;
@@ -17,15 +17,14 @@ class Challenge extends JsonResource
      */
     public function toArray($request)
     {
-
         $playfield = $this->playfield;
-        $game = $this->game;
 
         return [
             'id' => $this->id,
-            'sort_order' => (integer)$this->sort_order,
+            'tour_id' => (integer)$this->tour_id,
+            'step' => (integer)$this->step,
+            'duration' => (double)$this->duration,
             'playfield' => (!$playfield) ? null : $this->insert_playfield($this->playfield_type, $playfield),
-            'game' => (!$game) ? null : $this->insert_game($this->game_type, $game),
             'created_at' => (string)$this->created_at,
         ];
     }

@@ -13,14 +13,18 @@ class CityController extends Controller
     // Collection of all entries
     public function all()
     {
-        $data = City::all();
-        return CityResource::collection($data);
+        return \Validate::collection(
+            $all = City::all(),
+            CityResource::collection($all)
+        );
     }
 
     public function paginate($qty)
     {
-        $data = City::paginate($qty);
-        return CityResource::collection($data);
+        return \Validate::collection(
+            $all = City::paginate($qty),
+            CityResource::collection($all)
+        );
     }
 
     // Single entry by id

@@ -9,7 +9,7 @@ class Team extends Model
     
     public function trip()
     {
-        return $this->belongsTo('App\Tour', 'tour_id', 'id');
+        return $this->belongsTo('App\Trip', 'trip_id', 'id');
     }
 
     public function users()

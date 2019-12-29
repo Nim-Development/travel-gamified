@@ -12,18 +12,25 @@ Route::middleware('auth:api')->get('/user', function (Request $request) {
  */
 Route::get('users', 'Admin\UserController@all');
 Route::get('users/{id}', 'Admin\UserController@single');
+Route::get('users/paginate/{qty}', 'Admin\UserController@paginate');
 
 Route::get('teams', 'Admin\TeamController@all');
 Route::get('teams/{id}', 'Admin\TeamController@single');
+Route::get('teams/paginate/{qty}', 'Admin\TeamController@paginate');
 
 Route::get('trips', 'Admin\TripController@all');
 Route::get('trips/{id}', 'Admin\TripController@single');
+Route::get('trips/paginate/{qty}', 'Admin\TripController@paginate');
 
 Route::get('tours', 'Admin\TourController@all');
 Route::get('tours/{id}', 'Admin\TourController@single');
+Route::get('tours/paginate/{id}', 'Admin\TourController@paginate');
 
 Route::get('itineraries', 'Admin\ItineraryController@all');
 Route::get('itineraries/{id}', 'Admin\ItineraryController@single');
+Route::get('itineraries/paginate/{qty}', 'Admin\ItineraryController@paginate');
+Route::get('itineraries/playfield/{playfield}', 'Admin\ItineraryController@all_by_playfield'); //all with specific playfield type
+Route::get('itineraries/playfield/{playfield}/paginate/{qty}', 'Admin\ItineraryController@paginate_by_playfield'); //all with specific playfield type PAGINATED
 
 Route::get('cities', 'Admin\CityController@all');
 Route::get('cities/paginate/{qty}', 'Admin\CityController@paginate');
@@ -31,9 +38,11 @@ Route::get('cities/{id}', 'Admin\CityController@single');
 
 Route::get('transits', 'Admin\TransitController@all');
 Route::get('transits/{id}', 'Admin\TransitController@single');
+Route::get('transits/paginate/{qty}', 'Admin\TransitController@paginate');
 
 Route::get('routes', 'Admin\RouteController@all');
 Route::get('routes/{id}', 'Admin\RouteController@single');
+Route::get('routes/paginate/{qty}', 'Admin\RouteController@paginate');
 
 Route::get('challenges', 'Admin\ChallengeController@all'); // returns all challenges
 Route::get('challenges/paginate/{qty}', 'Admin\ChallengeController@paginated');

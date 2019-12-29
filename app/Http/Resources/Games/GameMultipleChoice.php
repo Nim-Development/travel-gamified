@@ -7,6 +7,9 @@ use App\Http\Resources\Games\GameMultipleChoiceOption;
 
 class GameMultipleChoice extends JsonResource
 {
+
+    use \App\Http\Resources\_Traits\Insert;
+
     /**
      * Transform the resource into an array.
      *
@@ -15,6 +18,8 @@ class GameMultipleChoice extends JsonResource
      */
     public function toArray($request)
     {
+        $options = $this->options;
+
         return [
             'id' => $this->id,
             'title' => $this->title,
@@ -23,7 +28,7 @@ class GameMultipleChoice extends JsonResource
             'correct_answere' => $this->correct_answere,
             'points_min' => (integer)$this->points_min,
             'points_max' => (integer)$this->points_max,
-            'options' => $this->insert_options($this->options),
+            'options' => (!$options) ? null : $this->insert_options($this->options),
             'created_at' => (string)$this->created_at
         ];
     }
@@ -32,20 +37,4 @@ class GameMultipleChoice extends JsonResource
     // PRIVATE //
     /////////////
 
-    // function to loop trough options relation and return it as 2d array for insert.
-    private function insert_options($opts)
-    {
-        $options_array = [];
-        foreach ($opts as $option) {
-            array_push($options_array,
-                [
-                    'id' => $option->id,
-                    'sort_order' => $option->sort_order,
-                    'text' => $option->text,
-                    'created_at' => (string)$option->created_at
-                ]
-            );
-        }
-        return $options_array;
-    }
 }

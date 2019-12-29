@@ -36,6 +36,27 @@ class RouteControllerTest extends TestCase
         $res->assertStatus(404);
     }
 
+        /**
+     * @test
+     */
+    public function will_return_204_when_requesting_all_routes_whilst_no_entries_in_database()
+    {
+        // Skip any creates
+        $res = $this->json('GET', 'api/routes');
+        $res->assertStatus(204);
+    }
+
+    /**
+     * @test
+     */
+    public function will_return_204_when_requesting_paginated_routes_whilst_no_entries_in_database()
+    {
+        // Skip any creates
+        $res = $this->json('GET', 'api/routes/paginate/3');
+        $res->assertStatus(204);
+    }
+
+
     /**
      * @test
      */
@@ -80,7 +101,7 @@ class RouteControllerTest extends TestCase
     //         ->assertStatus(201);
 
     //     // assert if the route has been added to the database
-    //     $this->assertDatabaseHas('routes', $route_data);
+    //     $this->assertDatabaseHas('Playfields\Routes', $route_data);
 
     // }
 
@@ -90,7 +111,7 @@ class RouteControllerTest extends TestCase
     // public function can_update_a_route()
     // {
     //     // Given
-    //     $old_route = $this->create('Route');
+    //     $old_route = $this->create('Playfields\Route');
 
     //     $new_route = [
     //         'name' => $old_route->name.'_update',
@@ -105,7 +126,7 @@ class RouteControllerTest extends TestCase
     //     // Then
     //     $response->assertStatus(200)
     //              ->assertJsonFragment($new_route);
-    //     $this->assertDatabaseHas('routes', $new_route);
+    //     $this->assertDatabaseHas('Playfields\Routes', $new_route);
 
     // }
 
@@ -116,7 +137,7 @@ class RouteControllerTest extends TestCase
     // {
     //     // Given
     //     // first create a route in the database to delete
-    //     $route = $this->create('Route');
+    //     $route = $this->create('Playfields\Route');
 
     //     // When
     //     // call the delete api
@@ -127,18 +148,17 @@ class RouteControllerTest extends TestCase
     //         ->assertSee(null);
 
     //     // check if $route is deleted from database
-    //     $this->assertDatabaseMissing('routes', ['id' => $route->id]);
+    //     $this->assertDatabaseMissing('Playfields\Routes', ['id' => $route->id]);
     // }
 
     /**
      * @test
      */
-    public function can_return_a_route()
+    public function returns_a_null_value_on_relationships_if_there_are_no_relationships_available()
     {
-        // Given
-        $transit = $this->create('Transit');
 
-        $route = $this->create('Route', ['transit_id' => $transit->id]);
+        // Create route without relationship
+        $route = $this->create('Playfields\Route');
 
         // When
         $response = $this->json('GET', '/api/routes/'.$route->id);
@@ -147,23 +167,61 @@ class RouteControllerTest extends TestCase
         // assert status code
         $response->assertStatus(200)
                  ->assertExactJson([
-                    'id' => $route->id,
-                    'name' => $route->name,
-                    'maps_url' => $route->maps_url,
-                    'kilometers' => $route->kilometers,
-                    'hours' => $route->hours,
-                    'difficulty' => $route->difficulty,
-                    'nature' => $route->nature,
-                    'highway' => $route->nature,
-                    'transit' => [
-                        'id' => $transit->id,
-                        'name' => $transit->name,
-                        'from' => $transit->from,
-                        'to' => $transit->to,
-                        'created_at' => (string)$transit->created_at
-                    ],
-                    'created_at' => (string)$route->created_at,
-                    // 'updated_at' => (string)$route->updated_at
+                     'data' => [
+                        'id' => $route->id,
+                        'name' => $route->name,
+                        'maps_url' => $route->maps_url,
+                        'kilometers' => $route->kilometers,
+                        'hours' => $route->hours,
+                        'difficulty' => $route->difficulty,
+                        'nature' => $route->nature,
+                        'highway' => $route->nature,
+                        'transit' => null,
+                        'created_at' => (string)$route->created_at,
+                    ]
+                ]);
+
+    }
+
+
+
+    /**
+     * @test
+     */
+    public function can_return_a_route()
+    {
+        // Given
+        $transit = $this->create('Playfields\Transit');
+
+        $route = $this->create('Playfields\Route', ['transit_id' => $transit->id]);
+
+        // When
+        $response = $this->json('GET', '/api/routes/'.$route->id);
+
+        // Then
+        // assert status code
+        $response->assertStatus(200)
+                 ->assertExactJson([
+                     'data' => [
+                        'id' => $route->id,
+                        'name' => $route->name,
+                        'maps_url' => $route->maps_url,
+                        'kilometers' => $route->kilometers,
+                        'hours' => $route->hours,
+                        'difficulty' => $route->difficulty,
+                        'nature' => $route->nature,
+                        'highway' => $route->nature,
+                        'transit' => [
+                            'id' => $transit->id,
+                            'type' => 'transit',
+                            'name' => $transit->name,
+                            'from' => $transit->from,
+                            'to' => $transit->to,
+                            'created_at' => (string)$transit->created_at
+                        ],
+                        'created_at' => (string)$route->created_at,
+                        // 'updated_at' => (string)$route->updated_at
+                    ]
                 ]);
 
     }
@@ -173,14 +231,9 @@ class RouteControllerTest extends TestCase
      */
     public function can_return_a_collection_of_all_routes()
     {
-        $transit = $this->create('Transit');
+        $transit = $this->create('Playfields\Transit');
 
-        $route_1 = $this->create('Route', ['transit_id' => $transit->id]);
-        $route_2 = $this->create('Route', ['transit_id' => $transit->id]);
-        $route_3 = $this->create('Route', ['transit_id' => $transit->id]);
-        $route_4 = $this->create('Route', ['transit_id' => $transit->id]);
-        $route_5 = $this->create('Route', ['transit_id' => $transit->id]);
-        $route_6 = $this->create('Route', ['transit_id' => $transit->id]);
+        $this->create_collection('Playfields\Route', ['transit_id' => $transit->id], false, 6);
 
         $response = $this->json('GET', "/api/routes");
 
@@ -199,6 +252,7 @@ class RouteControllerTest extends TestCase
                             'highway',
                             'transit' => [
                                 'id',
+                                'type',
                                 'name',
                                 'from',
                                 'to',
@@ -206,12 +260,6 @@ class RouteControllerTest extends TestCase
                             ],
                             'created_at'
                         ]
-                    ],
-                    // Check if it is paginated
-                    'links' => ['first', 'last', 'prev', 'next'],
-                    'meta' => [
-                        'current_page', 'last_page', 'from', 'to',
-                        'path', 'per_page', 'total'
                     ]
                 ]);
     }
@@ -221,14 +269,9 @@ class RouteControllerTest extends TestCase
      */
     public function can_return_a_collection_of_paginated_routes()
     {
-        $transit = $this->create('Transit');
+        $transit = $this->create('Playfields\Transit');
 
-        $route_1 = $this->create('Route', ['transit_id' => $transit->id]);
-        $route_2 = $this->create('Route', ['transit_id' => $transit->id]);
-        $route_3 = $this->create('Route', ['transit_id' => $transit->id]);
-        $route_4 = $this->create('Route', ['transit_id' => $transit->id]);
-        $route_5 = $this->create('Route', ['transit_id' => $transit->id]);
-        $route_6 = $this->create('Route', ['transit_id' => $transit->id]);
+        $this->create_collection('Playfields\Route', ['transit_id' => $transit->id], false, 6);
 
         $response = $this->json('GET', "/api/routes/paginate/3");
 
@@ -247,6 +290,7 @@ class RouteControllerTest extends TestCase
                             'highway',
                             'transit' => [
                                 'id',
+                                'type',
                                 'name',
                                 'from',
                                 'to',

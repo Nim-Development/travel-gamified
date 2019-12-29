@@ -19,43 +19,42 @@ class GameMultipleChoiceController extends Controller
 
     public function all()
     {
-        //dd(GameMultipleChoice::all());
-        return GameMultipleChoiceResource::collection(GameMultipleChoice::all());
+        return \Validate::collection(
+            $all = GameMultipleChoice::all(),
+            GameMultipleChoiceResource::collection($all)
+        );
     }
 
     public function paginate($qty)
     {
-        return GameMultipleChoiceResource::collection(GameMultipleChoice::paginate($qty));
+        return \Validate::collection(
+            $all = GameMultipleChoice::paginate($qty),
+            GameMultipleChoiceResource::collection($all)
+        );
     }
 
     public function single_game_options($id)
     {
-        $options = GameMultipleChoice::findOrFail($id)->options;
-        if(count($options) == 0){
-            // game has no options
-            return response()->json(['error' => 'This game has no options.'], 404);
-        }
-        return GameMultipleChoiceOptionResource::collection($options);
+        return \Validate::collection(
+            $all = GameMultipleChoice::findOrFail($id)->options,
+            GameMultipleChoiceOptionResource::collection($all)
+        );
     }
 
     public function all_options()
     {
-
-        $all_options = GameMultipleChoiceOption::all();
-
-        if(count($all_options) == 0){
-            return response()->json(['error' => 'There are no options in the database'], 404);
-        }
-        return GameMultipleChoiceOptionResource::collection($all_options);
+        return \Validate::collection(
+            $all = GameMultipleChoiceOption::all(),
+            GameMultipleChoiceOptionResource::collection($all)
+        );
     }
 
     public function paginated_options($qty)
     {
-        $paginated_options = GameMultipleChoiceOption::paginate($qty);
-        if(count($paginated_options) == 0){
-            return response()->json(['error' => 'There are no options in the database'], 404);
-        }
-        return GameMultipleChoiceOptionResource::collection($paginated_options);
+        return \Validate::collection(
+            $all = GameMultipleChoiceOption::paginate($qty),
+            GameMultipleChoiceOptionResource::collection($all)
+        );
     }
 
 }

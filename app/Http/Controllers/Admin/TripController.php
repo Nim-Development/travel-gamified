@@ -2,28 +2,34 @@
 
 namespace App\Http\Controllers\Admin;
 
-use App\Http\Controllers\Controller;
-use Illuminate\Http\Request;
-
 use App\Trip;
+use App\Http\Resources\Trip as TripResource;
+
+use Illuminate\Http\Request;
+use App\Http\Controllers\Controller;
 
 class TripController extends Controller
 {
     // Collection of all entries
     public function all()
     {
-        $data = Trip::all();
-        $code = 200;
-        
-        return response()->json($data, $code);
+        return \Validate::collection(
+            $all = Trip::all(),
+            TripResource::collection($all)
+        );
     }
 
     // Single entry by id
     public function single($id)
     {
-        $data = Trip::find($id);
-        $code = 200;
+        return new TripResource(Trip::findOrFail($id));
+    }
 
-        return response()->json($data, $code);
+    public function paginate($qty)
+    {
+        return \Validate::collection(
+            $all = Trip::paginate($qty),
+            TripResource::collection($all)
+        );
     }
 }

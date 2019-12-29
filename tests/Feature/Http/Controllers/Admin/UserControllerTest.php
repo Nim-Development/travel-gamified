@@ -39,6 +39,27 @@ class UserControllerTest extends TestCase
     /**
      * @test
      */
+    public function will_return_204_when_requesting_all_users_whilst_no_entries_in_database()
+    {
+        // Skip any creates
+        $res = $this->json('GET', 'api/users');
+        $res->assertStatus(204);
+    }
+
+    /**
+     * @test
+     */
+    public function will_return_204_when_requesting_paginated_users_whilst_no_entries_in_database()
+    {
+        // Skip any creates
+        $res = $this->json('GET', 'api/users/paginate/3');
+        $res->assertStatus(204);
+    }
+
+
+    /**
+     * @test
+     */
     // public function will_fail_with_a_404_if_the_user_we_want_to_update_is_not_found()
     // {
     //     $res = $this->json('PUT', 'api/users/-1');
@@ -130,6 +151,39 @@ class UserControllerTest extends TestCase
     //     $this->assertDatabaseMissing('users', ['id' => $user->id]);
     // }
 
+    
+    /**
+     * @test
+     */
+    public function returns_a_null_value_on_relationships_if_there_are_no_relationships_available()
+    {
+        // Given
+        $user = $this->create('User');
+
+        // When
+        $response = $this->json('GET', '/api/users/'.$user->id);
+
+        // Then
+        // assert status code
+        $response->assertStatus(200)
+                 ->assertExactJson([ 
+                    'data' => [
+                        'id' => $user->id,
+                        'email' => $user->email,
+                        'phone' => $user->phone,
+                        'email_verified_at' => (string)$user->email_verified_at,
+                        'first_name' => $user->first_name,
+                        'family_name' => $user->family_name,
+                        'age' => $user->age,
+                        'gender' => $user->gender,
+                        'score' => $user->score,
+                        'team' => null,
+                        'trip' => null,
+                        'created_at' => (string)$user->created_at
+                    ]
+                ]);
+    }
+
     /**
      * @test
      */
@@ -147,34 +201,35 @@ class UserControllerTest extends TestCase
         // Then
         // assert status code
         $response->assertStatus(200)
-                 ->assertExactJson([
-                    'id' => $user->id,
-                    'email' => $user->email,
-                    'phone' => $user->phone,
-                    'email_verified_at' => $user->email_verified_at,
-                    'first_name' => $user->first_name,
-                    'family_name' => $user->family_name,
-                    'age' => $user->age,
-                    'gender' => $user->gender,
-                    'score' => $user->score,
-                    'team' => [
-                        'id' => $team->id,
-                        'name' => $team->name,
-                        'color' => $team->color,
-                        'badge' => $team->badge,
-                        'score' => $team->score,
-                        'created_at' => (string)$team->created_at
-                    ],
-                    'trip' => [
-                        'id' => $trip->id,
-                        'tour_id' => $trip->tour_id,
-                        'name' => $trip->name,
-                        'start_date_time' => $trip->start_date_time,
-                        'score' => $trip->score,
-                        'created_at' => $trip->created_at,
-                    ],
-                    'created_at' => (string)$user->created_at
-                    // 'updated_at' => (string)$user->updated_at
+                 ->assertExactJson([ 
+                    'data' => [
+                        'id' => $user->id,
+                        'email' => $user->email,
+                        'phone' => $user->phone,
+                        'email_verified_at' => (string)$user->email_verified_at,
+                        'first_name' => $user->first_name,
+                        'family_name' => $user->family_name,
+                        'age' => $user->age,
+                        'gender' => $user->gender,
+                        'score' => $user->score,
+                        'team' => [
+                            'id' => $team->id,
+                            'name' => $team->name,
+                            'color' => $team->color,
+                            'badge' => $team->badge,
+                            'score' => $team->score,
+                            'created_at' => (string)$team->created_at
+                        ],
+                        'trip' => [
+                            'id' => $trip->id,
+                            'tour_id' => $trip->tour_id,
+                            'name' => $trip->name,
+                            'start_date_time' => (string)$trip->start_date_time,
+                            'score' => $trip->score,
+                            'created_at' => (string)$trip->created_at,
+                        ],
+                        'created_at' => (string)$user->created_at
+                    ]
                 ]);
     }
 
@@ -187,12 +242,7 @@ class UserControllerTest extends TestCase
         $team = $this->create('Team');
         $trip = $this->create('Trip');
 
-        $user_1 = $this->create('User', ['team_id' => $team->id, 'trip_id' => $trip->id]);
-        $user_2 = $this->create('User', ['team_id' => $team->id, 'trip_id' => $trip->id]);
-        $user_3 = $this->create('User', ['team_id' => $team->id, 'trip_id' => $trip->id]);
-        $user_4 = $this->create('User', ['team_id' => $team->id, 'trip_id' => $trip->id]);
-        $user_5 = $this->create('User', ['team_id' => $team->id, 'trip_id' => $trip->id]);
-        $user_6 = $this->create('User', ['team_id' => $team->id, 'trip_id' => $trip->id]);
+        $this->create_collection('User', ['team_id' => $team->id, 'trip_id' => $trip->id], false, 6);
 
         $response = $this->json('GET', '/api/users');
 
@@ -240,12 +290,7 @@ class UserControllerTest extends TestCase
         $team = $this->create('Team');
         $trip = $this->create('Trip');
 
-        $user_1 = $this->create('User', ['team_id' => $team->id, 'trip_id' => $trip->id]);
-        $user_2 = $this->create('User', ['team_id' => $team->id, 'trip_id' => $trip->id]);
-        $user_3 = $this->create('User', ['team_id' => $team->id, 'trip_id' => $trip->id]);
-        $user_4 = $this->create('User', ['team_id' => $team->id, 'trip_id' => $trip->id]);
-        $user_5 = $this->create('User', ['team_id' => $team->id, 'trip_id' => $trip->id]);
-        $user_6 = $this->create('User', ['team_id' => $team->id, 'trip_id' => $trip->id]);
+        $this->create_collection('User', ['team_id' => $team->id, 'trip_id' => $trip->id], false, 6);
 
         $response = $this->json('GET', '/api/users/paginate/3');
 

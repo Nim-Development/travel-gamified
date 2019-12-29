@@ -35,6 +35,27 @@ class GameMediaUploadControllerTest extends TestCase
         $res->assertStatus(404);
     }
 
+        /**
+     * @test
+     */
+    public function will_return_204_when_requesting_all_media_upload_whilst_no_entries_in_database()
+    {
+        // Skip any creates
+        $res = $this->json('GET', 'api/games/media_upload');
+        $res->assertStatus(204);
+    }
+
+    /**
+     * @test
+     */
+    public function will_return_204_when_requesting_paginated_media_upload_whilst_no_entries_in_database()
+    {
+        // Skip any creates
+        $res = $this->json('GET', 'api/games/media_upload/paginate/3');
+        $res->assertStatus(204);
+    }
+
+
     // /**
     //  * @test
     //  */

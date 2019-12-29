@@ -16,11 +16,17 @@ class GameTextAnswereController extends Controller
 
     public function all()
     {
-        return GameTextAnswereResource::collection(GameTextAnswere::all());
+        return \Validate::collection(
+            $all = GameTextAnswere::all(),
+            GameTextAnswereResource::collection($all)
+        );
     }
 
     public function paginate($qty)
     {
-        return GameTextAnswereResource::collection(GameTextAnswere::paginate($qty));
+        return \Validate::collection(
+            $all = GameTextAnswere::paginate($qty),
+            GameTextAnswereResource::collection($all)
+        );
     }
 }

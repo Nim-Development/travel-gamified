@@ -14,9 +14,6 @@ class ChallengeControllerTest extends TestCase
 
     use RefreshDatabase;
 
-
-
-
     /**
      * @test
      */
@@ -36,6 +33,27 @@ class ChallengeControllerTest extends TestCase
     {
         $res = $this->json('GET', 'api/challenges/-1');
         $res->assertStatus(404);
+    }
+
+
+    /**
+     * @test
+     */
+    public function will_return_204_when_requesting_all_challenges_whilst_no_entries_in_database()
+    {
+        // Skip any creates
+        $res = $this->json('GET', 'api/challenges');
+        $res->assertStatus(204);
+    }
+
+    /**
+     * @test
+     */
+    public function will_return_204_when_requesting_paginated_challenges_whilst_no_entries_in_database()
+    {
+        // Skip any creates
+        $res = $this->json('GET', 'api/challenges/paginate/3');
+        $res->assertStatus(204);
     }
 
 
@@ -134,6 +152,27 @@ class ChallengeControllerTest extends TestCase
     // }
 
 
+    /**
+     * @test
+     */
+    public function relationship_is_null_if_there_is_no_relationship()
+    {
+        // create challenge without creating any relationships
+        $challenge = $this->create('Games\Challenge');
+
+        $response = $this->json('GET', '/api/challenges/'.$challenge->id);
+
+        $response->assertStatus(200)
+                ->assertExactJson([
+                'data' => [
+                    'id' => $challenge->id,
+                    'sort_order' => $challenge->sort_order,
+                    'playfield' => null, // should be null because there is no relationship
+                    'game' => null, // should be null because there is no relationship
+                    'created_at' => (string)$challenge->created_at
+                ]
+            ]);
+    }
 
     /**
      * @test
@@ -237,37 +276,11 @@ class ChallengeControllerTest extends TestCase
             'game_id' => $game->id
         ]);
 
-
-
         $response = $this->json('GET', '/api/challenges/'.$challenge->id);
 
         $this->assertSame($challenge->id, $response->getData()->data->id);
         $response->assertStatus(200)
-                ->assertJsonStructure([
-                    'data' => [
-                        'id',
-                        'sort_order',
-                        'playfield' => [
-                            'id',
-                            'type',
-                            'short_code',
-                            'name',
-                            'created_at'
-                        ],
-                        'game' => [
-                            'id',
-                            'type',
-                            'title',
-                            'content_media',
-                            'content_text',
-                            'correct_answere',
-                            'points_min',
-                            'points_max',
-                            'created_at'
-                        ],
-                        'created_at'
-                ]
-            ])->assertExactJson([
+                ->assertExactJson([
                 'data' => [
                     'id' => $challenge->id,
                     'sort_order' => $challenge->sort_order,
@@ -1054,40 +1067,5 @@ class ChallengeControllerTest extends TestCase
         /**
          * Add functionality for getting checked and unchecked answeres relations.
          */
-    }
-
-
-
-    // PRIVATE HELPERS
-    private function collection_of_challenges($playfield_type, $game_type, $qty)
-    {
-        $polymorph_map = [
-            'media_upload' => 'Games\GameMediaUpload',
-            'multiple_choice' => 'Games\GameMultipleChoice',
-            'text_answere' => 'Games\GameTextAnswere',
-            'city' => 'Playfields\City',
-            'route' => 'Playfields\Route',
-            'transit' => 'Playfields\Transit'
-        ];
-
-        return $this->create_collection(
-            'Games\Challenge',
-            [
-                'game_type' => $game_type,
-                'game_id' => $this->create($polymorph_map[$game_type], [], false)->id,
-                'playfield_type' => $playfield_type,
-                'playfield_id' => $this->create($polymorph_map[$playfield_type], [], false)->id
-            ],
-            true,
-            $qty
-        );
-    }
-
-    private function assert_if_all_objects_have_same_type_in_specified_relation($response, $relation_type, $given)
-    {
-        // asserts the nested $type property for game or playfield.
-        foreach($response->getData()->data as $challenge){
-            $this->assertSame($given, $challenge->$relation_type->type);
-        }
     }
 }

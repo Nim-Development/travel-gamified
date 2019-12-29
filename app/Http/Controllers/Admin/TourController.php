@@ -2,28 +2,34 @@
 
 namespace App\Http\Controllers\Admin;
 
-use App\Http\Controllers\Controller;
-use Illuminate\Http\Request;
-
 use App\Tour;
+use App\Http\Resources\Tour as TourResource;
+
+use Illuminate\Http\Request;
+use App\Http\Controllers\Controller;
 
 class TourController extends Controller
 {
     // Collection of all entries
     public function all()
     {
-        $data = Tour::all();
-        $code = 200;
-        
-        return response()->json($data, $code);
+        return \Validate::collection(
+            $all = Tour::all(),
+            TourResource::collection($all)
+        );
     }
 
     // Single entry by id
     public function single($id)
     {
-        $data = Tour::find($id);
-        $code = 200;
+        return new TourResource(Tour::findOrFail($id));
+    }
 
-        return response()->json($data, $code);
+    public function paginate($qty)
+    {
+        return \Validate::collection(
+            $all = Tour::paginate($qty),
+            TourResource::collection($all)
+        );
     }
 }
