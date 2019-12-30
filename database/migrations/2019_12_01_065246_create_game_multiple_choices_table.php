@@ -16,7 +16,7 @@ class CreateGameMultipleChoicesTable extends Migration
         Schema::create('game_multiple_choices', function (Blueprint $table) {
             $table->bigIncrements('id');
             $table->string('title');
-            $table->string('content_media');
+            $table->string('content_media')->nullable();
             $table->text('content_text');
             $table->string('correct_answere');
             $table->bigInteger('points_min');
