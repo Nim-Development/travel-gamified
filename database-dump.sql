@@ -300,7 +300,6 @@ CREATE TABLE `failed_jobs` (
 CREATE TABLE `game_media_uploads` (
   `id` bigint(20) UNSIGNED NOT NULL,
   `title` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
-  `content_media` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
   `content_text` text COLLATE utf8mb4_unicode_ci NOT NULL,
   `media_type` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
   `correct_answere` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
@@ -314,7 +313,7 @@ CREATE TABLE `game_media_uploads` (
 -- Dumping data for table `game_media_uploads`
 --
 
-INSERT INTO `game_media_uploads` (`id`, `title`, `content_media`, `content_text`, `media_type`, `correct_answere`, `points_min`, `points_max`, `created_at`, `updated_at`) VALUES
+INSERT INTO `game_media_uploads` (`id`, `title`, `content_text`, `media_type`, `correct_answere`, `points_min`, `points_max`, `created_at`, `updated_at`) VALUES
 (1, 'Margarita Haag', 'https://lorempixel.com/640/640/?15726', 'Voluptas eius corporis maxime dignissimos quo eos exercitationem voluptate enim aperiam error ex porro in nihil ea illo dolorem dolore dolore nisi labore tenetur sequi minima assumenda magni est blanditiis aliquam sit rerum repudiandae voluptatibus quisquam facere vitae voluptatum voluptas nihil repellendus.', 'image', 'Maiores facilis voluptas doloremque consectetur.', 0, 35000, '2019-12-01 03:15:57', '2019-12-01 03:15:57'),
 (2, 'Marlen Stoltenberg', 'https://lorempixel.com/640/640/?68349', 'Quaerat quibusdam officia consequatur aut ex quia ullam cupiditate ut qui quidem vitae et est quam repellat tempore minus ad qui quis exercitationem non debitis est voluptates vitae maxime ut eos tempora minima ut eius ut maxime consequatur.', 'image', 'Laborum deserunt sit aut et earum commodi distinctio.', 0, 35000, '2019-12-01 03:15:57', '2019-12-01 03:15:57'),
 (3, 'Janick Pagac', 'https://lorempixel.com/640/640/?77283', 'Voluptatibus accusamus blanditiis tenetur minima aut ut dicta distinctio ratione delectus voluptate ex nihil et dolores perferendis aut non adipisci qui est fugiat ut ad.', 'image', 'Optio quasi maxime sint qui est consequatur ut.', 0, 35000, '2019-12-01 03:15:57', '2019-12-01 03:15:57'),
@@ -355,7 +354,6 @@ INSERT INTO `game_media_uploads` (`id`, `title`, `content_media`, `content_text`
 CREATE TABLE `game_multiple_choices` (
   `id` bigint(20) UNSIGNED NOT NULL,
   `title` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
-  `content_media` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
   `content_text` text COLLATE utf8mb4_unicode_ci NOT NULL,
   `correct_answere` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
   `points_min` bigint(20) NOT NULL,
@@ -368,7 +366,7 @@ CREATE TABLE `game_multiple_choices` (
 -- Dumping data for table `game_multiple_choices`
 --
 
-INSERT INTO `game_multiple_choices` (`id`, `title`, `content_media`, `content_text`, `correct_answere`, `points_min`, `points_max`, `created_at`, `updated_at`) VALUES
+INSERT INTO `game_multiple_choices` (`id`, `title`, `content_text`, `correct_answere`, `points_min`, `points_max`, `created_at`, `updated_at`) VALUES
 (1, 'Prof. Marguerite Littel DDS', 'https://lorempixel.com/640/640/?67505', 'In ex est eum illo sint corporis quam repudiandae aspernatur debitis ut consequuntur optio ducimus quibusdam ipsa qui aspernatur repellendus expedita quod voluptatum quisquam et praesentium deserunt doloribus nihil esse dolore magni suscipit enim ad.', '1', 0, 35000, '2019-12-01 03:15:57', '2019-12-01 03:15:57'),
 (2, 'Jewell Bode', 'https://lorempixel.com/640/640/?17378', 'Facilis quaerat laudantium omnis et sed vel et et sed aut blanditiis ut asperiores eligendi ipsam fugiat quos vero dolorem architecto veniam deleniti modi quisquam asperiores quo quisquam aut quo fugit ea harum laboriosam sed cum ut.', '2', 0, 35000, '2019-12-01 03:15:57', '2019-12-01 03:15:57'),
 (3, 'Lauryn Spencer II', 'https://lorempixel.com/640/640/?74875', 'Sit numquam sint iste a pariatur magni dolor quae voluptatem repellat nobis sunt quia impedit unde voluptas placeat dolores ut optio vel aperiam ea distinctio neque voluptatem qui pariatur eveniet amet libero.', '1', 0, 35000, '2019-12-01 03:15:57', '2019-12-01 03:15:57'),
@@ -562,7 +560,6 @@ CREATE TABLE `game_quizzes` (
 CREATE TABLE `game_text_answeres` (
   `id` bigint(20) UNSIGNED NOT NULL,
   `title` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
-  `content_media` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
   `content_text` text COLLATE utf8mb4_unicode_ci NOT NULL,
   `correct_answere` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
   `points_min` bigint(20) NOT NULL,
@@ -575,7 +572,7 @@ CREATE TABLE `game_text_answeres` (
 -- Dumping data for table `game_text_answeres`
 --
 
-INSERT INTO `game_text_answeres` (`id`, `title`, `content_media`, `content_text`, `correct_answere`, `points_min`, `points_max`, `created_at`, `updated_at`) VALUES
+INSERT INTO `game_text_answeres` (`id`, `title`, `content_text`, `correct_answere`, `points_min`, `points_max`, `created_at`, `updated_at`) VALUES
 (1, 'Nettie Beier II', 'https://lorempixel.com/640/640/?63833', 'Sequi aliquam molestiae odit inventore id sed culpa rem ut autem nulla aperiam quisquam voluptatum aut ab consequatur quidem voluptas id qui laboriosam rerum voluptas dolor porro magnam similique incidunt soluta pariatur nostrum debitis molestiae possimus soluta.', 'Qui illo aut laudantium.', 0, 35000, '2019-12-01 03:15:57', '2019-12-01 03:15:57'),
 (2, 'Mrs. Cortney DuBuque III', 'https://lorempixel.com/640/640/?93864', 'Quod sed quibusdam minus aut aut quidem sapiente laborum quos pariatur ex cum voluptatem ad omnis numquam ullam illo natus consectetur sint cum voluptates ipsam quo omnis nostrum et ut libero dolores odit ut eos laborum assumenda.', 'Alias ad atque est.', 0, 35000, '2019-12-01 03:15:57', '2019-12-01 03:15:57'),
 (3, 'Laney Barrows', 'https://lorempixel.com/640/640/?68480', 'Sit ex nisi autem et eum dolorem quia ut ut quam est quia aut provident ducimus aperiam necessitatibus cum et et rerum blanditiis delectus illum at et iure quia harum vel a cumque harum consequatur expedita voluptatibus suscipit ipsam quis omnis eos.', 'Id aliquam odio voluptates officiis saepe asperiores.', 0, 35000, '2019-12-01 03:15:57', '2019-12-01 03:15:57'),
@@ -821,7 +818,6 @@ CREATE TABLE `teams` (
   `trip_id` bigint(20) NOT NULL,
   `name` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
   `color` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-  `badge` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   `score` bigint(20) NOT NULL,
   `created_at` timestamp NULL DEFAULT NULL,
   `updated_at` timestamp NULL DEFAULT NULL
@@ -831,7 +827,7 @@ CREATE TABLE `teams` (
 -- Dumping data for table `teams`
 --
 
-INSERT INTO `teams` (`id`, `trip_id`, `name`, `color`, `badge`, `score`, `created_at`, `updated_at`) VALUES
+INSERT INTO `teams` (`id`, `trip_id`, `name`, `color`, `score`, `created_at`, `updated_at`) VALUES
 (1, 1, 'Mrs. Ozella Kris V', '#fd5d4e', 'https://lorempixel.com/640/640/?10203', 2821034, '2019-12-01 03:15:57', '2019-12-01 03:15:57'),
 (2, 1, 'Ms. Anais Shields MD', '#53719e', 'https://lorempixel.com/640/640/?52653', 7910924, '2019-12-01 03:15:57', '2019-12-01 03:15:57'),
 (3, 1, 'Jamarcus Wiegand', '#bb5356', 'https://lorempixel.com/640/640/?35829', 2166985, '2019-12-01 03:15:57', '2019-12-01 03:15:57'),

@@ -16,8 +16,8 @@ class CreateTransitsTable extends Migration
         Schema::create('transits', function (Blueprint $table) {
             $table->bigIncrements('id');
             $table->string('name');
-            $table->bigInteger('from');
-            $table->bigInteger('to');
+            $table->bigInteger('from_city_id');
+            $table->bigInteger('to_city_id');
             $table->timestamps();
         });
     }

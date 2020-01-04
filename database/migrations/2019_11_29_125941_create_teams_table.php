@@ -15,11 +15,10 @@ class CreateTeamsTable extends Migration
     {
         Schema::create('teams', function (Blueprint $table) {
             $table->bigIncrements('id');
-                $table->bigInteger('trip_id');
+                $table->bigInteger('trip_id')->nullable();
                 $table->string('name');
                 $table->string('color')->nullable();
-                $table->string('badge')->nullable();
-                $table->bigInteger('score');
+                $table->bigInteger('score')->nullable();
             $table->timestamps();
         });
     }

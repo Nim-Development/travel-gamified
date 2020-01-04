@@ -21,4 +21,18 @@ class Transit extends Model
     {
         return $this->morphMany('App\Games\Challenge', 'playfield');
     }
+
+    // starting city
+    public function from()
+    {
+        return $this->hasOne('App\Playfields\City', 'id', 'from_city_id');
+    }
+
+    // ending city
+    public function to()
+    {
+        return $this->hasOne('App\Playfields\City', 'id', 'to_city_id');
+    }
+
+    protected $fillable = ['name', 'from_city_id', 'to_city_id'];
 }

@@ -21,12 +21,26 @@ class Transit extends JsonResource
         $itinerary = $this->itinerary;
         $routes = $this->routes;
         $challenges = $this->challenges;
+        $from = $this->from;
+        $to = $this->to;
 
         return [
             'id' => $this->id,
             'name' => $this->name,
-            'from' => (integer)$this->from,
-            'to' => (integer)$this->to,
+            'from' => [
+                'id' => $from->id,
+                'type' => 'city',
+                'short_code' => $from->short_code,
+                'name' => $from->name,
+                'created_at' => (string)$from->created_at
+            ],
+            'to' => [
+                'id' => $to->id,
+                'type' => 'city',
+                'short_code' => $to->short_code,
+                'name' => $to->name,
+                'created_at' => (string)$to->created_at
+            ],
             'itinerary' => (!$itinerary) ? null :
                 [
                     'id' => $itinerary->id,

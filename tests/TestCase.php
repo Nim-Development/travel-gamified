@@ -2,6 +2,8 @@
 
 namespace Tests;
 
+use Illuminate\Http\UploadedFile;
+use Illuminate\Filesystem\Filesystem;
 use Illuminate\Foundation\Testing\TestCase as BaseTestCase;
 
 abstract class TestCase extends BaseTestCase
@@ -16,6 +18,26 @@ abstract class TestCase extends BaseTestCase
         'route' => 'Playfields\Route',
         'transit' => 'Playfields\Transit'
     ];
+
+    // /** 
+    //  * This function runs after every test
+    //  */
+    // public function tearDown() :void{
+    //     // Clear all files from storage/app/public
+    //     parent::tearDown();
+    //     config()->set('medialibrary.disk_name', 'test');
+    //     $this->clear_files();
+    // }
+
+    public function setUp() :void{
+        parent::setUp();
+
+        // set the storage path to test directory
+        config()->set('medialibrary.disk_name', 'test');
+                
+        // empty the storage test map before starting the test
+        $this->clear_files();
+    }
 
     // now we can use $this->create('Model') inside our tests to return a product
     public function create(string $model, array $attributes = [], $resource = true)
@@ -103,6 +125,23 @@ abstract class TestCase extends BaseTestCase
 
     public function collection_of_challenges($playfield_type, $game_type, $qty)
     {
+        if($playfield_type == 'transit'){
+            // inject relational cities in transit creation
+            return $this->create_collection(
+                'Games\Challenge',
+                [
+                    'game_type' => $game_type,
+                    'game_id' => $this->create($this->polymorph_map[$game_type], [], false)->id,
+                    'playfield_type' => $playfield_type,
+                    'playfield_id' => $this->create($this->polymorph_map[$playfield_type], [
+                        'from_city_id' => $this->create('Playfields\City')->id,
+                        'to_city_id' => $this->create('Playfields\City')->id
+                    ], false)->id
+                ],
+                true,
+                $qty
+            );
+        }
 
         return $this->create_collection(
             'Games\Challenge',
@@ -157,4 +196,97 @@ abstract class TestCase extends BaseTestCase
             $this->create_collection('Games\GameMultipleChoiceOption', ['game_id' => $game->id], true, $options_qty);
         }
     }
+
+    // This function can be used to add files to the test data. returns true or false.
+    /**
+     * set files as:
+     * ['chelsea', 'liverpool', 'manchester']
+     */
+    public function file_factory(object $model, string $media_collection, array $files)
+    {
+        // 
+        foreach($files as $file){
+            try {
+                $model->addMedia(UploadedFile::fake()->image("$file.jpg"))->toMediaCollection($media_collection);
+            } catch (\Throwable $th) {
+                break;
+            }
+        }
+        return true;
+    }
+
+    // LEGACY
+
+    // returns a single or an array of uploadable files depending on if $files is a single name or a array of names.()
+    // public function get_uploadable_file_s($files, $mime_type)
+    // {
+    //     $mime_type = 'image/jpg';
+    //     $size = null;
+    //     $error = null;
+    //     $test = true;
+
+    //     if(is_array($files)){
+    //         // return an array of uploadable files
+    //         $files_array = [];
+
+    //         foreach ($files as $file) {
+    //             // return a single uploadable file
+    //             $original_name = uniqid().$file;
+    //             // first copy a version to temp directory
+    //             $lib_file = storage_path("app/test/test_media/$file");
+    //             $temp_file = storage_path("app/test/test_media/temp/$original_name");
+    //             copy($lib_file, $temp_file);
+
+    //             $path = $temp_file;
+
+    //             array_push(
+    //                 $files_array, 
+    //                 new UploadedFile($path, $original_name, $mime_type, $size, $error, $test)
+    //             );
+    //         }
+    //         return $files_array;
+    //     }
+    //     // return a single uploadable file
+    //     $original_name = uniqid().$file;
+    //     // first copy a version to temp directory
+    //     $lib_file = storage_path("app/test/test_media/$file");
+    //     $temp_file = storage_path("app/test/test_media/temp/$original_name");
+    //     copy($lib_file, $temp_file);
+
+    //     $path = $temp_file;
+        
+    //     return new UploadedFile($path, $original_name, $mime_type, $size, $error, $test);    
+    // }
+    
+    // ::nk nasty function.. refactor
+    public function spread_media_urls($model_media_properties){
+        if($model_media_properties){
+            $strip = config('filesystems.disks.test.url'); // string to strip from file url
+
+            $files_path_array = [];
+            // Here we strip the fill filepath to only be left with something like: /1/liverpool.jpg and add it to array
+            foreach($model_media_properties as $conversions){
+                foreach($conversions as $key => $conversion){
+                    $trimmed = str_replace($strip, '', $conversion);
+    
+                    array_push($files_path_array, $trimmed);
+                }
+            }
+            return $files_path_array;
+        }
+        return null;
+    }
+
+    // This clears the file_factory generated files from storage
+    public function clear_files()
+    {
+        $file = new Filesystem;
+        $res = $file->cleanDirectory(storage_path('app/test'));
+    }
+
+
+
+
+
+
 }

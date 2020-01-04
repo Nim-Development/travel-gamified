@@ -15,11 +15,11 @@ class CreateItinerariesTable extends Migration
     {
         Schema::create('itineraries', function (Blueprint $table) {
             $table->bigIncrements('id');
-                $table->bigInteger('tour_id');
+                $table->bigInteger('tour_id')->nullable();
                 $table->integer('step');
                 $table->float('duration');
-                $table->string('playfield_type');
-                $table->bigInteger('playfield_id');
+                $table->string('playfield_type')->nullable();
+                $table->bigInteger('playfield_id')->nullable();
             $table->timestamps();
         });
     }

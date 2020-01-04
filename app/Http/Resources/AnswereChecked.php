@@ -6,6 +6,9 @@ use Illuminate\Http\Resources\Json\JsonResource;
 
 class AnswereChecked extends JsonResource
 {
+
+    use \App\Http\Resources\_Traits\Insert;
+    
     /**
      * Transform the resource into an array.
      *
@@ -17,6 +20,8 @@ class AnswereChecked extends JsonResource
 
         $user = $this->user;
         $challenge = $this->challenge;
+
+        // $this->getMedia('submission');
 
         return [
             'id' => $this->id,
@@ -55,14 +60,14 @@ class AnswereChecked extends JsonResource
                             'id' => $challenge->game->id,
                             'type' => $challenge->game_type,
                             'title' => $challenge->game->title,
-                            'content_media' => $challenge->game->content_media,
                             'content_text' => $challenge->game->content_text,
                             'correct_answere' => $challenge->game->correct_answere,
                             'points_min' => $challenge->game->points_min,
                             'points_max' => $challenge->game->points_max,
                             'created_at' => (string)$challenge->game->created_at
                         ]
-                ]
+                ],
+            'media_submission' => $this->insert_media_conversions($this->getMedia('submission'))
         ];
     }
 }

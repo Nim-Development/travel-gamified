@@ -16,5 +16,5 @@ class Challenge extends Model
         return $this->morphTo('game');
     }
 
-    protected $fillable = ['sort_order'];
+    protected $fillable = ['sort_order','playfield_type','playfield_id','game_type','game_id'];
 }

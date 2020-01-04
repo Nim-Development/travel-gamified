@@ -13,18 +13,23 @@ class CityController extends Controller
     // Collection of all entries
     public function all()
     {
-        return \Validate::collection(
-            $all = City::all(),
-            CityResource::collection($all)
-        );
+        $all = City::all();
+        if($all->isEmpty()){
+            return response()->json(['message' => 'No entries found in database'], 204);
+        }
+
+        return CityResource::collection($all);  
     }
 
     public function paginate($qty)
     {
-        return \Validate::collection(
-            $all = City::paginate($qty),
-            CityResource::collection($all)
-        );
+        $all = City::paginate($qty);
+
+        if($all->isEmpty()){
+            return response()->json(['message' => 'No entries found in database'], 204);
+        }
+
+        return CityResource::collection($all);  
     }
 
     // Single entry by id
@@ -32,5 +37,60 @@ class CityController extends Controller
     {
         $data = City::findOrFail($id);
         return new CityResource($data);
+    }
+
+    public function store(Request $request)
+    {
+        $request->validate([
+            'short_code' => 'required|string',
+            'name' => 'required|string'
+        ]);
+
+        // validate header file
+        if($request->has('header')){
+            // must be of type .jpg or .png
+            $res = $request->validate([
+                "header.*"  => "image",
+            ]);
+        }
+
+        // validate media file
+        if($request->has('media')){
+            // must be of type .jpg or .png
+            $res = $request->validate([
+                "media.*"  => "image",
+            ]);
+        }
+
+        //Create City
+        $city = City::create([
+            'short_code' => $request->short_code,
+            'name' => $request->name
+        ]);
+
+        // validate header file
+        if($request->has('header')){
+            // insert the media file.
+            \MediaHelper::model_insert(
+                $city, // model
+                $request->header, // media (single or array)
+                'header' // collection name
+            );
+        }
+
+        // validate header file
+        if($request->has('media')){
+            // insert the media file.
+            \MediaHelper::model_insert(
+                $city, // model
+                $request->media, // media (single or array)
+                'media' // collection name
+            );
+        }
+
+        // Return resource
+        return (new CityResource($city))
+                                ->response()
+                                ->setStatusCode(201);
     }
 }

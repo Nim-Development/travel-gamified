@@ -20,17 +20,23 @@ class UserController extends Controller
     // Collection of all entries
     public function all()
     {
-        return \Validate::collection(
-            $all = User::all(),
-            UserResource::collection($all)
-        );
+        $all = User::all();
+
+        if($all->isEmpty()){
+            return response()->json(['message' => 'No entries found in database'], 204);
+        }
+
+        return UserResource::collection($all);
     }
 
     public function paginate($qty)
     {
-        return \Validate::collection(
-            $all = User::paginate($qty),
-            UserResource::collection($all)
-        );
+        $all = User::paginate($qty);
+        
+        if($all->isEmpty()){
+            return response()->json(['message' => 'No entries found in database'], 204);
+        }
+
+        return UserResource::collection($all);
     }
 }

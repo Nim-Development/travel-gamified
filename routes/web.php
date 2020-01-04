@@ -14,3 +14,9 @@
 // Route::get('/', function () {
 // //
 // });
+
+Route::get('/test', function(){
+
+    MediaHelper::test();
+
+});

@@ -16,7 +16,6 @@ trait Insert {
                     'id' => $game->id,
                     'type' => $game_type,
                     'title' => $game->title,
-                    'content_media' => $game->content_media,
                     'content_text' => $game->content_text,
                     'media_type' => $game->media_type,
                     'correct_answere' => $game->correct_answere,
@@ -31,7 +30,6 @@ trait Insert {
                     'id' => $game->id,
                     'type' => $game_type,
                     'title' => $game->title,
-                    'content_media' => $game->content_media,
                     'content_text' => $game->content_text,
                     'correct_answere' => $game->correct_answere,
                     'points_min' => (integer)$game->points_min,
@@ -45,7 +43,6 @@ trait Insert {
                     'id' => $game->id,
                     'type' => $game_type,
                     'title' => $game->title,
-                    'content_media' => $game->content_media,
                     'content_text' => $game->content_text,
                     'correct_answere' => $game->correct_answere,
                     'points_min' => (integer)$game->points_min,
@@ -90,8 +87,20 @@ trait Insert {
                     'id' => $playfield->id,
                     'type' => $playfield_type,
                     'name' => $playfield->name,
-                    'from' => (integer)$playfield->from,
-                    'to' => (integer)$playfield->to,
+                    'from' => [
+                        'id' => $playfield->from->id,
+                        'type' => 'city',
+                        'short_code' => $playfield->from->short_code,
+                        'name' => $playfield->from->name,
+                        'created_at' => (string)$playfield->from->created_at
+                    ],
+                    'to' => [
+                        'id' => $playfield->to->id,
+                        'type' => 'city',
+                        'short_code' => $playfield->to->short_code,
+                        'name' => $playfield->to->name,
+                        'created_at' => (string)$playfield->to->created_at
+                    ],
                     'created_at' => (string)$playfield->created_at
                 ];
                 break;
@@ -179,7 +188,6 @@ trait Insert {
                     'id' => (integer)$team->id,
                     'name' => $team->name,
                     'color' => $team->color,
-                    'badge' => $team->badge,
                     'score' => (integer)$team->score,
                     'created_at' => (string)$team->created_at
                 ]
@@ -212,6 +220,33 @@ trait Insert {
         return $routes_array;
     }
 
+    public function insert_media_conversions($media_collection)
+    {
+        if(count($media_collection) == 0){ return null; } 
+
+        // function to loop trough routes relation and return it as 2d array for insertion.
+        $media_collection_array = [];
+        foreach ($media_collection as $media_collection_item) {
+            array_push($media_collection_array,
+                [
+                    'def' => $media_collection_item->getUrl(),
+                    'md' => $media_collection_item->getUrl('md'),
+                    'sm' => $media_collection_item->getUrl('sm'),
+                    'thumb' => $media_collection_item->getUrl('thumb')
+                ]
+            );
+        }
+        return $media_collection_array;
+    }
+
+    // checks if single media item is empty and returns null if true.
+    public function single_media($media_collection){
+        if($media_collection->isEmpty()){
+            return null;
+        }
+        return $media_collection[0];
+    }
+
     public function insert_challenges_into_transit($challenges)
     {
         if(count($challenges) == 0){ return null; } 
@@ -227,7 +262,6 @@ trait Insert {
                         'id' => (integer)$challenge->game->id,
                         'type' => $challenge->game->type,
                         'title' => $challenge->game->title,
-                        'content_media' => $challenge->game->content_media,
                         'content_text' => $challenge->game->content_text,
                         'correct_answere' => $challenge->game->correct_answere,
                         'points_min' => (integer)$challenge->game->points_min,

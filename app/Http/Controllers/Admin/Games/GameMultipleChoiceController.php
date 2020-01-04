@@ -19,42 +19,127 @@ class GameMultipleChoiceController extends Controller
 
     public function all()
     {
-        return \Validate::collection(
-            $all = GameMultipleChoice::all(),
-            GameMultipleChoiceResource::collection($all)
-        );
+        $all = GameMultipleChoice::all();
+
+        if($all->isEmpty()){
+            return response()->json(['message' => 'No entries found in database'], 204);
+        }
+
+        return GameMultipleChoiceResource::collection($all);
     }
 
     public function paginate($qty)
     {
-        return \Validate::collection(
-            $all = GameMultipleChoice::paginate($qty),
-            GameMultipleChoiceResource::collection($all)
-        );
+        $all = GameMultipleChoice::paginate($qty);
+        if($all->isEmpty()){
+            return response()->json(['message' => 'No entries found in database'], 204);
+        }
+
+        return GameMultipleChoiceResource::collection($all);
     }
 
     public function single_game_options($id)
     {
-        return \Validate::collection(
-            $all = GameMultipleChoice::findOrFail($id)->options,
-            GameMultipleChoiceOptionResource::collection($all)
-        );
+        $all = GameMultipleChoice::findOrFail($id)->options;
+        if($all->isEmpty()){
+            return response()->json(['message' => 'No entries found in database'], 204);
+        }
+
+        return GameMultipleChoiceOptionResource::collection($all);
     }
 
     public function all_options()
     {
-        return \Validate::collection(
-            $all = GameMultipleChoiceOption::all(),
-            GameMultipleChoiceOptionResource::collection($all)
-        );
+        $all = GameMultipleChoiceOption::all();
+
+        if($all->isEmpty()){
+            return response()->json(['message' => 'No entries found in database'], 204);
+        }
+
+        return GameMultipleChoiceOptionResource::collection($all);       
     }
 
     public function paginated_options($qty)
     {
-        return \Validate::collection(
-            $all = GameMultipleChoiceOption::paginate($qty),
-            GameMultipleChoiceOptionResource::collection($all)
+
+        $all = GameMultipleChoiceOption::paginate($qty);
+
+        if($all->isEmpty()){
+            return response()->json(['message' => 'No entries found in database'], 204);
+        }
+
+        return GameMultipleChoiceOptionResource::collection($all);  
+    }
+
+
+    public function store(Request $request)
+    {
+    
+        $request->validate([
+
+            'title' => 'required|string',
+            'content_text' => 'required|string',
+            'correct_answere' => 'required|string',
+            'points_min' => 'required|integer',
+            'points_max' => 'required|integer',
+
+            'options.*.sort_order' => 'integer|nullable',
+            'options.*.text' => 'string'
+
+        ]);
+
+        // validate header file
+        if($request->header){
+            // must be of type .jpg or .png
+            $res = $request->validate([
+                "header.*"  => "required|image",
+            ]);
+        }
+
+        // validate header file
+        if($request->media){
+            // must be of type .jpg or .png
+            $request->validate([
+                "media_content.*"  => "required|image",
+            ]);
+        }
+
+        // CREATE GAME
+        $game = GameMultipleChoice::create([
+            'title' => $request->title,
+            'content_text' => $request->content_text,
+            'correct_answere' => $request->correct_answere,
+            'media_type' => $request->media_type,
+            'points_min' => $request->points_min,
+            'points_max' => $request->points_max
+        ]);
+
+        // Create options relationships
+        if($request->options){
+            foreach($request->options as $option){
+                $game->options()->create([
+                    'sort_order' => $option['sort_order'],
+                    'text' => $option['text']
+                ]);
+            }
+        }
+
+
+        \MediaHelper::model_insert(
+            $game, // model
+            $request->header, // media (single or array)
+            'header' // collection name
         );
+
+        \MediaHelper::model_insert(
+            $game,
+            $request->media_content,
+            'media'
+        );
+
+        return (new GameMultipleChoiceResource($game))
+                                        ->response()
+                                        ->setStatusCode(201);
     }
 
 }

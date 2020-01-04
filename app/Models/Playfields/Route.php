@@ -20,4 +20,6 @@ class Route extends Model
     {
         return $this->morphMany('App\Games\Challenge', 'playfield');
     }
+
+    protected $fillable = [ 'transit_id', 'name', 'maps_url', 'kilometers', 'hours', 'difficulty', 'nature', 'highway'];
 }

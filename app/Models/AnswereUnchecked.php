@@ -2,10 +2,15 @@
 
 namespace App;
 
+use Spatie\MediaLibrary\Models\Media;
 use Illuminate\Database\Eloquent\Model;
+use Spatie\MediaLibrary\HasMedia\HasMedia;
+use Spatie\MediaLibrary\HasMedia\HasMediaTrait;
 
-class AnswereUnchecked extends Model
+class AnswereUnchecked extends Model implements HasMedia
 {
+    use HasMediaTrait;
+
     public function challenge()
     {
         return $this->hasOne('App\Games\Challenge', 'id', 'challenge_id');
@@ -15,4 +20,24 @@ class AnswereUnchecked extends Model
     {
         return $this->hasOne('App\User', 'id', 'user_id');
     }
+
+
+    public function registerMediaCollections()
+    {
+        $this->addMediaCollection('submission')
+        ->registerMediaConversions(function(Media $media){
+           $this->addMediaConversion('thumb')
+               ->width(100) //??
+               ->height(100); //??
+            $this->addMediaConversion('md')
+               ->width(368) //??
+               ->height(232); //??
+           $this->addMediaConversion('sm')
+               ->width(368) //??
+               ->height(232); //??
+       });
+    }
+
+    protected $fillable = ['challenge_id', 'user_id', 'answere', 'score'];
+
 }

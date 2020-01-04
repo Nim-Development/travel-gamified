@@ -22,7 +22,6 @@ use App\Trip;
 // $table->bigInteger('trip_id');
 // $table->string('name');
 // $table->string('color')->nullable();
-// $table->string('badge')->nullable();
 // $table->bigInteger('score');
 // $table->timestamps();
 
@@ -32,7 +31,6 @@ $factory->define(Team::class, function (Faker $faker) {
         'trip_id' => 1,
         'name' => $faker->name,
         'color' => $faker->hexcolor,
-        'badge' => $faker->imageUrl($width = 640, $height = 640),
         'score' => $faker->numberBetween($min = 10000, $max = 9000000)
     ];
 });

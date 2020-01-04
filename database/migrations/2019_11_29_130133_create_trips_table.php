@@ -20,7 +20,6 @@ class CreateTripsTable extends Migration
                 $table->string('name');
                 $table->string('timezone');
                 $table->dateTime('start_date_time')->nullable();
-                $table->bigInteger('score');
 
             $table->timestamps();
         });

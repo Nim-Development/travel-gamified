@@ -2,14 +2,20 @@
 
 namespace App\Http\Controllers\Admin;
 
-use App\Http\Controllers\Controller;
-use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Validator;
-use Illuminate\Support\Facades\DB;
 use App\Games\Challenge;
+use App\Playfields\City;
+use App\Playfields\Route;
+use App\Playfields\Transit;
+use Illuminate\Http\Request;
 
 
 
+use App\Games\GameMediaUpload;
+use App\Games\GameTextAnswere;
+use App\Games\GameMultipleChoice;
+use Illuminate\Support\Facades\DB;
+use App\Http\Controllers\Controller;
+use Illuminate\Support\Facades\Validator;
 use App\Http\Resources\Games\Challenge as ChallengeResource;
 
 class ChallengeController extends Controller
@@ -21,19 +27,25 @@ class ChallengeController extends Controller
     // Collection of all entries
     public function all($type = null)
     {
-        // Returns a 204 response if collection is empty, else it returns the resource collection
-        return \Validate::collection(
-            $all = Challenge::all(), // resource to validate
-            ChallengeResource::collection($all) // return if validation passes
-        );
+
+        $all = Challenge::all();
+        
+        if($all->isEmpty()){
+            return response()->json(['message' => 'No entries found in database'], 204);
+        }
+        
+        return ChallengeResource::collection($all);
     }
 
     public function paginated($qty)
     {
-        return \Validate::collection(
-            $all = Challenge::paginate($qty), 
-            ChallengeResource::collection($all)
-        );
+        $all = Challenge::paginate($qty);
+
+        if($all->isEmpty()){
+            return response()->json(['message' => 'No entries found in database'], 204);
+        }
+        
+        return ChallengeResource::collection($all);
     }
 
     // Single entry by id
@@ -44,124 +56,132 @@ class ChallengeController extends Controller
 
     public function all_by_playfield($type, $paginate = null, $qty = null)
     {
-        return \Validate::collection(
-            $all = Challenge::where('playfield_type', $type)->get(), 
-            ChallengeResource::collection($all)
-        );
+        $all = Challenge::where('playfield_type', $type)->get();
+    
+        if($all->isEmpty()){
+            return response()->json(['message' => 'No entries found in database'], 204);
+        }
+        
+        return ChallengeResource::collection($all);
     }
 
     public function all_by_game($type)
     {
-        return \Validate::collection(
-            $all = Challenge::where('game_type', $type)->get(), 
-            ChallengeResource::collection($all)
-        );
+        $all = Challenge::where('game_type', $type)->get();
+
+        if($all->isEmpty()){
+            return response()->json(['message' => 'No entries found in database'], 204);
+        }
+        
+        return ChallengeResource::collection($all);
     }
 
     public function paginated_by_playfield($type, $qty)
     {
-        return \Validate::collection(
-            $all = Challenge::where('playfield_type', $type)->paginate($qty), 
-            ChallengeResource::collection($all)
-        );
+        $all = Challenge::where('playfield_type', $type)->paginate($qty);
+
+        if($all->isEmpty()){
+            return response()->json(['message' => 'No entries found in database'], 204);
+        }
+        
+        return ChallengeResource::collection($all);
     }
 
     public function paginated_by_game($type, $qty)
     {
-        return \Validate::collection(
-            $all = Challenge::where('game_type', $type)->paginate($qty), 
-            ChallengeResource::collection($all)
-        );
+        $all = Challenge::where('game_type', $type)->paginate($qty);
+
+        if($all->isEmpty()){
+            return response()->json(['message' => 'No entries found in database'], 204);
+        }
+        
+        return ChallengeResource::collection($all);
     }
 
     /**
      * POST
      */
-
-    // Add a new challenge including game
-    public function add(Request $request)
+    public function store(Request $request)
     {
-
-        // validate request
-        $validator = Validator::make($request->all(), [
-            'playfield' => 'required',
-                'playfield.type' => 'required',
-                'playfield.id' => 'required',
-            'challenge' => 'required',
-                'challenge.sort_order' => 'required',
-            'game' => 'required',
-                'game.type' => 'required'
-                // all game related data, create will throw error back to api user if data is insufficient, so no need to check here.
+        $request->validate([
+            'sort_order' => 'integer',
+            'playfield_type' => 'required|string',
+            'playfield_id' => 'required|integer',
+            'game_type' => 'required|string',
+            'game_id' => 'required|integer'
         ]);
 
-        // Validate if game.type extually is known in our config('models.games')
-        if(\ConfigHelper::validate_keyname(config('models.games'), $request->input('game.type')) == FALSE){
-            // error
-            return response()->json(['error' => 'game with keyname: '.$request->input('game.type').', does not exist'], 200);
+        // check if relational playfield row actually exists in database
+        switch ($request->playfield_type) {
+
+            case 'city':
+                if(!City::find($request->playfield_id)){
+                    // Error: can't create answere for non existent challenge!
+                    return response()->json(['error' => 'Can not create Challenge for non existing City'], 422);
+                }
+                break;
+
+            case 'route':
+                if(!Route::find($request->playfield_id)){
+                    // Error: can't create answere for non existent challenge!
+                    return response()->json(['error' => 'Can not create Challenge for non existing Route'], 422);
+                }
+                break;
+
+            case 'transit':
+                if(!Transit::find($request->playfield_id)){
+                    // Error: can't create answere for non existent challenge!
+                    return response()->json(['error' => 'Can not create Challenge for non existing Transit'], 422);
+                }
+                break;
+            
+            default:
+                return response()->json(['error' => 'Playfield of type: '.$request->playfield_type.' does not exist.'], 400);
+                break;
         }
 
-        // Validate if playfield.type extually is known in our config('models.playfield')
-        if(\ConfigHelper::validate_keyname(config('models.playfields'), $request->input('playfield.type')) == FALSE){
-            // error
-            return response()->json(['error' => 'game with keyname: '.$request->input('playfield.type').', does not exist'], 200);
+        // check if relational game row actually exists in database
+        switch ($request->game_type) {
+
+            case 'media_upload':
+                if(!GameMediaUpload::find($request->playfield_id)){
+                    // Error: can't create answere for non existent challenge!
+                    return response()->json(['error' => 'Can not create Challenge for non existing GameMediaUpload'], 422);
+                }
+                break;
+
+            case 'text_answere':
+                if(!GameTextAnswere::find($request->playfield_id)){
+                    // Error: can't create answere for non existent challenge!
+                    return response()->json(['error' => 'Can not create Challenge for non existing GameTextAnswere'], 422);
+                }
+                break;
+
+            case 'multiple_choice':
+                if(!GameMultipleChoice::find($request->playfield_id)){
+                    // Error: can't create answere for non existent challenge!
+                    return response()->json(['error' => 'Can not create Challenge for non existing GameMultipleChoice'], 422);
+                }
+                break;
+            
+            default:
+                return response()->json(['error' => 'Playfield of type: '.$request->playfield_type.' does not exist.'], 400);
+                break;
         }
 
-        if ($validator->fails()) {
-             return response()->json($validator->messages(), 200);
-        }
+        // Preform creation
+        $challenge = Challenge::create([
+            'sort_order' => $request->sort_order,
+            'playfield_type' => $request->playfield_type,
+            'playfield_id' => $request->playfield_id,
+            'game_type' => $request->game_type,
+            'game_id' => $request->game_id
+        ]);
 
-        // we will only commit the DB transaction if everything in try{} block succeeds.
-        DB::beginTransaction();
-
-        try {
-            // do database actions
-
-            // extract key info from request
-            $game_type = $request->input('game.type');
-            $game_data = $request->input('game');
-
-            $playfield_type = $request->input('playfield.type');
-            $playfield_id = $request->input('playfield.id');
-
-            $challenge_data = $request->input('challenge');
-
-            if(is_null(config('models.playfields.'.$playfield_type)::find($playfield_id))){
-
-                // ERROR:
-                /*
-                 * The playfield instance you want to attach the challenge to does NOT exist!
-                 */
-                 throw new \Exception('Relational playfield for the challenge does not exist.');
-
-            }
-
-
-            // create game
-            $game = config('models.games.'.$game_type);
-            $game_id = $game->create($game_data)->id; //::nk can only return id directly from create() for some reason (because DB::commit() has not been done yet)
-
-            // create challenge
-            $challenge = new Challenge;
-                $challenge->fill($challenge_data);
-                $challenge->playfield_type = $playfield_type;
-                $challenge->playfield_id = $playfield_id;
-                $challenge->game_type = $game_type;
-                $challenge->game_id = $game_id;
-            $challenge->save();
-
-            // commit
-            DB::commit();
-        } catch (\Exception $e) {
-            DB::rollback();
-
-            // something went wrong
-            return response()->json(['error' => $e->getMessage()], 200);
-        }
-
-        return 'Success';
+        // Return as resource
+        return (new ChallengeResource($challenge))
+        ->response()
+        ->setStatusCode(201);
+        
     }
-
-
-
-
 }

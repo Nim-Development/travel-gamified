@@ -27,7 +27,7 @@ use App\Playfields\City;
 $factory->define(Transit::class, function (Faker $faker) {
     return [
         'name' => $faker->name,
-        'from' => 1,
-        'to' => 2
+        'from_city_id' => 1,
+        'to_city_id' => 2
     ];
 });

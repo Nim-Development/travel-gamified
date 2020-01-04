@@ -7,7 +7,6 @@ use Illuminate\Support\Str;
 
 // $table->bigIncrements('id');
 // $table->string('title');
-// $table->string('content_media');
 // $table->string('content_text');
 // $table->bigInteger('correct_answere');
 // $table->bigInteger('points_min');
@@ -17,7 +16,6 @@ use Illuminate\Support\Str;
 $factory->define(GameTextAnswere::class, function (Faker $faker) {
     return [
         'title' => $faker->name,
-        'content_media' => $faker->imageUrl($width = 640, $height = 640), // cant fake this.
         'content_text' => $faker->sentence($nbWords = 32, $variableNbWords = true),
         'correct_answere' => $faker->sentence($nbWords = 6, $variableNbWords = true),
         'points_min' => 0,

@@ -16,4 +16,6 @@ class Tour extends Model
     {
         return $this->hasMany('App\Trip', 'tour_id', 'id');
     }
+
+    protected $fillable = ['name', 'duration'];
 }

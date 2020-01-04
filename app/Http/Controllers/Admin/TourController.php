@@ -13,10 +13,13 @@ class TourController extends Controller
     // Collection of all entries
     public function all()
     {
-        return \Validate::collection(
-            $all = Tour::all(),
-            TourResource::collection($all)
-        );
+        $all = Tour::all();
+
+        if($all->isEmpty()){
+            return response()->json(['message' => 'No entries found in database'], 204);
+        }
+
+        return TourResource::collection($all);
     }
 
     // Single entry by id
@@ -27,9 +30,32 @@ class TourController extends Controller
 
     public function paginate($qty)
     {
-        return \Validate::collection(
-            $all = Tour::paginate($qty),
-            TourResource::collection($all)
-        );
+        $all = Tour::paginate($qty);
+        
+        if($all->isEmpty()){
+            return response()->json(['message' => 'No entries found in database'], 204);
+        }
+
+        return TourResource::collection($all);
+    }
+
+    public function store(Request $request)
+    {
+        $request->validate([
+            'name' => 'required|string',
+            'duration' => 'required|numeric'
+        ]);
+        
+        // create the tour
+        $tour = Tour::create([
+            'name' => $request->name,
+            'duration' => $request->duration
+        ]);
+
+        // return Resource
+        return (new TourResource($tour))
+                                ->response()
+                                ->setStatusCode(201);
+
     }
 }

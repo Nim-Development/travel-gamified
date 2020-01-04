@@ -21,4 +21,6 @@ class Trip extends Model
         return $this->hasMany('App\User', 'trip_id', 'id');
     }
 
+    protected $fillable = ['tour_id', 'name', 'timezone', 'start_date_time'];
+
 }

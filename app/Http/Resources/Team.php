@@ -20,12 +20,11 @@ class Team extends JsonResource
 
         $users = $this->users;
         $trip = $this->trip;
-
+        
         return [
             'id' => (integer)$this->id,
             'name' => $this->name,
             'color' => $this->color,
-            'badge' => $this->badge,
             'score' =>  (integer)$this->score,
             'users' => (!$users) ? null : $this->insert_users_into_team($users),
             'trip' => (!$trip) ? null :
@@ -35,10 +34,12 @@ class Team extends JsonResource
                     'name' => $trip->name,
                     'timezone' => $trip->timezone,
                     'start_date_time' => (string)$trip->start_date_time,
-                    'score' => (integer)$trip->score,
                     'created_at' => (string)$trip->created_at
                 ],
+            'badge' => $this->insert_media_conversions($this->getMedia('badge')),
             'created_at' => (string)$this->created_at,            
         ];
+
+        
     }
 }

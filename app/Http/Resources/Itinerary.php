@@ -18,10 +18,16 @@ class Itinerary extends JsonResource
     public function toArray($request)
     {
         $playfield = $this->playfield;
+        $tour = $this->tour;
 
         return [
             'id' => $this->id,
-            'tour_id' => (integer)$this->tour_id,
+            'tour' => (!$tour) ? null : [
+                'id' => (integer)$tour->id,
+                'name' => $tour->name,
+                'duration' => (double)$tour->duration,
+                'created_at' => (string)$tour->created_at
+            ],
             'step' => (integer)$this->step,
             'duration' => (double)$this->duration,
             'playfield' => (!$playfield) ? null : $this->insert_playfield($this->playfield_type, $playfield),
