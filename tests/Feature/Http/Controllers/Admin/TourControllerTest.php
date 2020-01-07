@@ -148,16 +148,6 @@ trait Get
 trait Post
 {
 
-    // $table->bigIncrements('id');
-    // $table->string('name');
-    // $table->float('duration');
-    // $table->timestamps();
-
-    // 'id' => $this->id,
-    // 'name' => $this->name,
-    // 'duration' => (double)$this->duration,
-    // 'created_at' => (string)$this->created_at,
-
          /**
      * @test
      */
@@ -229,39 +219,114 @@ trait Post
 
 trait Put
 {
-        /**
+    // $body = [
+    //     'name' => '1234',
+    //     'duration' => 22.11
+    // ];
+
+
+            /**
      * @test
      */
-    // public function will_fail_with_a_404_if_the_tour_we_want_to_update_is_not_found()
-    // {
-    //     $res = $this->json('PUT', 'api/tours/-1');
-    //     $res->assertStatus(404);
-    // }
-    
+    public function will_fail_with_a_404_if_the_tour_we_want_to_update_is_not_found()
+    {
+        $res = $this->json('PUT', 'api/tours/-1');
+        $res->assertStatus(404);
+    }
+
+
+
     /**
      * @test
      */
-    // public function can_update_a_tour()
-    // {
-    //     // Given
-    //     $old_tour = $this->create('Tour');
+    public function can_update_tour_fully_on_each_model_attribute()
+    {
 
-    //     $new_tour = [
-    //         'name' => $old_tour->name.'_update',
-    //         'slug' => $old_tour->slug.'_update',
-    //         'price' => $old_tour->price + 3
-    //     ];
+        $old_values = [
+            'name' => '1234',
+            'duration' => 22.11
+        ];
 
-    //     // When
-    //     $response = $this->json('PUT',
-    //                             'api/tours/'.$old_tour->id,
-    //                             $new_tour);
-    //     // Then
-    //     $response->assertStatus(200)
-    //              ->assertJsonFragment($new_tour);
-    //     $this->assertDatabaseHas('tours', $new_tour);
+        $old_tour = $this->create('Tour', $old_values);
 
-    // }
+        // update every attribute
+        $new_values = [
+            'name' => 'aaaaaaaa',
+            'duration' => 00.01
+        ];
+
+        // When
+        $response = $this->json('PUT','api/tours/'.$old_tour->id, $new_values);
+
+        // Then
+        $response->assertStatus(200)
+                    ->assertJsonFragment($new_values);
+                    
+        $this->assertDatabaseHas('tours', $new_values);
+        $this->assertDatabaseMissing('tours', $old_values);
+            
+    }
+   
+    /**
+     * @test
+     */
+    public function can_update_tours_on_a_couple_of_model_attributes()
+    {
+        $old_values = [
+            'name' => '1234'
+        ];
+
+        $values_to_remain_after_update = [
+            'duration' => 22.11
+        ];
+
+        $old_tour = $this->create('Tour', array_merge($old_values, $values_to_remain_after_update));
+
+        // update every attribute
+        $new_values = [
+            'name' => 'aaaaaaaa',
+        ];
+
+        // When
+        $response = $this->json('PUT','api/tours/'.$old_tour->id, $new_values);
+
+        // Then
+        $response->assertStatus(200)
+                    ->assertJsonFragment(array_merge($new_values, $values_to_remain_after_update));
+                    
+        $this->assertDatabaseHas('tours', array_merge($new_values, $values_to_remain_after_update));
+        $this->assertDatabaseMissing('tours', $old_values);
+            
+    }
+
+    /**
+     * @test
+     */
+    public function will_fail_with_error_422_when_body_data_is_of_wrong_type()
+    {
+        $old_values = [
+            'name' => '1234',
+            'duration' => 22.11
+        ];
+
+        $old_tour = $this->create('Tour', $old_values);
+
+        // 'name' is of wrong type
+        $new_values = [
+            'name' => 'aaaaaaaa'
+        ];
+
+        // When
+        $response = $this->json('PUT','api/tours/'.$old_tour->id, $new_values);
+
+        // Then
+        $response->assertStatus(200)
+                    ->assertJsonFragment($new_values);
+                    
+        $this->assertDatabaseHas('tours', $new_values);
+        $this->assertDatabaseMissing('tours', $old_values);
+            
+    }
 }
 
 trait Delete

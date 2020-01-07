@@ -93,4 +93,41 @@ class CityController extends Controller
                                 ->response()
                                 ->setStatusCode(201);
     }
+
+
+    public function update(Request $request, $id)
+    {
+        // Nothing required, just data types
+        $request->validate([
+            'short_code' => 'string',
+            'name' => 'string'
+        ]);
+        
+        // find or fail with 422
+        $city = City::findOrFail($id);
+
+        // perform update ( ::nk handle exception )
+        $city->update($request->except(['header', 'media']));
+
+        if($request->header){
+            \MediaHelper::model_insert(
+                $city, // model
+                $request->header, // media (single or array)
+                'header' // collection name
+            );
+        }
+
+        if($request->media){
+            \MediaHelper::model_insert(
+                $city,
+                $request->media,
+                'media'
+            );
+        }
+
+        // Return as resource
+        return (new CityResource($city))
+            ->response()
+            ->setStatusCode(200);
+    }
 }

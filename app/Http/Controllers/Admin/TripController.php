@@ -93,4 +93,55 @@ class TripController extends Controller
                                 ->response()
                                 ->setStatusCode(201);
     }
+
+    public function update(Request $request, $id)
+    {
+        $request->validate([
+            'tour_id' => 'integer',
+            'name' => 'string',
+            'timezone' => 'string',
+            'start_date_time' => 'date',
+            'teams.*' => 'numeric'
+        ]);
+
+        // check if relational data actually exists
+        if($request->tour_id){
+            if(!Tour::find($request->tour_id)){
+                // Error: can't create answere for non existent challenge!
+                return response()->json(['error' => 'Can not add Trip to non existing Tour (id: '.$request->tour_id.')'], 422);
+            }
+        }
+
+        // LOOP!
+        // check if relational teams actually exists first!
+        if($request->teams){
+            foreach ($request->teams as $team_id) {
+                if(!Team::find($team_id)){
+                    // Error: can't create answere for non existent challenge!
+                    return response()->json(['error' => 'Can not add non existing Team relationship (id: '.$team_id.') to Trip.'], 422);
+                }
+            }
+        }
+        
+        // create the 
+        $trip = Trip::findOrFail($id);
+
+        $trip->update($request->except(['teams']));
+
+        // LOOP OVER TEAMS AND ADJUST THEIR TRIP_ID
+        if($request->teams){
+            foreach ($request->teams as $team_id) {
+                // save relational team to the trip
+                $trip->teams()->save(
+                    Team::find($team_id)
+                );
+            }
+        }
+
+        // return Resource
+        return (new TripResource($trip))
+                                ->response()
+                                ->setStatusCode(200);
+    }
+
 }

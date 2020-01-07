@@ -58,4 +58,21 @@ class TourController extends Controller
                                 ->setStatusCode(201);
 
     }
+    
+    public function update(Request $request, $id)
+    {
+        $request->validate([
+            'name' => 'string',
+            'duration' => 'numeric'
+        ]);
+        
+        $tour = Tour::findOrFail($id);
+
+        $tour->update($request->all());
+
+        // return Resource
+        return (new TourResource($tour))
+                                ->response()
+                                ->setStatusCode(200);
+    }
 }

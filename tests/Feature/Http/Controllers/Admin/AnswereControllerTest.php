@@ -704,7 +704,7 @@ trait Get
 trait Post
 {
 
-// MEDIA COLLECTION FOR BOTH MODELS: submission
+    // MEDIA COLLECTION FOR BOTH MODELS: submission
 
    /**
      * @test
@@ -1318,39 +1318,511 @@ trait Post
 
 trait Put
 {
-    // /**
-    //  * @test
-    //  */
-    // public function will_fail_with_a_404_if_the_answere_we_want_to_update_is_not_found()
-    // {
-    //     $res = $this->json('PUT', 'api/answeres/-1');
-    //     $res->assertStatus(404);
-    // }
 
-    // /**
-    //  * @test
-    //  */
-    // public function can_update_a_answere()
-    // {
-    //     // Given
-    //     $old_answere = $this->create('Answere');
+    // Submission media collection
+    // Relational keys for User
+    
 
-    //     $new_answere = [
-    //         'name' => $old_answere->name.'_update',
-    //         'slug' => $old_answere->slug.'_update',
-    //         'price' => $old_answere->price + 3
-    //     ];
+    /**
+     * @test
+     */
+    public function will_fail_with_a_404_if_the_checked_answere_we_want_to_update_is_not_found()
+    {
+        $res = $this->json('PUT', 'api/answeres/checked/-1');
+        $res->assertStatus(404);
+    }
 
-    //     // When
-    //     $response = $this->json('PUT',
-    //                             'api/answeres/'.$old_answere->id,
-    //                             $new_answere);
-    //     // Then
-    //     $response->assertStatus(200)
-    //              ->assertJsonFragment($new_answere);
-    //     $this->assertDatabaseHas('answeres', $new_answere);
+       /**
+     * @test
+     */
+    public function will_fail_with_a_404_if_the_unchecked_answere_we_want_to_update_is_not_found()
+    {
+        $res = $this->json('PUT', 'api/answeres/unchecked/-1');
+        $res->assertStatus(404);
+    }
 
-    // }
+    // $challenge = $this->create('Games\Challenge', [
+    //     'game_type' => 'text_answere',
+    //     'game_id' => $this->create('Games\GameTextAnswere')->id,
+    //     'playfield_type' => 'city',
+    //     'playfield_id' => $this->create('Playfields\City')->id,
+    // ]);
+
+    // // 'answere' is missing
+    // $body = [
+    //     'challenge_id' => $challenge->id,
+    //     'user_id' => $this->create('User')->id,
+    //     'answere' => 'sadffasfaf adsf afds.',
+    //     'score' => null
+    // ];
+
+
+    
+    /**
+     * @test
+     */
+    public function can_add_a_submission_media_image_to_end_of_submission_collection_of_checked_answere()
+    {
+
+        // 'answere' is missing
+        $old_values = [
+            'challenge_id' => $this->create('Games\Challenge', [
+                'game_type' => 'text_answere',
+                'game_id' => $this->create('Games\GameTextAnswere')->id,
+                'playfield_type' => 'city',
+                'playfield_id' => $this->create('Playfields\City')->id,
+            ])->id,
+            'user_id' => $this->create('User')->id,
+            'answere' => 'sadffasfaf adsf afds.',
+            'score' => 25000
+        ];
+
+        $old_checked_answere = $this->create('AnswereChecked', $old_values);
+        $this->file_factory($old_checked_answere, 'submission', ['submission1', 'submission2']);
+        
+        $files = [
+            'submission' => [
+                UploadedFile::fake()->image('submission3.jpg'),
+                UploadedFile::fake()->image('submission4.jpg'),
+            ]
+        ];
+
+        // When
+        $res = $this->json('PUT','api/answeres/checked/'.$old_checked_answere->id, $files);
+
+        // Then
+        $res->assertStatus(200)
+                    ->assertJsonCount(4, 'data.media_submission'); // assert that 2 images have been added to submission
+
+        // Check if db file media data urls actually exist as files in storage
+        if($stored_header_files_array = $this->spread_media_urls($res->getData()->data->media_submission)){
+            \Storage::disk('test')->assertExists($stored_header_files_array);
+        }
+    }
+
+        /**
+     * @test
+     */
+    public function can_add_a_submission_media_image_to_end_of_submission_collection_of_UNchecked_answere()
+    {
+
+        // 'answere' is missing
+        $old_values = [
+            'challenge_id' => $this->create('Games\Challenge', [
+                'game_type' => 'text_answere',
+                'game_id' => $this->create('Games\GameTextAnswere')->id,
+                'playfield_type' => 'city',
+                'playfield_id' => $this->create('Playfields\City')->id,
+            ])->id,
+            'user_id' => $this->create('User')->id,
+            'answere' => 'sadffasfaf adsf afds.',
+            'score' => null
+        ];
+
+        $old_unchecked_answere = $this->create('AnswereUnchecked', $old_values);
+        $this->file_factory($old_unchecked_answere, 'submission', ['submission1', 'submission2']);
+        
+        $files = [
+            'submission' => [
+                UploadedFile::fake()->image('submission3.jpg'),
+                UploadedFile::fake()->image('submission4.jpg'),
+            ]
+        ];
+
+        // When
+        $res = $this->json('PUT','api/answeres/unchecked/'.$old_unchecked_answere->id, $files);
+
+        // Then
+        $res->assertStatus(200)
+                    ->assertJsonCount(4, 'data.media_submission'); // assert that 2 images have been added to submission
+
+        // Check if db file media data urls actually exist as files in storage
+        if($stored_header_files_array = $this->spread_media_urls($res->getData()->data->media_submission)){
+            \Storage::disk('test')->assertExists($stored_header_files_array);
+        }
+    }
+
+    /**
+     * @test
+     */
+    public function can_update_unchecked_answere_fully_on_each_model_attribute()
+    {
+        // Given
+        $old_values = [
+            'answere' => 'sadffasfaf adsf afds.',
+            'score' => null
+        ];
+
+        $old_relations = [
+            'challenge_id' => $this->create('Games\Challenge', [
+                'game_type' => 'text_answere',
+                'game_id' => $this->create('Games\GameTextAnswere')->id,
+                'playfield_type' => 'city',
+                'playfield_id' => $this->create('Playfields\City')->id,
+            ])->id,
+            'user_id' => $this->create('User')->id,
+        ];
+
+        $old_answere = $this->create('AnswereUnchecked', array_merge($old_values, $old_relations));
+
+        // update every attribute
+        $new_values = [
+            'answere' => 'sadffasfaf adsf afds.',
+            'score' => null
+        ];
+
+        $new_relations = [
+            'challenge_id' => $this->create('Games\Challenge', [
+                'game_type' => 'text_answere',
+                'game_id' => $this->create('Games\GameTextAnswere')->id,
+                'playfield_type' => 'city',
+                'playfield_id' => $this->create('Playfields\City')->id,
+            ])->id,
+            'user_id' => $this->create('User')->id,
+        ];
+
+        // When
+        $response = $this->json('PUT','api/answeres/unchecked/'.$old_answere->id, array_merge($new_values, $new_relations));
+
+        // Then
+        $response->assertStatus(200)
+                    ->assertJsonFragment($new_values);
+                    
+        $this->assertDatabaseHas('answere_uncheckeds', $new_values);
+        $this->assertDatabaseMissing('cities', $old_values);
+            
+    }
+
+        /**
+     * @test
+     */
+    public function can_update_checked_answere_fully_on_each_model_attribute()
+    {
+        // Given
+        $old_values = [
+            'answere' => 'sadffasfaf adsf afds.',
+            'score' => 35000
+        ];
+
+        $old_relations = [
+            'challenge_id' => $this->create('Games\Challenge', [
+                'game_type' => 'text_answere',
+                'game_id' => $this->create('Games\GameTextAnswere')->id,
+                'playfield_type' => 'city',
+                'playfield_id' => $this->create('Playfields\City')->id,
+            ])->id,
+            'user_id' => $this->create('User')->id
+        ];
+
+        $old_answere = $this->create('AnswereChecked', array_merge($old_values, $old_relations));
+
+        // update every attribute
+        $new_values = [
+            'answere' => 'aaaaaaaa',
+            'score' => 000001
+        ];
+
+        $new_relations = [
+            'challenge_id' => $this->create('Games\Challenge', [
+                'game_type' => 'text_answere',
+                'game_id' => $this->create('Games\GameTextAnswere')->id,
+                'playfield_type' => 'city',
+                'playfield_id' => $this->create('Playfields\City')->id,
+            ])->id,
+            'user_id' => $this->create('User')->id,
+        ];
+
+        // When
+        $response = $this->json('PUT','api/answeres/checked/'.$old_answere->id, array_merge($new_values, $new_relations));
+
+        // Then
+        $response->assertStatus(200)
+                    ->assertJsonFragment($new_values);
+                    
+        $this->assertDatabaseHas('answere_checkeds', $new_values);
+        $this->assertDatabaseMissing('answere_checkeds', $old_values);
+            
+    }
+   
+    /**
+     * @test
+     */
+    public function can_update_answere_unchecked_on_a_couple_of_model_attributes()
+    {
+        // Given
+        $old_values = [
+            'challenge_id' => $this->create('Games\Challenge', [
+                'game_type' => 'text_answere',
+                'game_id' => $this->create('Games\GameTextAnswere')->id,
+                'playfield_type' => 'city',
+                'playfield_id' => $this->create('Playfields\City')->id,
+            ])->id,
+            'user_id' => $this->create('User')->id
+        ];
+
+        $old_values_to_remain_after_update = [
+            'answere' => 'sadffasfaf adsf afds.',
+            'score' => null
+        ];
+
+        $old_answere = $this->create('AnswereUnchecked', array_merge($old_values, $old_values_to_remain_after_update));
+
+        // update every attribute
+        $new_values = [
+            'challenge_id' => $this->create('Games\Challenge', [
+                'game_type' => 'text_answere',
+                'game_id' => $this->create('Games\GameTextAnswere')->id,
+                'playfield_type' => 'city',
+                'playfield_id' => $this->create('Playfields\City')->id,
+            ])->id,
+            'user_id' => $this->create('User')->id
+        ];
+
+        // When
+        $response = $this->json('PUT','api/answeres/unchecked/'.$old_answere->id, $new_values);
+
+        // Then
+        $response->assertStatus(200)
+                 ->assertJsonFragment($old_values_to_remain_after_update);
+                    
+        $this->assertDatabaseHas('answere_uncheckeds', array_merge($new_values, $old_values_to_remain_after_update));
+        $this->assertDatabaseMissing('answere_uncheckeds', $old_values);
+
+    }
+
+
+    /**
+     * @test
+     */
+    public function will_fail_with_422_when_relational_challenge_does_not_exist_CHECKED_ANSWERE()
+    {
+                // Given
+                $old_values = [
+                    'challenge_id' => $this->create('Games\Challenge', [
+                        'game_type' => 'text_answere',
+                        'game_id' => $this->create('Games\GameTextAnswere')->id,
+                        'playfield_type' => 'city',
+                        'playfield_id' => $this->create('Playfields\City')->id,
+                    ])->id,
+                    'user_id' => $this->create('User')->id,
+                    'answere' => 'sadffasfaf adsf afds.',
+                    'score' => 35000
+                ];
+        
+                $old_answere = $this->create('AnswereChecked', $old_values);
+        
+                // update relational challenge does not exist in database
+                $new_values = [
+                    'challenge_id' => -1
+                ];
+        
+                // When
+                $response = $this->json('PUT','api/answeres/checked/'.$old_answere->id, $new_values);
+        
+                // Then
+                $response->assertStatus(422);
+                            
+                $this->assertDatabaseHas('answere_checkeds', $old_values);
+                $this->assertDatabaseMissing('answere_checkeds', $new_values);
+    }
+
+    /**
+     * @test
+     */
+    public function will_fail_with_422_when_relational_challenge_does_not_exist_UNCHECKED_ANSWERE()
+    {
+                // Given
+                $old_values = [
+                    'challenge_id' => $this->create('Games\Challenge', [
+                        'game_type' => 'text_answere',
+                        'game_id' => $this->create('Games\GameTextAnswere')->id,
+                        'playfield_type' => 'city',
+                        'playfield_id' => $this->create('Playfields\City')->id,
+                    ])->id,
+                    'user_id' => $this->create('User')->id,
+                    'answere' => 'sadffasfaf adsf afds.',
+                    'score' => null
+                ];
+        
+                $old_answere = $this->create('AnswereUnchecked', $old_values);
+        
+                // update relational challenge does not exist in database
+                $new_values = [
+                    'challenge_id' => -1
+                ];
+        
+                // When
+                $response = $this->json('PUT','api/answeres/unchecked/'.$old_answere->id, $new_values);
+        
+                // Then
+                $response->assertStatus(422);
+                            
+                $this->assertDatabaseHas('answere_uncheckeds', $old_values);
+                $this->assertDatabaseMissing('answere_uncheckeds', $new_values);
+    }
+
+
+    /**
+     * @test
+     */
+    public function will_fail_with_422_when_relational_user_does_not_exist_CHECKED_ANSWERE()
+    {
+                // Given
+                $old_values = [
+                    'challenge_id' => $this->create('Games\Challenge', [
+                        'game_type' => 'text_answere',
+                        'game_id' => $this->create('Games\GameTextAnswere')->id,
+                        'playfield_type' => 'city',
+                        'playfield_id' => $this->create('Playfields\City')->id,
+                    ])->id,
+                    'user_id' => $this->create('User')->id,
+                    'answere' => 'sadffasfaf adsf afds.',
+                    'score' => 35000
+                ];
+        
+                $old_answere = $this->create('AnswereChecked', $old_values);
+        
+                // update relational user does not exist in database
+                $new_values = [
+                    'user_id' => -1
+                ];
+        
+                // When
+                $response = $this->json('PUT','api/answeres/checked/'.$old_answere->id, $new_values);
+        
+                // Then
+                $response->assertStatus(422);
+                            
+                $this->assertDatabaseHas('answere_checkeds', $old_values);
+                $this->assertDatabaseMissing('answere_checkeds', $new_values);
+    }
+
+
+    /**
+     * @test
+     */
+    public function will_fail_with_422_when_relational_user_does_not_exist_UNCHECKED_ANSWERE()
+    {
+                // Given
+                $old_values = [
+                    'challenge_id' => $this->create('Games\Challenge', [
+                        'game_type' => 'text_answere',
+                        'game_id' => $this->create('Games\GameTextAnswere')->id,
+                        'playfield_type' => 'city',
+                        'playfield_id' => $this->create('Playfields\City')->id,
+                    ])->id,
+                    'user_id' => $this->create('User')->id,
+                    'answere' => 'sadffasfaf adsf afds.',
+                    'score' => null
+                ];
+        
+                $old_answere = $this->create('AnswereUnchecked', $old_values);
+        
+                // update relational user does not exist in database
+                $new_values = [
+                    'user_id' => -1
+                ];
+        
+                // When
+                $response = $this->json('PUT','api/answeres/unchecked/'.$old_answere->id, $new_values);
+        
+                // Then
+                $response->assertStatus(422);
+                            
+                $this->assertDatabaseHas('answere_uncheckeds', $old_values);
+                $this->assertDatabaseMissing('answere_uncheckeds', $new_values);
+    }
+
+
+    /**
+     * @test
+     */
+    public function will_fail_with_error_422_when_body_data_is_of_wrong_type_ANSWERE_CHECKED()
+    {
+        // Given
+        $old_values = [
+            'challenge_id' => $this->create('Games\Challenge', [
+                'game_type' => 'text_answere',
+                'game_id' => $this->create('Games\GameTextAnswere')->id,
+                'playfield_type' => 'city',
+                'playfield_id' => $this->create('Playfields\City')->id,
+            ])->id,
+            'user_id' => $this->create('User')->id,
+            'answere' => 'sadffasfaf adsf afds.',
+            'score' => 35000
+        ];
+
+        $old_answere = $this->create('AnswereChecked', $old_values);
+
+        // 'answere' is of wrong type
+        $new_values = [
+            'challenge_id' => $this->create('Games\Challenge', [
+                'game_type' => 'text_answere',
+                'game_id' => $this->create('Games\GameTextAnswere')->id,
+                'playfield_type' => 'city',
+                'playfield_id' => $this->create('Playfields\City')->id,
+            ])->id,
+            'user_id' => $this->create('User')->id,
+            'answere' => 0000001,
+            'score' => 000001
+        ];
+
+        // When
+        $response = $this->json('PUT','api/answeres/checked/'.$old_answere->id, $new_values);
+
+        // Then
+        $response->assertStatus(422);
+                    
+        $this->assertDatabaseHas('answere_checkeds', $old_values);
+        $this->assertDatabaseMissing('answere_checkeds', $new_values);
+            
+
+    }
+
+    /**
+     * @test
+     */
+    public function will_fail_with_error_422_when_body_data_is_of_wrong_type_ANSWERE_UNCHECKED()
+    {
+        // Given
+        $old_values = [
+            'challenge_id' => $this->create('Games\Challenge', [
+                'game_type' => 'text_answere',
+                'game_id' => $this->create('Games\GameTextAnswere')->id,
+                'playfield_type' => 'city',
+                'playfield_id' => $this->create('Playfields\City')->id,
+            ])->id,
+            'user_id' => $this->create('User')->id,
+            'answere' => 'sadffasfaf adsf afds.',
+            'score' => null
+        ];
+
+        $old_answere = $this->create('AnswereUnchecked', $old_values);
+
+        // 'answere' is of wrong type
+        $new_values = [
+            'challenge_id' => $this->create('Games\Challenge', [
+                'game_type' => 'text_answere',
+                'game_id' => $this->create('Games\GameTextAnswere')->id,
+                'playfield_type' => 'city',
+                'playfield_id' => $this->create('Playfields\City')->id,
+            ])->id,
+            'user_id' => $this->create('User')->id,
+            'answere' => 0000001,
+            'score' => null
+        ];
+
+        // When
+        $response = $this->json('PUT','api/answeres/unchecked/'.$old_answere->id, $new_values);
+
+        // Then
+        $response->assertStatus(422);
+                    
+        $this->assertDatabaseHas('answere_uncheckeds', $old_values);
+        $this->assertDatabaseMissing('answere_uncheckeds', $new_values);
+            
+
+    }
 }
 
 trait Delete

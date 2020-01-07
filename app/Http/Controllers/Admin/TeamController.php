@@ -114,4 +114,72 @@ class TeamController extends Controller
                                 ->response()
                                 ->setStatusCode(201);
     }
+
+
+    public function update(Request $request, $id)
+    {
+        $request->validate([
+            'trip_id' => 'integer',
+            'name' => 'string',
+            'color' => 'string',
+            'score' => 'numeric',
+
+            'users.*' => 'numeric'
+        ]);
+
+
+        // validate badge file
+        if($request->badge){
+            // must be of type .jpg or .png
+            $res = $request->validate([
+                "badge.*"  => "image",
+            ]);
+        }
+
+        // check if relational data actually exists
+        if($request->trip_id){
+            if(!Trip::find($request->trip_id)){
+                // Error: can't create answere for non existent challenge!
+                return response()->json(['error' => 'Can not add non existant relational Trip (id: '.$request->trip_id.') to Team'], 422);
+            }
+        }
+
+        // check if relational users actually exist
+        if($request->users){
+            foreach ($request->users as $user_id) {
+                if(!User::find($user_id)){
+                    // Error: can't create answere for non existent challenge!
+                    return response()->json(['error' => 'Can not create answere for non existing User'], 422);
+                }
+            }
+        }
+
+        $team = Team::findOrFail($id);
+
+        $team->update($request->except(['users', 'badge']));
+
+        //Attach User relationships to Team
+        if($request->users){
+            foreach ($request->users as $user_id) {
+                $team->users()->save(
+                    User::find($user_id)
+                );
+            }
+        }
+
+        // Insert Media files
+        if($request->has('badge')){
+            // insert the media file.
+            \MediaHelper::model_insert(
+                $team, // model
+                $request->badge, // media (single or array)
+                'badge' // collection name
+            );
+        }
+
+        // Return resource
+        return (new TeamResource($team))
+                                ->response()
+                                ->setStatusCode(200);
+    }
 }

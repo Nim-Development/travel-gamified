@@ -27,7 +27,7 @@ class Route extends JsonResource
             'hours' => (double)$this->hours,
             'difficulty' => (integer)$this->difficulty,
             'nature' => (integer)$this->nature,
-            'highway' => (integer)$this->nature,
+            'highway' => (integer)$this->highway,
             'transit' => (!$transit) ? null : $this->insert_playfield('transit', $this->transit),
             'created_at' => (string)$this->created_at,
         ];

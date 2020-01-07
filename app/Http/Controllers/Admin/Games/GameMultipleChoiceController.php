@@ -142,4 +142,61 @@ class GameMultipleChoiceController extends Controller
                                         ->setStatusCode(201);
     }
 
+    public function update(Request $request, $id)
+    {
+        // Nothing required, just data types
+        $request->validate([
+            'title' => 'string',
+            'content_text' => 'string',
+            'correct_answere' => 'string',
+            'points_min' => 'numeric',
+            'points_max' => 'numeric',
+
+            'options.*.sort_order' => 'integer|nullable',
+            'options.*.text' => 'string'
+        ]);
+
+        // find or fail with 422
+        $game = GameMultipleChoice::findOrFail($id);
+
+        // perform update ( ::nk handle exception )
+        $game->update($request->except(['header', 'media_content', 'options']));
+
+        // Create options relationships
+        if($request->options){
+
+            $request->validate([
+                'options.*.sort_order' => 'required|integer|nullable',
+                'options.*.text' => 'required|string'
+            ]);
+
+            foreach($request->options as $option){
+                $game->options()->create([
+                    'sort_order' => $option['sort_order'],
+                    'text' => $option['text']
+                ]);
+            }
+        }
+
+        if($request->header){
+            \MediaHelper::model_insert(
+                $game, // model
+                $request->header, // media (single or array)
+                'header' // collection name
+            );
+        }
+
+        if($request->media_content){
+            \MediaHelper::model_insert(
+                $game,
+                $request->media_content,
+                'media'
+            );
+        }
+
+        // Return as resource
+        return (new GameMultipleChoiceResource($game))
+            ->response()
+            ->setStatusCode(200);
+    }
 }

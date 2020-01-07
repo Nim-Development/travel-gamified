@@ -88,4 +88,43 @@ class GameTextAnswereController extends Controller
                                         ->response()
                                         ->setStatusCode(201);
     }
+
+    public function update(Request $request, $id)
+    {
+        // Nothing required, just data types
+        $request->validate([
+            'title' => 'string',
+            'content_text' => 'string',
+            'correct_answere' => 'string',
+            'points_min' => 'numeric',
+            'points_max' => 'numeric'
+        ]);
+
+        // find or fail with 422
+        $game = GameTextAnswere::findOrFail($id);
+
+        // perform update ( ::nk handle exception )
+        $game->update($request->except(['header', 'media_content']));
+
+        if($request->header){
+            \MediaHelper::model_insert(
+                $game, // model
+                $request->header, // media (single or array)
+                'header' // collection name
+            );
+        }
+
+        if($request->media_content){
+            \MediaHelper::model_insert(
+                $game,
+                $request->media_content,
+                'media'
+            );
+        }
+
+        // Return as resource
+        return (new GameTextAnswereResource($game))
+            ->response()
+            ->setStatusCode(200);
+    }
 }

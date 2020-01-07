@@ -1061,39 +1061,215 @@ trait Post
 
 trait Put
 {
+    // $body = [
+    //     'tour_id' => $this->create('Tour')->id,
+    //     'step' => 1,
+    //     'duration' => 12.34,
+    //     'playfield_type' => 'city',
+    //     'playfield_id' => $this->create('Playfields\City')->id
+    // ];
+
+    
     /**
      * @test
      */
-    // public function will_fail_with_a_404_if_the_itinerary_we_want_to_update_is_not_found()
-    // {
-    //     $res = $this->json('PUT', 'api/itineraries/-1');
-    //     $res->assertStatus(404);
-    // }
+    public function will_fail_with_a_404_if_the_itinerary_we_want_to_update_is_not_found()
+    {
+        $res = $this->json('PUT', 'api/itineraries/-1');
+        $res->assertStatus(404);
+    }
 
     /**
      * @test
      */
-    // public function can_update_a_itinerary()
-    // {
-    //     // Given
-    //     $old_itinerary = $this->create('Itinerary');
+    public function can_update_itinerary_fully_on_each_model_attribute()
+    {
 
-    //     $new_itinerary = [
-    //         'name' => $old_itinerary->name.'_update',
-    //         'slug' => $old_itinerary->slug.'_update',
-    //         'price' => $old_itinerary->price + 3
-    //     ];
+        $old_values = [
+            'tour_id' => $this->create('Tour')->id,
+            'step' => 1,
+            'duration' => 12.34,
+            'playfield_type' => 'city',
+            'playfield_id' => $this->create('Playfields\City')->id
+        ];
 
-    //     // When
-    //     $response = $this->json('PUT',
-    //                             'api/itineraries/'.$old_itinerary->id,
-    //                             $new_itinerarie);
-    //     // Then
-    //     $response->assertStatus(200)
-    //              ->assertJsonFragment($new_itinerarie);
-    //     $this->assertDatabaseHas('itineraries', $new_itinerarie);
+        $old_itinerary = $this->create('Itinerary', $old_values);
 
-    // }
+
+        // update every attribute
+        $new_values = [
+            'step' => 000001,
+            'duration' => 00.02,
+        ];
+
+        $relations = [
+            'tour_id' => $this->create('Tour')->id,
+            'playfield_type' => 'city',
+            'playfield_id' => $this->create('Playfields\City')->id
+        ];
+
+        // When
+        $response = $this->json('PUT','api/itineraries/'.$old_itinerary->id, array_merge($new_values, $relations));
+
+        // Then
+        $response->assertStatus(200)
+                    ->assertJsonFragment($new_values);
+                    
+        $this->assertDatabaseHas('itineraries', $new_values);
+        $this->assertDatabaseMissing('itineraries', $old_values);
+            
+    }
+   
+    /**
+     * @test
+     */
+    public function can_update_itinerary_on_a_couple_of_model_attributes()
+    {
+        $old_values = [
+            'step' => 1,
+            'duration' => 12.34,
+        ];
+
+        $old_values_to_remain_after_update = [
+            'tour_id' => $this->create('Tour')->id,
+            'playfield_type' => 'city',
+            'playfield_id' => $this->create('Playfields\City')->id
+        ];
+
+        $old_itinerary = $this->create('Itinerary', array_merge($old_values, $old_values_to_remain_after_update));
+
+
+        // update every attribute
+        $new_values = [
+            'step' => 000001,
+            'duration' => 00.02,
+        ];
+
+        // When
+        $response = $this->json('PUT','api/itineraries/'.$old_itinerary->id, $new_values);
+
+        // Then
+        $response->assertStatus(200)
+                    ->assertJsonFragment($new_values);
+                    
+        $this->assertDatabaseHas('itineraries', array_merge($new_values, $old_values_to_remain_after_update));
+        $this->assertDatabaseMissing('itineraries', $old_values);
+    }
+
+    /**
+     * @test
+     */
+    public function will_fail_with_error_422_when_body_data_is_of_wrong_type()
+    {
+        $old_values = [
+            'tour_id' => $this->create('Tour')->id,
+            'step' => 1,
+            'duration' => 12.34,
+            'playfield_type' => 'city',
+            'playfield_id' => $this->create('Playfields\City')->id
+        ];
+
+        $old_itinerary = $this->create('Itinerary', $old_values);
+
+
+        // 'step' is of wrong data type
+        $new_values = [
+            'step' => 'aaaaaaaa',
+            'duration' => 00.02,
+        ];
+
+        $relations = [
+            'tour_id' => $this->create('Tour')->id,
+            'playfield_type' => 'city',
+            'playfield_id' => $this->create('Playfields\City')->id
+        ];
+
+        // When
+        $response = $this->json('PUT','api/itineraries/'.$old_itinerary->id, array_merge($new_values, $relations));
+
+        // Then
+        $response->assertStatus(422);
+                    
+        $this->assertDatabaseHas('itineraries', $old_values);
+        $this->assertDatabaseMissing('itineraries', $new_values);
+    }
+
+    /**
+     * @test
+     */
+    public function will_fail_with_error_422_relational_tour_does_not_exist()
+    {
+        $old_values = [
+            'tour_id' => $this->create('Tour')->id,
+            'step' => 1,
+            'duration' => 12.34,
+            'playfield_type' => 'city',
+            'playfield_id' => $this->create('Playfields\City')->id
+        ];
+
+        $old_itinerary = $this->create('Itinerary', $old_values);
+
+        // update every attribute
+        $new_values = [
+            'step' => 000001,
+            'duration' => 00.02,
+        ];
+
+        // tour_id does not exist
+        $relations = [
+            'tour_id' => -1,
+            'playfield_type' => 'city',
+            'playfield_id' => $this->create('Playfields\City')->id
+        ];
+
+        // When
+        $response = $this->json('PUT','api/itineraries/'.$old_itinerary->id, array_merge($new_values, $relations));
+
+        // Then
+        $response->assertStatus(422);
+                    
+        $this->assertDatabaseHas('itineraries', $old_values);
+        $this->assertDatabaseMissing('itineraries', $new_values);
+    }
+
+    /**
+     * @test
+     */
+    public function will_fail_with_error_422_relational_playfield_does_not_exist()
+    {
+        $old_values = [
+            'tour_id' => $this->create('Tour')->id,
+            'step' => 1,
+            'duration' => 12.34,
+            'playfield_type' => 'city',
+            'playfield_id' => $this->create('Playfields\City')->id
+        ];
+
+        $old_itinerary = $this->create('Itinerary', $old_values);
+
+        // update every attribute
+        $new_values = [
+            'step' => 000001,
+            'duration' => 00.02,
+        ];
+
+        // playfield does not exist
+        $relations = [
+            'tour_id' => $this->create('Tour')->id,
+            'playfield_type' => 'city',
+            'playfield_id' => -1
+        ];
+
+        // When
+        $response = $this->json('PUT','api/itineraries/'.$old_itinerary->id, array_merge($new_values, $relations));
+
+        // Then
+        $response->assertStatus(422);
+                    
+        $this->assertDatabaseHas('itineraries', $old_values);
+        $this->assertDatabaseMissing('itineraries', $new_values);
+    }
+
 }
 
 trait Delete

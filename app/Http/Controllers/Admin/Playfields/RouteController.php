@@ -75,5 +75,38 @@ class RouteController extends Controller
                                 ->response()
                                 ->setStatusCode(201);
     }
+    
+    public function update(Request $request, $id)
+    {
+        // Nothing required, just data types
+        $request->validate([
+            'transit_id' => 'numeric',
+            'name' => 'string',
+            'maps_url' => 'string',
+            'kilometers' => 'numeric',
+            'hours' => 'numeric',
+            'difficulty' => 'numeric',
+            'nature' => 'numeric',
+            'highway' => 'integer'
+        ]);
+        
+        // find or fail with 422
+        $route = Route::findOrFail($id);
+
+        // Check if relational transit_id actually exists in database
+        if($request->transit_id){
+            if(!Transit::find($request->transit_id)){
+                return response()->json(['error' => 'Can not add a non existing Transit (id: '.$request->transit_id.') as relationship to Route.'] ,422);
+            }
+        }
+
+        // perform update ( ::nk handle exception )
+        $route->update($request->all());
+
+        // Return as resource
+        return (new RouteResource($route))
+            ->response()
+            ->setStatusCode(200);
+    }
 
 }

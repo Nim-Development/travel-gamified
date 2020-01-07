@@ -541,38 +541,208 @@ trait Post
 
 trait Put
 {
-    // /**
-    //  * @test
-    //  */
-    // public function will_fail_with_a_404_if_the_game_we_want_to_update_is_not_found()
-    // {
-    //     $res = $this->json('PUT', 'api/games/-1');
-    //     $res->assertStatus(404);
-    // }
+    /**
+     * @test
+     */
+    public function will_fail_with_a_404_if_the_text_answere_game_we_want_to_update_is_not_found()
+    {
+        $res = $this->json('PUT', 'api/games/text_answere/-1');
+        $res->assertStatus(404);
+    }
 
-    // /**
-    //  * @test
-    //  */
-    // public function can_update_a_game()
-    // {
-    //     // Given
-    //     $old_game = $this->create('Games\Game');
+    /**
+     * @test
+     */
+    public function can_add_a_header_image_to_end_of_media_collection_from_game_text_answere()
+    {
+        // Given
+        $old_values = [
+            'title' => 'dsfsdvafs',
+            'content_text' => 'fas af afs asdasd as',
+            'correct_answere' => 'fsadfafa fas as dfasdfas asdfas dfasfa das',
+            'points_min' => 123423,
+            'points_max' => 123456
+        ];
 
-    //     $new_game = [
-    //         'name' => $old_game->name.'_update',
-    //         'slug' => $old_game->slug.'_update',
-    //         'price' => $old_game->price + 3
-    //     ];
+        $old_game = $this->create('Games\GameTextAnswere', $old_values);
 
-    //     // When
-    //     $response = $this->json('PUT',
-    //                             'api/games/'.$old_game->id,
-    //                             $new_game);
-    //     // Then
-    //     $response->assertStatus(200)
-    //              ->assertJsonFragment($new_game);
-    //     $this->assertDatabaseHas('games', $new_game);
-    // }
+        // attach media
+        $this->file_factory($old_game, 'header', ['header1', 'header2']);
+        
+        $files = [
+            'header' => [
+                UploadedFile::fake()->image('header3.jpg'),
+                UploadedFile::fake()->image('header4.jpg'),
+            ]
+        ];
+
+        // When
+        $res = $this->json('PUT','api/games/text_answere/'.$old_game->id, $files);
+
+        // Then
+        $res->assertStatus(200)
+                    ->assertJsonCount(4, 'data.header'); // assert that 2 images have been added to header
+
+        // Check if db file media data urls actually exist as files in storage
+        if($stored_header_files_array = $this->spread_media_urls($res->getData()->data->header)){
+            \Storage::disk('test')->assertExists($stored_header_files_array);
+        }
+    }
+    
+    /**
+     * @test
+     */
+    public function can_add_a_media_image_to_end_of_media_collection_from_game_text_answere()
+    {
+        // Given
+        $old_values = [
+            'title' => 'dsfsdvafs',
+            'content_text' => 'fas af afs asdasd as',
+            'correct_answere' => 'fsadfafa fas as dfasdfas asdfas dfasfa das',
+            'points_min' => 123423,
+            'points_max' => 123456
+        ];
+
+        $old_game = $this->create('Games\GameTextAnswere', $old_values);
+
+        // attach media
+        $this->file_factory($old_game, 'media', ['media1', 'media2']);
+        
+        $files = [
+            'media_content' => [
+                UploadedFile::fake()->image('media3.jpg'),
+                UploadedFile::fake()->image('media4.jpg'),
+            ]
+        ];
+
+        // When
+        $res = $this->json('PUT','api/games/text_answere/'.$old_game->id, $files);
+
+
+        // Then
+        $res->assertStatus(200)
+                    ->assertJsonCount(4, 'data.media_content'); // assert that 2 images have been added to header
+                    
+        // Check if db file media data urls actually exist as files in storage
+        if($stored_header_files_array = $this->spread_media_urls($res->getData()->data->media_content)){
+            \Storage::disk('test')->assertExists($stored_header_files_array);
+        }
+    }
+
+    /**
+     * @test
+     */
+    public function can_update_game_text_answere_fully_on_each_model_attribute()
+    {
+
+        // Given
+        $old_values = [
+            'title' => 'dsfsdvafs',
+            'content_text' => 'fas af afs asdasd as',
+            'correct_answere' => 'fsadfafa fas as dfasdfas asdfas dfasfa das',
+            'points_min' => 123423,
+            'points_max' => 123456
+        ];
+
+        $old_game = $this->create('Games\GameTextAnswere', $old_values);
+
+        // update every attribute
+        $new_values = [
+            'title' => 'aaaaaaa',
+            'content_text' => 'aaaa aaaaa aaaaa',
+            'correct_answere' => 'aaa aaaa aaaaa aaaaa',
+            'points_min' => 000001,
+            'points_max' => 000002
+        ];
+
+        // When
+        $response = $this->json('PUT','api/games/text_answere/'.$old_game->id, $new_values);
+
+        // Then
+        $response->assertStatus(200)
+                    ->assertJsonFragment($new_values);
+                    
+        $this->assertDatabaseHas('game_text_answeres', $new_values);
+        $this->assertDatabaseMissing('game_text_answeres', $old_values);
+            
+    }
+   
+    /**
+     * @test
+     */
+    public function can_update_game_text_answere_on_a_couple_of_model_attributes()
+    {
+        
+        // Given
+        $old_values_to_be_updated = [
+            'title' => 'dsfsdvafs',
+            'content_text' => 'fas af afs asdasd as',
+            'correct_answere' => 'fsadfafa fas as dfasdfas asdfas dfasfa das',
+        ];
+
+        $old_values_to_remain_after_update = [
+            'points_min' => 123423,
+            'points_max' => 123456
+        ];
+
+        $old_game = $this->create('Games\GameTextAnswere', array_merge($old_values_to_be_updated, $old_values_to_remain_after_update));
+
+        // update every attribute
+        $new_values = [
+            'title' => 'aaaaaaa',
+            'content_text' => 'aaaaaaa',
+            'correct_answere' => 'aaaaaaaa',
+        ];
+
+        // When
+        $response = $this->json('PUT','api/games/text_answere/'.$old_game->id, $new_values);
+
+        // Then
+        $response->assertStatus(200)
+                    ->assertJsonFragment(array_merge($new_values, $old_values_to_remain_after_update));
+                    
+        $this->assertDatabaseHas('game_text_answeres', array_merge($new_values, $old_values_to_remain_after_update));
+        $this->assertDatabaseMissing('game_text_answeres', $old_values_to_be_updated);
+
+    }
+
+
+
+    /**
+     * @test
+     */
+    public function will_fail_with_error_422_when_body_data_is_of_wrong_type()
+    {
+        // Given
+        $old_values = [
+            'title' => 'dsfsdvafs',
+            'content_text' => 'fas af afs asdasd as',
+            'correct_answere' => 'fsadfafa fas as dfasdfas asdfas dfasfa das',
+            'points_min' => 123423,
+            'points_max' => 123456
+        ];
+
+        $old_game = $this->create('Games\GameTextAnswere', $old_values);
+
+        // 'title' is of wrong type
+        $new_values = [
+            'title' => 1234567,
+            'content_text' => 'aaaa aaaaa aaaaa',
+            'correct_answere' => 'aaa aaaa aaaaa aaaaa',
+            'points_min' => 000001,
+            'points_max' => 000002
+        ];
+
+        // When
+        $response = $this->json('PUT','api/games/text_answere/'.$old_game->id, $new_values);
+
+        // Then
+        $response->assertStatus(422);
+
+        $this->assertDatabaseHas('game_text_answeres', $old_values);          
+        $this->assertDatabaseMissing('game_text_answeres', $new_values);
+
+    }
 }
 
 trait Delete

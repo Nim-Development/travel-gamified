@@ -17,8 +17,6 @@ class AnswereController extends Controller
     // Collection of all entries
     public function all($type)
     {
-        
-
         switch ($type) {
             case 'checked': # return all from AnswereChecked
                 $all = AnswereChecked::all();
@@ -162,6 +160,78 @@ class AnswereController extends Controller
             
             default:
                 return response()->json(['error' => 'Answere of type: '.$type.' does not exist.'], 400);
+                break;
+        }
+    }
+
+    public function update(Request $request, $type, $id)
+    {
+        $request->validate([
+            'challenge_id' => 'integer',
+            'user_id' => 'integer',
+            'answere' => 'string',
+            'score' => 'nullable'
+        ]);
+
+        // validate submission file
+        if($request->submission){
+            // must be of type .jpg or .png
+            $res = $request->validate([
+                "submission.*"  => "required|image",
+            ]);
+        }
+
+        // check if relational data actually exists
+        if($request->challenge_id){
+            if(!Challenge::find($request->challenge_id)){
+                // Error: can't create answere for non existent challenge!
+                return response()->json(['error' => 'Can not create answere for non existing Challenge'], 422);
+            }
+        }
+
+        // check if relational data actually exists
+        if($request->user_id){
+            if(!User::find($request->user_id)){
+                // Error: can't create answere for non existent challenge!
+                return response()->json(['error' => 'Can not create answere for non existing User'], 422);
+            }
+        }
+
+        switch ($type) {
+            case 'checked':
+                $answere = AnswereChecked::findOrFail($id);
+                $answere->update($request->except(['submission']));
+
+                if($request->submission){
+                    // insert the media file.
+                    \MediaHelper::model_insert(
+                        $answere, // model
+                        $request->submission, // media (single or array)
+                        'submission' // collection name
+                    );
+                }
+
+                return new AnswereCheckedResource($answere);
+                break;
+
+            case 'unchecked':
+                $answere = AnswereUnchecked::findOrFail($id);
+                $answere->update($request->except(['submission']));
+
+                if($request->submission){
+                    // insert the media file.
+                    \MediaHelper::model_insert(
+                        $answere, // model
+                        $request->submission, // media (single or array)
+                        'submission' // collection name
+                    );
+                }
+
+                return new AnswereUncheckedResource($answere);
+                break;                
+
+            default:
+                return response()->json(['error' => 'Answere of type '.$type.' does not exist.'], 404);
                 break;
         }
     }

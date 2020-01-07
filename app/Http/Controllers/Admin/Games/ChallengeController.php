@@ -184,4 +184,79 @@ class ChallengeController extends Controller
         ->setStatusCode(201);
         
     }
+
+    public function update(Request $request, $id)
+    {
+        // Nothing required, just data types
+        $request->validate([
+            'playfield_type' => 'string',
+            'playfield_id' => 'integer',
+            'game_type' => 'string',
+            'game_id' => 'integer'
+        ]);
+
+        // check if given relational playfield actually exists in database
+        if($request->has('playfield_type') && $request->has('playfield_id')){
+            switch ($request->playfield_type) {
+                case 'city':
+                    if(!City::find($request->playfield_id)){
+                        return response()->json(['error' => 'Can not update playfield for non existing City (id: '.$request->playfield_id.')'], 422);
+                    }
+                    break;
+                
+                case 'route':
+                    if(!Route::find($request->playfield_id)){
+                        return response()->json(['error' => 'Can not update playfield for non existing Route (id: '.$request->playfield_id.')'], 422);
+                    }
+                    break;
+
+                case 'transit':
+                    if(!Transit::find($request->playfield_id)){
+                        return response()->json(['error' => 'Can not update playfield for non existing Transit (id: '.$request->playfield_id.')'], 422);
+                    }
+                    break;
+                
+                default:
+                    return response()->json(['error' => 'Playfield of type: '.$request->playfield_type.' does not exist.'], 422);
+                    break;
+            }
+        }
+
+        if($request->has('game_type') && $request->has('game_id')){
+            switch ($request->game_type) {
+                case 'text_answere':
+                    if(!GameTextAnswere::find($request->game_id)){
+                        return response()->json(['error' => 'Can not update game for non existing GameTextAnswere (id: '.$request->game_id.')'], 422);
+                    }
+                    break;
+                
+                case 'media_upload':
+                    if(!Route::find($request->game_id)){
+                        return response()->json(['error' => 'Can not update game for non existing GameMediaUpload (id: '.$request->game_id.')'], 422);
+                    }
+                    break;
+
+                case 'multiple_choice':
+                    if(!GameMultipleChoice::find($request->game_id)){
+                        return response()->json(['error' => 'Can not update game for non existing GameMultipleChoice (id: '.$request->game_id.')'], 422);
+                    }
+                    break;
+                
+                default:
+                    return response()->json(['error' => 'Game of type: '.$request->game_type.' does not exist.'], 422);
+                    break;
+            }
+        }
+
+        // find or fail with 422
+        $challenge = Challenge::findOrFail($id);
+
+        // perform update ( ::nk handle exception )
+        $challenge->update( $request->all());
+
+        // Return as resource
+        return (new ChallengeResource($challenge))
+            ->response()
+            ->setStatusCode(200);
+    }
 }

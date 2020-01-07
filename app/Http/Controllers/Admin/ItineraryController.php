@@ -162,5 +162,63 @@ class ItineraryController extends Controller
         ->setStatusCode(201);
         
     }
+
+
+    public function update(Request $request, $id)
+    {
+        // Nothing required, just data types
+        $request->validate([
+            'tour_id' => 'integer',
+            'step' => 'integer',
+            'duration' => 'numeric',
+            'playfield_type' => 'string',
+            'playfield_id' => 'integer'
+        ]);
+
+        if($request->tour_id){
+            if(!Tour::find($request->tour_id)){
+                return response()->json(['error' => 'Can not create Itinerary for non existing Tour'], 422); 
+            }
+        }
+        
+        if($request->playfield_type && $request->playfield_id){
+            // check if relational playfield row actually exists in database
+            switch ($request->playfield_type) {
+                case 'city':
+                    if(!City::find($request->playfield_id)){
+                        // Error: can't create answere for non existent challenge!
+                        return response()->json(['error' => 'Can not create Itinerary for non existing City'], 422);
+                    }
+                    break;
+
+                case 'route':
+                    if(!Route::find($request->playfield_id)){
+                        // Error: can't create answere for non existent challenge!
+                        return response()->json(['error' => 'Can not create Itinerary for non existing Route'], 422);
+                    }
+                    break;
+
+                case 'transit':
+                    if(!Transit::find($request->playfield_id)){
+                        // Error: can't create answere for non existent challenge!
+                        return response()->json(['error' => 'Can not create Itinerary for non existing Transit'], 422);
+                    }
+                    break;
+                
+                default:
+                    return response()->json(['error' => 'Playfield of type: '.$request->playfield_type.' does not exist.'], 400);
+                    break;
+            }
+        }
+
+        $itinerary = Itinerary::findOrFail($id);
+
+        $itinerary->update($request->all());
+
+        // Return as resource
+        return (new ItineraryResource($itinerary))
+            ->response()
+            ->setStatusCode(200);
+    }
     
 }

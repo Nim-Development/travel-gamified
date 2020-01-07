@@ -88,7 +88,7 @@ trait Get
                         'hours' => $route->hours,
                         'difficulty' => $route->difficulty,
                         'nature' => $route->nature,
-                        'highway' => $route->nature,
+                        'highway' => $route->highway,
                         'transit' => null,
                         'created_at' => (string)$route->created_at,
                     ]
@@ -126,7 +126,7 @@ trait Get
                         'hours' => $route->hours,
                         'difficulty' => $route->difficulty,
                         'nature' => $route->nature,
-                        'highway' => $route->nature,
+                        'highway' => $route->highway,
                         'transit' => [
                             'id' => $transit->id,
                             'type' => 'transit',
@@ -151,7 +151,6 @@ trait Get
                         // 'updated_at' => (string)$route->updated_at
                     ]
                 ]);
-
     }
 
     /**
@@ -450,39 +449,210 @@ trait Post
 trait Put
 {
 
+
+        /**
+     * @test
+     */
+    public function will_fail_with_a_404_if_the_routes_we_want_to_update_is_not_found()
+    {
+        $res = $this->json('PUT', 'api/routes/-1');
+        $res->assertStatus(404);
+    }
+
+
+
     /**
      * @test
      */
-    // public function will_fail_with_a_404_if_the_route_we_want_to_update_is_not_found()
-    // {
-    //     $res = $this->json('PUT', 'api/routes/-1');
-    //     $res->assertStatus(404);
-    // }
+    public function can_update_route_fully_on_each_model_attribute()
+    {
+
+        $old_values = [
+            'transit_id' => $this->create('Playfields\Transit', [
+                'from_city_id' => $this->create('Playfields\City')->id,
+                'to_city_id' => $this->create('Playfields\City')->id,
+            ])->id,
+            'name' => 'asadsff',
+            'maps_url' => 'https://asadssadadsff.sad/sadmkas/asdasd',
+            'kilometers' => 21.23,
+            'hours' => 4.45,
+            'difficulty' => 8,
+            'nature' => 4,
+            'highway' => 6,
+        ];
+
+        $old_route = $this->create('Playfields\Route', $old_values);
+
+
+        // update every attribute
+        $new_values = [
+            'name' => 'aaaaaaaaa',
+            'maps_url' => 'https://aaaaaaaa.aa/aaaaaaa/aaaaa',
+            'kilometers' => 00.001,
+            'hours' => 0.01,
+            'difficulty' => 01,
+            'nature' => 01,
+            'highway' => 01,
+        ];
+
+        $transit_id = [
+            'transit_id' => $this->create('Playfields\Transit', [
+                'from_city_id' => $this->create('Playfields\City')->id,
+                'to_city_id' => $this->create('Playfields\City')->id,
+            ])->id,
+        ];
+
+        // When
+        $response = $this->json('PUT','api/routes/'.$old_route->id, array_merge($transit_id, $new_values));
+
+        // Then
+        $response->assertStatus(200)
+                    ->assertJsonFragment($new_values);
+                    
+        $this->assertDatabaseHas('routes', $new_values);
+        $this->assertDatabaseMissing('routes', $old_values);
+            
+    }
+   
+    /**
+     * @test
+     */
+    public function can_update_city_on_a_couple_of_model_attributes()
+    {
+        $old_values = [
+            'transit_id' => $this->create('Playfields\Transit', [
+                'from_city_id' => $this->create('Playfields\City')->id,
+                'to_city_id' => $this->create('Playfields\City')->id,
+            ])->id,
+            'name' => 'asadsff',
+            'maps_url' => 'https://asadssadadsff.sad/sadmkas/asdasd',
+        ];
+
+        $old_values_to_remain_after_update = [
+            'kilometers' => 21.23,
+            'hours' => 4.45,
+            'difficulty' => 8,
+            'nature' => 4,
+            'highway' => 6
+        ];
+
+        $old_route = $this->create('Playfields\Route', array_merge($old_values, $old_values_to_remain_after_update));
+
+
+        // update every attribute
+        $new_values = [
+            'name' => 'aaaaaaaaa',
+            'maps_url' => 'https://aaaaaaaa.aa/aaaaaaa/aaaaa'
+        ];
+
+        $transit_id = [
+            'transit_id' => $this->create('Playfields\Transit', [
+                'from_city_id' => $this->create('Playfields\City')->id,
+                'to_city_id' => $this->create('Playfields\City')->id,
+            ])->id,
+        ];
+
+        // When
+        $response = $this->json('PUT','api/routes/'.$old_route->id, array_merge($new_values, $transit_id));
+
+        // Then
+        $response->assertStatus(200)
+                    ->assertJsonFragment(array_merge($new_values, $old_values_to_remain_after_update));
+                    
+        $this->assertDatabaseHas('routes', array_merge($new_values, $old_values_to_remain_after_update));
+        $this->assertDatabaseMissing('routes', $old_values);
+    }
 
     /**
      * @test
      */
-    // public function can_update_a_route()
-    // {
-    //     // Given
-    //     $old_route = $this->create('Playfields\Route');
+    public function will_fail_with_error_422_when_body_data_is_of_wrong_type()
+    {
+        $old_values = [
+            'transit_id' => $this->create('Playfields\Transit', [
+                'from_city_id' => $this->create('Playfields\City')->id,
+                'to_city_id' => $this->create('Playfields\City')->id,
+            ])->id,
+            'name' => 'asadsff',
+            'maps_url' => 'https://asadssadadsff.sad/sadmkas/asdasd',
+            'kilometers' => 21.23,
+            'hours' => 4.45,
+            'difficulty' => 8,
+            'nature' => 4,
+            'highway' => 6
+        ];
 
-    //     $new_route = [
-    //         'name' => $old_route->name.'_update',
-    //         'slug' => $old_route->slug.'_update',
-    //         'price' => $old_route->price + 3
-    //     ];
+        $old_route = $this->create('Playfields\Route', $old_values);
 
-    //     // When
-    //     $response = $this->json('PUT',
-    //                             'api/routes/'.$old_route->id,
-    //                             $new_route);
-    //     // Then
-    //     $response->assertStatus(200)
-    //              ->assertJsonFragment($new_route);
-    //     $this->assertDatabaseHas('Playfields\Routes', $new_route);
+        // 'name' is of wrong type
+        $new_values = [
+            'transit_id' => $this->create('Playfields\Transit', [
+                'from_city_id' => $this->create('Playfields\City')->id,
+                'to_city_id' => $this->create('Playfields\City')->id,
+            ])->id,
+            'name' => 000001,
+            'maps_url' => 'https://aaaaaaaa.aa/aaaaaaa/aaaaa',
+            'kilometers' => 00.001,
+            'hours' => 0.01,
+            'difficulty' => 01,
+            'nature' => 01,
+            'highway' => 01,
+        ];
 
-    // }
+        // When
+        $response = $this->json('PUT','api/routes/'.$old_route->id, $new_values);
+
+        // Then
+        $response->assertStatus(422);
+                    
+        $this->assertDatabaseHas('routes', $old_values);
+        $this->assertDatabaseMissing('routes', $new_values);
+
+    }
+
+        /**
+     * @test
+     */
+    public function will_fail_with_error_422_relational_transit_does_not_exist()
+    {
+        $old_values = [
+            'transit_id' => $this->create('Playfields\Transit', [
+                'from_city_id' => $this->create('Playfields\City')->id,
+                'to_city_id' => $this->create('Playfields\City')->id,
+            ])->id,
+            'name' => 'asadsff',
+            'maps_url' => 'https://asadssadadsff.sad/sadmkas/asdasd',
+            'kilometers' => 21.23,
+            'hours' => 4.45,
+            'difficulty' => 8,
+            'nature' => 4,
+            'highway' => 6,
+        ];
+
+        $old_route = $this->create('Playfields\Route', $old_values);
+
+        // 'transit_id' is of -1 whish clearly doesn't exist
+        $new_values = [
+            'transit_id' => -1,
+            'name' => 'aaaaa',
+            'maps_url' => 'https://aaaaaaaa.aa/aaaaaaa/aaaaa',
+            'kilometers' => 00.001,
+            'hours' => 0.01,
+            'difficulty' => 01,
+            'nature' => 01,
+            'highway' => 01,
+        ];
+
+        // When
+        $response = $this->json('PUT','api/routes/'.$old_route->id, $new_values);
+
+        // Then
+        $response->assertStatus(422);
+                    
+        $this->assertDatabaseHas('routes', $old_values);
+        $this->assertDatabaseMissing('routes', $new_values);
+
+    }
 }
 
 trait Delete

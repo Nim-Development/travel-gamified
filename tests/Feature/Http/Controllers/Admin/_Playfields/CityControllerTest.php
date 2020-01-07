@@ -475,39 +475,181 @@ trait Post
 
 trait Put
 {
-    /**
+
+        /**
      * @test
      */
-    // public function can_update_a_city()
-    // {
-    //     // Given
-    //     $old_city= $this->create('City');
-
-    //     $new_city= [
-    //         'name' => $old_city->name.'_update',
-    //         'slug' => $old_city->slug.'_update',
-    //         'price' => $old_city->price + 3
-    //     ];
-
-    //     // When
-    //     $response = $this->json('PUT',
-    //                             'api/cities/'.$old_city->id,
-    //                             $new_citie);
-    //     // Then
-    //     $response->assertStatus(200)
-    //              ->assertJsonFragment($new_citie);
-    //     $this->assertDatabaseHas('cities', $new_citie);
-
-    // }
+    public function will_fail_with_a_404_if_the_city_we_want_to_update_is_not_found()
+    {
+        $res = $this->json('PUT', 'api/cities/-1');
+        $res->assertStatus(404);
+    }
 
     /**
      * @test
      */
-    // public function will_fail_with_a_404_if_the_city_we_want_to_update_is_not_found()
-    // {
-    //     $res = $this->json('PUT', 'api/cities/-1');
-    //     $res->assertStatus(404);
-    // }
+    public function can_add_a_header_image_to_end_of_media_collection_from_game_text_answere()
+    {
+        $old_values = [
+            'short_code' => 'dsf',
+            'name' => 'fas af afs asdasd'
+        ];
+
+        $old_city = $this->create('Playfields\City', $old_values);
+        $this->file_factory($old_city, 'header', ['header1', 'header2']);
+        
+        $files = [
+            'header' => [
+                UploadedFile::fake()->image('header3.jpg'),
+                UploadedFile::fake()->image('header4.jpg'),
+            ]
+        ];
+
+        // When
+        $res = $this->json('PUT','api/cities/'.$old_city->id, $files);
+
+        // Then
+        $res->assertStatus(200)
+                    ->assertJsonCount(4, 'data.header'); // assert that 2 images have been added to header
+
+        // Check if db file media data urls actually exist as files in storage
+        if($stored_header_files_array = $this->spread_media_urls($res->getData()->data->header)){
+            \Storage::disk('test')->assertExists($stored_header_files_array);
+        }
+    }
+    
+    /**
+     * @test
+     */
+    public function can_add_a_media_image_to_end_of_media_collection_from_city()
+    {
+        $old_values = [
+            'short_code' => 'dsf',
+            'name' => 'fas af afs asdasd'
+        ];
+
+        $old_city = $this->create('Playfields\City', $old_values);
+        $this->file_factory($old_city, 'media', ['media1', 'media2']);
+        
+        $files = [
+            'media' => [
+                UploadedFile::fake()->image('media3.jpg'),
+                UploadedFile::fake()->image('media4.jpg'),
+            ]
+        ];
+
+        // When
+        $res = $this->json('PUT','api/cities/'.$old_city->id, $files);
+
+        // Then
+        $res->assertStatus(200)
+                    ->assertJsonCount(4, 'data.media'); // assert that 2 images have been added to header
+
+        // Check if db file media data urls actually exist as files in storage
+        if($stored_header_files_array = $this->spread_media_urls($res->getData()->data->media)){
+            \Storage::disk('test')->assertExists($stored_header_files_array);
+        }
+    }
+
+    /**
+     * @test
+     */
+    public function can_update_city_fully_on_each_model_attribute()
+    {
+        // Given
+        $old_values = [
+            'short_code' => 'dsf',
+            'name' => 'fas af afs asdasd'
+        ];
+
+        $old_city = $this->create('Playfields\City', $old_values);
+
+        // update every attribute
+        $new_values = [
+            'short_code' => 'aaaaaaaaa',
+            'name' => 'aaaaaaaaa'
+        ];
+
+        // When
+        $response = $this->json('PUT','api/cities/'.$old_city->id, $new_values);
+
+        // Then
+        $response->assertStatus(200)
+                    ->assertJsonFragment($new_values);
+                    
+        $this->assertDatabaseHas('cities', $new_values);
+        $this->assertDatabaseMissing('cities', $old_values);
+            
+    }
+   
+    /**
+     * @test
+     */
+    public function can_update_game_text_answere_on_a_couple_of_model_attributes()
+    {
+        
+        // Given
+        $old_values = [
+            'short_code' => 'dsf'
+        ];
+
+        $old_values_to_remain_after_update = [
+            'name' => 'fas af afs asdasd'
+        ];
+
+        $old_city = $this->create('Playfields\City', array_merge($old_values, $old_values_to_remain_after_update));
+
+        // update every attribute
+        $new_values = [
+            'short_code' => 'aaaaaaaaa',
+        ];
+
+        // When
+        $response = $this->json('PUT','api/cities/'.$old_city->id, $new_values);
+
+        // Then
+        $response->assertStatus(200)
+                    ->assertJsonFragment(array_merge($new_values, $old_values_to_remain_after_update));
+                    
+        // Then
+        $response->assertStatus(200)
+                    ->assertJsonFragment(array_merge($new_values, $old_values_to_remain_after_update));
+                    
+        $this->assertDatabaseHas('cities', array_merge($new_values, $old_values_to_remain_after_update));
+        $this->assertDatabaseMissing('cities', $old_values);
+
+    }
+
+    /**
+     * @test
+     */
+    public function will_fail_with_error_422_when_body_data_is_of_wrong_type()
+    {
+        // Given
+        $old_values = [
+            'short_code' => 'dsf',
+            'name' => 'fas af afs asdasd'
+        ];
+
+        $old_game = $this->create('Playfields\City', $old_values);
+
+        // 'short_code' is of wrong type
+        $new_values = [
+            'short_code' => 00001,
+            'name' => 'fas af afs asdasd'
+        ];
+
+        // When
+        $response = $this->json('PUT','api/cities/'.$old_game->id, $new_values);
+
+        // Then
+        $response->assertStatus(422);
+
+        $this->assertDatabaseHas('cities', $old_values);          
+        $this->assertDatabaseMissing('cities', $new_values);
+
+    }
+
 }
 
 trait Delete

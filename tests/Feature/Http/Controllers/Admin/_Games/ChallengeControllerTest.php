@@ -3,16 +3,20 @@
 namespace Tests\Feature\Http\Controllers\Admin\Games\ChallengeController;
 
 use Faker\Factory;
-use Illuminate\Support\Str;
-
-use Illuminate\Foundation\Testing\RefreshDatabase;
-use Illuminate\Foundation\Testing\WithFaker;
 use Tests\TestCase;
+
+use Illuminate\Support\Str;
+use Illuminate\Foundation\Testing\WithFaker;
+use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Foundation\Testing\WithoutMiddleware;
 
 class ChallengeControllerTest extends TestCase
 {
 
     use RefreshDatabase;
+    
+    // disables CSRF token. for PUT requests
+    use WithoutMiddleware;
 
     // Include the different tests (seperated by API type)
     use Get;
@@ -1142,40 +1146,432 @@ trait Post
 
 trait Put
 {
-    // /**
-    //  * @test
-    //  */
-    // public function will_fail_with_a_404_if_the_challenge_we_want_to_update_is_not_found()
-    // {
-    //     $res = $this->json('PUT', 'api/challenges/-1');
-    //     $res->assertStatus(404);
-    // }
+
+    /**
+     * @test
+     */
+    public function will_fail_with_a_404_if_the_challenge_we_want_to_update_is_not_found()
+    {
+        $res = $this->json('PUT', 'api/challenges/-1');
+        $res->assertStatus(404);
+    }
+
+    /**
+     * @test
+     */
+    public function can_update_a_challenge_to_playfield_of_type_city_and_game_of_type_media_upload()
+    {
+        // Given
+        $old_challenge_values = [
+            'playfield_type' => 'route',
+            'playfield_id' => $this->create('Playfields\Route', [], false)->id,
+            'game_type' => 'text_answere',
+            'game_id' => $this->create('Games\GameTextAnswere', [], false)->id
+        ];
+
+        $old_challenge = $this->create('Games\Challenge', $old_challenge_values);
+
+        $playfield = $this->create('Playfields\City', [], false);
+        $game = $this->create('Games\GameMediaUpload', [], false);
+
+        $body = [
+            'playfield_type' => 'city',
+            'playfield_id' => $playfield->id,
+            'game_type' => 'media_upload',
+            'game_id' => $game->id
+        ];
+
+        // When
+        $response = $this->json('PUT','api/challenges/'.$old_challenge->id, $body);
+        // Then
+        $response->assertStatus(200)
+                 ->assertJsonFragment([
+                     'playfield' => [
+                        'id' => $playfield->id,
+                        'type' => 'city',
+                        'short_code' => $playfield->short_code,
+                        'name' => $playfield->name,
+                        'created_at' => (string)$playfield->created_at
+                     ],
+                     'game' => [
+                        'id' => $game->id,
+                        'type' => 'media_upload',
+                        'title' => $game->title,
+                        'content_text' => $game->content_text,
+                        'media_type' => $game->media_type,
+                        'correct_answere' => $game->correct_answere,
+                        'points_min' => (integer)$game->points_min,
+                        'points_max' => (integer)$game->points_max,
+                        'created_at' => (string)$game->created_at
+                     ]
+                 ]);
+        $this->assertDatabaseHas('challenges', $body);
+        $this->assertDatabaseMissing('challenges', $old_challenge_values);
+
+    }
+
+    /**
+     * @test
+     */
+    public function can_update_a_challenge_to_playfield_of_type_route_and_game_of_type_multiple_choice()
+    {
+        // Given
+        $old_challenge_values = [
+            'playfield_type' => 'city',
+            'playfield_id' => $this->create('Playfields\City', [], false)->id,
+            'game_type' => 'text_answere',
+            'game_id' => $this->create('Games\GameTextAnswere', [], false)->id
+        ];
+
+        $old_challenge = $this->create('Games\Challenge', $old_challenge_values);
+
+        $playfield = $this->create('Playfields\Route', [], false);
+        $game = $this->create('Games\GameMultipleChoice', [], false);
+
+        $body = [
+            'playfield_type' => 'route',
+            'playfield_id' => $playfield->id,
+            'game_type' => 'multiple_choice',
+            'game_id' => $game->id
+        ];
+
+        // When
+        $response = $this->json('PUT','api/challenges/'.$old_challenge->id, $body);
+        // Then
+        $response->assertStatus(200)
+                 ->assertJsonFragment([
+                     'playfield' => [
+                        'id' => $playfield->id,
+                        'type' => 'route',
+                        'transit_id' => (integer)$playfield->transit_id,
+                        'name' => $playfield->name,
+                        'maps_url' => $playfield->maps_url,
+                        'kilometers' => (double)$playfield->kilometers,
+                        'hours' => (double)$playfield->hours,
+                        'difficulty' => (integer)$playfield->difficulty,
+                        'nature' => (integer)$playfield->nature,
+                        'highway' => (integer)$playfield->highway,
+                        'created_at' => (string)$playfield->created_at
+                     ],
+                     'game' => [
+                        'id' => $game->id,
+                        'type' => 'multiple_choice',
+                        'title' => $game->title,
+                        'content_text' => $game->content_text,
+                        'correct_answere' => $game->correct_answere,
+                        'points_min' => (integer)$game->points_min,
+                        'points_max' => (integer)$game->points_max,
+                        'created_at' => (string)$game->created_at
+                     ]
+                 ]);
+        $this->assertDatabaseHas('challenges', $body);
+        $this->assertDatabaseMissing('challenges', $old_challenge_values);
+
+    }
+
+    /**
+     * @test
+     */
+    public function can_update_a_challenge_to_playfield_of_type_transit_and_game_of_type_text_answere()
+    {
+        // Given
+        $old_challenge_values = [
+            'playfield_type' => 'city',
+            'playfield_id' => $this->create('Playfields\City', [], false)->id,
+            'game_type' => 'text_answere',
+            'game_id' => $this->create('Games\GameMediaUpload', [], false)->id
+        ];
+        $old_challenge = $this->create('Games\Challenge', $old_challenge_values);
+
+        $playfield = $this->create('Playfields\Transit', [
+            'from_city_id' => $this->create('Playfields\City')->id,
+            'to_city_id' => $this->create('Playfields\City')->id
+        ], false);
+        $game = $this->create('Games\GameTextAnswere', [], false);
+
+        $body = [
+            'playfield_type' => 'transit',
+            'playfield_id' => $playfield->id,
+            'game_type' => 'text_answere',
+            'game_id' => $game->id
+        ];
+
+        // When
+
+        $response = $this->json('PUT','api/challenges/'.$old_challenge->id, $body);
+
+        // Then
+        $response->assertStatus(200)
+                 ->assertJsonFragment([
+                    'playfield' => [
+                        'id' => $playfield->id,
+                        'type' => 'transit',
+                        'name' => $playfield->name,
+                        'from' => [
+                            'id' => $playfield->from->id,
+                            'type' => 'city',
+                            'short_code' => $playfield->from->short_code,
+                            'name' => $playfield->from->name,
+                            'created_at' => (string)$playfield->from->created_at
+                        ],
+                        'to' => [
+                            'id' => $playfield->to->id,
+                            'type' => 'city',
+                            'short_code' => $playfield->to->short_code,
+                            'name' => $playfield->to->name,
+                            'created_at' => (string)$playfield->to->created_at
+                        ],
+                        'created_at' => (string)$playfield->created_at
+                    ],
+                    'game' => [
+                        'id' => $game->id,
+                        'type' => 'text_answere',
+                        'title' => $game->title,
+                        'content_text' => $game->content_text,
+                        'correct_answere' => $game->correct_answere,
+                        'points_min' => (integer)$game->points_min,
+                        'points_max' => (integer)$game->points_max,
+                        'created_at' => (string)$game->created_at
+                    ]
+                ]);
+                 
+        $this->assertDatabaseHas('challenges', $body);
+        $this->assertDatabaseMissing('challenges', $old_challenge_values);
+    }
+
+
+    /**
+     * @test
+     */
+    public function can_update_only_a_playfield_relationship()
+    {
+        $game = $this->create('Games\GameMediaUpload', [], false);
+
+        $old_challenge_values = [
+            'playfield_type' => 'route',
+            'playfield_id' => $this->create('Playfields\Route', [], false)->id,
+            'game_type' => 'media_upload',
+            'game_id' => $game->id
+        ];
+
+        // Given
+        $old_challenge = $this->create('Games\Challenge', $old_challenge_values);
+
+        $playfield = $this->create('Playfields\City', [], false);
+
+        $body = [
+            'playfield_type' => 'city',
+            'playfield_id' => $playfield->id
+        ];
+
+        // When
+        $response = $this->json('PUT','api/challenges/'.$old_challenge->id, $body);
+        // Then
+        $response->assertStatus(200)
+                 ->assertJsonFragment([
+                     'playfield' => [
+                        'id' => $playfield->id,
+                        'type' => 'city',
+                        'short_code' => $playfield->short_code,
+                        'name' => $playfield->name,
+                        'created_at' => (string)$playfield->created_at
+                     ],
+                     'game' => [
+                        'id' => $game->id,
+                        'type' => 'media_upload',
+                        'title' => $game->title,
+                        'content_text' => $game->content_text,
+                        'media_type' => $game->media_type,
+                        'correct_answere' => $game->correct_answere,
+                        'points_min' => (integer)$game->points_min,
+                        'points_max' => (integer)$game->points_max,
+                        'created_at' => (string)$game->created_at
+                     ]
+                 ]);
+        $this->assertDatabaseHas('challenges', $body);
+
+    }
+    
+    /**
+     * @test
+     */
+    public function can_update_only_a_game_relationship()
+    {
+        $playfield = $this->create('Playfields\City', [], false);
+
+        $old_challenge_values = [
+            'playfield_type' => 'city',
+            'playfield_id' => $playfield->id,
+            'game_type' => 'text_answere',
+            'game_id' => $this->create('Games\GameMediaUpload', [], false)->id
+        ];
+
+        // Given
+        $old_challenge = $this->create('Games\Challenge', $old_challenge_values);
+
+        $game = $this->create('Games\GameTextAnswere', [], false);
+
+        $body = [
+            'game_type' => 'text_answere',
+            'game_id' => $game->id
+        ];
+
+        // When
+        $response = $this->json('PUT','api/challenges/'.$old_challenge->id, $body);
+        // Then
+        $response->assertStatus(200)
+                 ->assertJsonFragment([
+                     'playfield' => [
+                        'id' => $playfield->id,
+                        'type' => 'city',
+                        'short_code' => $playfield->short_code,
+                        'name' => $playfield->name,
+                        'created_at' => (string)$playfield->created_at
+                     ],
+                     'game' => [
+                        'id' => $game->id,
+                        'type' => 'text_answere',
+                        'title' => $game->title,
+                        'content_text' => $game->content_text,
+                        'correct_answere' => $game->correct_answere,
+                        'points_min' => (integer)$game->points_min,
+                        'points_max' => (integer)$game->points_max,
+                        'created_at' => (string)$game->created_at
+                     ]
+                 ]);
+
+        $this->assertDatabaseHas('challenges', $body);
+    }
+
+    /**
+     * @test
+     */
+    public function will_fail_with_error_422_when_updating_challenge_playfield_reltionship_with_non_existing_playfield()
+    {
+        // Given
+        $old_challenge_values = [
+            'playfield_type' => 'route',
+            'playfield_id' => $this->create('Playfields\Route', [], false)->id,
+            'game_type' => 'text_answere',
+            'game_id' => $this->create('Games\GameTextAnswere', [], false)->id
+        ];
+
+        $old_challenge = $this->create('Games\Challenge', $old_challenge_values);
+
+        $body = [
+            'playfield_type' => 'city',
+            'playfield_id' => -1,
+            'game_type' => 'media_upload',
+            'game_id' => $this->create('Games\GameMediaUpload', [], false)->id
+        ];
+
+        // When
+        $response = $this->json('PUT','api/challenges/'.$old_challenge->id, $body);
+
+        // Then
+        $response->assertStatus(422);
+        $this->assertDatabaseHas('challenges', $old_challenge_values);
+        $this->assertDatabaseMissing('challenges', $body);
+
+    }
+
+        /**
+     * @test
+     */
+    public function will_fail_with_error_422_when_updating_challenge_game_relationship_with_non_existing_game()
+    {
+        // Given
+        $old_challenge_values = [
+            'playfield_type' => 'route',
+            'playfield_id' => $this->create('Playfields\Route', [], false)->id,
+            'game_type' => 'text_answere',
+            'game_id' => $this->create('Games\GameTextAnswere', [], false)->id
+        ];
+
+        $old_challenge = $this->create('Games\Challenge', $old_challenge_values);
+
+        $body = [
+            'playfield_type' => 'city',
+            'playfield_id' => $this->create('Playfields\City', [], false)->id,
+            'game_type' => 'media_upload',
+            'game_id' => -1
+        ];
+
+        // When
+        $response = $this->json('PUT','api/challenges/'.$old_challenge->id, $body);
+
+        // Then
+        $response->assertStatus(422);
+        $this->assertDatabaseHas('challenges', $old_challenge_values);
+        $this->assertDatabaseMissing('challenges', $body);
+
+    }
+
+        /**
+     * @test
+     */
+    public function will_fail_with_error_422_when_body_data_is_of_wrong_type()
+    {
+        $old_challenge_values =  [
+            'playfield_type' => 'route',
+            'playfield_id' => $this->create('Playfields\Route', [], false)->id,
+            'game_type' => 'text_answere',
+            'game_id' => $this->create('Games\GameTextAnswere', [], false)->id
+        ];
+
+        // Given
+        $old_challenge = $this->create('Games\Challenge', $old_challenge_values);
+
+        // 'playfield_type' is of wrong data type
+        $body = [
+            'playfield_type' => 12345,
+            'playfield_id' => $this->create('Playfields\Route', [], false)->id,
+            'game_type' => 'media_upload',
+            'game_id' => $this->create('Games\GameMediaUpload', [], false)->id
+        ];
+
+        // When
+        $response = $this->json('PUT','api/challenges/'.$old_challenge->id, $body);
+
+        // Then
+        $response->assertStatus(422);
+        $this->assertDatabaseHas('challenges', $old_challenge_values);
+        $this->assertDatabaseMissing('challenges', $body);
+
+    }
 
     // /**
     //  * @test
     //  */
-    // public function can_update_a_challenge()
+    // public function will_fail_with_error_422_is_unknow_attribute_is_send_in_request_body()
     // {
     //     // Given
-    //     $old_challenge = $this->create('Challenge');
+    //     $old_challenge = $this->create('Games\Challenge', [
+    //         'playfield_type' => 'route',
+    //         'playfield_id' => $this->create('Playfields\Route', [], false)->id,
+    //         'game_type' => 'text_answere',
+    //         'game_id' => $this->create('Games\GameTextAnswere', [], false)->id
+    //     ]);
 
-    //     $new_challenge = [
-    //         'name' => $old_challenge->name.'_update',
-    //         'slug' => $old_challenge->slug.'_update',
-    //         'price' => $old_challenge->price + 3
+    //     // 'unkown_attribute' is not allowed
+    //     $body = [
+    //         'unknown_attribute' => 'xxxxxx',
+    //         'playfield_type' => 12345,
+    //         'playfield_id' => $this->create('Playfields\Route', [], false)->id,
+    //         'game_type' => 'media_upload',
+    //         'game_id' => $this->create('Games\GameMediaUpload', [], false)->id
     //     ];
 
     //     // When
-    //     $response = $this->json('PUT',
-    //                             'api/challenges/'.$old_challenge->id,
-    //                             $new_challenge);
+    //     $response = $this->json('PUT','api/challenges/'.$old_challenge->id, $body);
+
+    //     dd($response);
     //     // Then
-    //     $response->assertStatus(200)
-    //              ->assertJsonFragment($new_challenge);
-    //     $this->assertDatabaseHas('challenges', $new_challenge);
+    //     $response->assertStatus(422);
+    //     $this->assertDatabaseHas('challenges', $old_challenge);
+    //     $this->assertDatabaseMissing('challenges', $body);
 
     // }
-
 }
 
 trait Delete

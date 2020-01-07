@@ -500,39 +500,249 @@ trait Post
 
 trait Put
 {
-    /**
-     * @test
-     */
-    // public function will_fail_with_a_404_if_the_trip_we_want_to_update_is_not_found()
-    // {
-    //     $res = $this->json('PUT', 'api/trips/-1');
-    //     $res->assertStatus(404);
-    // }
 
     /**
      * @test
      */
-    // public function can_update_a_trip()
-    // {
-    //     // Given
-    //     $old_trip = $this->create('Trip');
+    public function will_fail_with_a_404_if_the_trip_we_want_to_update_is_not_found()
+    {
+        $res = $this->json('PUT', 'api/trips/-1');
+        $res->assertStatus(404);
+    }
 
-    //     $new_trip = [
-    //         'name' => $old_trip->name.'_update',
-    //         'slug' => $old_trip->slug.'_update',
-    //         'price' => $old_trip->price + 3
-    //     ];
 
-    //     // When
-    //     $response = $this->json('PUT',
-    //                             'api/trips/'.$old_trip->id,
-    //                             $new_trip);
-    //     // Then
-    //     $response->assertStatus(200)
-    //              ->assertJsonFragment($new_trip);
-    //     $this->assertDatabaseHas('trips', $new_trip);
+        /**
+     * @test
+     */
+    public function can_add_a_team_to_the_end_of_existing_teams()
+    {
+        $old_values = [
+            'tour_id' => $this->create('Tour')->id,
+            'name' => 'aad ijasf ijsoadfjoiasd',
+            'timezone' => 'GMT+7'
+        ];
+        $old_date_time = [
+            'start_date_time' => now()
+        ];
 
-    // }
+        $old_trip = $this->create('Trip', array_merge($old_values, $old_date_time));
+
+        // attach 2 teams to trip
+        $this->create('Team', ['trip_id' => $old_trip->id])->id;
+        $this->create('Team', ['trip_id' => $old_trip->id])->id;
+
+
+        // add 2 users
+        $teams = [
+            'teams' => [
+                $this->create('Team')->id,
+                $this->create('Team')->id
+            ]
+        ];
+
+        // When
+        $response = $this->json('PUT','api/trips/'.$old_trip->id, $teams);
+
+        // Then
+        $response->assertStatus(200)
+                    ->assertJsonCount(4, 'data.teams');
+            
+    }
+    
+
+    /**
+     * @test
+     */
+    public function can_update_tour_fully_on_each_model_attribute()
+    {
+        $old_values = [
+            'name' => 'aad ijasf ijsoadfjoiasd',
+            'timezone' => 'GMT+7'
+        ];
+        $old_tour_id = [
+            'tour_id' => $this->create('Tour')->id
+        ];
+        $old_date_time = [
+            'start_date_time' => now()
+        ];
+
+        $old_trip = $this->create('Trip', array_merge(array_merge($old_values, $old_tour_id), $old_date_time));
+
+        // attach 2 teams to trip
+        $this->create('Team', ['trip_id' => $old_trip->id])->id;
+        $this->create('Team', ['trip_id' => $old_trip->id])->id;
+
+        $new_values = [
+            'name' => 'aaaaaaaaaaa',
+            'timezone' => 'aaaaaaaaaa'
+        ];
+        $new_tour_id = [
+            'tour_id' => $this->create('Tour')->id
+        ];
+        $new_date_time = [
+            'start_date_time' => now()
+        ];
+
+        // When
+        $response = $this->json('PUT','api/trips/'.$old_trip->id, array_merge(array_merge($new_values, $new_tour_id), $new_date_time));
+
+        // Then
+        $response->assertStatus(200)
+                    ->assertJsonFragment($new_values);
+                    
+        
+        $this->assertDatabaseHas('trips', $new_values);
+        $this->assertDatabaseMissing('trips', $old_values);
+            
+    }
+   
+    /**
+     * @test
+     */
+    public function can_update_tours_on_a_couple_of_model_attributes()
+    {
+        $old_values = [
+            'name' => 'aad ijasf ijsoadfjoiasd'
+        ];
+
+        $tour_id = [
+            'tour_id' => $this->create('Tour')->id
+        ];
+
+        $old_values_remain_after_update = [
+            'timezone' => 'GMT+7'
+        ];
+
+        $old_date_time = [
+            'start_date_time' => now()
+        ];
+
+        $old_trip = $this->create('Trip', array_merge(array_merge(array_merge($tour_id, $old_values), $old_values_remain_after_update), $old_date_time));
+
+        // attach 2 teams to trip
+        $this->create('Team', ['trip_id' => $old_trip->id])->id;
+        $this->create('Team', ['trip_id' => $old_trip->id])->id;
+
+        $new_values = [
+            'name' => 'aaaaaaaaaaa',
+        ];
+
+        // When
+        $response = $this->json('PUT','api/trips/'.$old_trip->id, $new_values);
+
+        // Then
+        $response->assertStatus(200)
+                    ->assertJsonFragment(array_merge($new_values, $old_values_remain_after_update));
+
+        
+        $this->assertDatabaseHas('trips', $new_values);
+        $this->assertDatabaseMissing('trips', $old_values);
+    }
+
+    /**
+     * @test
+     */
+    public function will_fail_with_error_422_when_relational_tour_does_not_exist()
+    {
+        $old_values = [
+            'tour_id' => $this->create('Tour')->id,
+            'name' => 'aad ijasf ijsoadfjoiasd',
+            'timezone' => 'GMT+7'
+        ];
+        $old_date_time = [
+            'start_date_time' => now()
+        ];
+
+        $old_trip = $this->create('Trip', array_merge($old_values, $old_date_time));
+
+        // tour with id -1 does not exist
+        $new_values = [
+            'tour_id' => -1
+        ];
+
+        // When
+        $response = $this->json('PUT','api/trips/'.$old_trip->id, $new_values);
+
+        // Then
+        $response->assertStatus(422);
+                    
+        $this->assertDatabaseHas('trips', $old_values);
+        $this->assertDatabaseMissing('trips', $new_values);
+            
+    }
+
+    /**
+     * @test
+     */
+    public function will_fail_with_error_422_when_relational_team_does_not_exist()
+    {
+        $old_values = [
+            'tour_id' => $this->create('Tour')->id,
+            'name' => 'aad ijasf ijsoadfjoiasd',
+            'timezone' => 'GMT+7'
+        ];
+        $old_date_time = [
+            'start_date_time' => now()
+        ];
+
+        $old_trip = $this->create('Trip', array_merge($old_values, $old_date_time));
+
+        // attach 2 teams to trip
+        $this->create('Team', ['trip_id' => $old_trip->id])->id;
+        $this->create('Team', ['trip_id' => $old_trip->id])->id;
+
+
+        $new_values = [
+            'name' => 'aaaaaaa aaaa',
+        ];
+        // user with id -1 does not exist
+        $teams = [
+            'teams' => [
+                $this->create('Team')->id,
+                -1
+            ]
+        ];
+
+        // When
+        $response = $this->json('PUT','api/trips/'.$old_trip->id, array_merge($new_values, $teams));
+
+        // Then
+        $response->assertStatus(422);
+
+        $this->assertDatabaseHas('trips', $old_values);
+        $this->assertDatabaseMissing('trips', $new_values);
+    }
+
+    /**
+     * @test
+     */
+    public function will_fail_with_error_422_when_body_data_is_of_wrong_type()
+    {
+        $old_values = [
+            'name' => '1234',
+            'duration' => 22.11
+        ];
+
+        $old_tour = $this->create('Tour', $old_values);
+
+        // 'name' is of wrong type
+        $new_values = [
+            'name' => 'aaaaaaaa'
+        ];
+
+        // When
+        $response = $this->json('PUT','api/tours/'.$old_tour->id, $new_values);
+
+        // Then
+        $response->assertStatus(200)
+                    ->assertJsonFragment($new_values);
+                    
+        $this->assertDatabaseHas('tours', $new_values);
+        $this->assertDatabaseMissing('tours', $old_values);
+            
+    }
+
+
 }
 
 trait Delete

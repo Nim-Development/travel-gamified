@@ -624,39 +624,231 @@ trait Post
 
 trait Put
 {
-        /**
-     * @test
-     */
-    // public function will_fail_with_a_404_if_the_transit_we_want_to_update_is_not_found()
-    // {
-    //     $res = $this->json('PUT', 'api/transits/-1');
-    //     $res->assertStatus(404);
-    // }
     
     /**
      * @test
      */
-    // public function can_update_a_transit()
-    // {
-    //     // Given
-    //     $old_transit = $this->create('Playfields\Transit');
+    public function will_fail_with_a_404_if_the_transit_we_want_to_update_is_not_found()
+    {
+        $res = $this->json('PUT', 'api/transits/-1');
+        $res->assertStatus(404);
+    }
 
-    //     $new_transit = [
-    //         'name' => $old_transit->name.'_update',
-    //         'slug' => $old_transit->slug.'_update',
-    //         'price' => $old_transit->price + 3
-    //     ];
+    /**
+     * @test
+     */
+    public function can_update_transit_fully_on_each_model_attribute()
+    {
+        $old_values = [
+            'name' => 'sdad hx as hh dsuah ihas',
+            'from_city_id' => $this->create('Playfields\City')->id,
+            'to_city_id' => $this->create('Playfields\City')->id
+        ];
+        $old_transit = $this->create('Playfields\Transit', $old_values);
+        // attach 2 routes to transit
+        $this->create('Playfields\Route', ['transit_id' => $old_transit->id]);
+        $this->create('Playfields\Route', ['transit_id' => $old_transit->id]);
 
-    //     // When
-    //     $response = $this->json('PUT',
-    //                             'api/transits/'.$old_transit->id,
-    //                             $new_transit);
-    //     // Then
-    //     $response->assertStatus(200)
-    //              ->assertJsonFragment($new_transit);
-    //     $this->assertDatabaseHas('Playfields\Transits', $new_transit);
+        $new_values = [
+            'name' => 'aaaaaaaaaaaaaaaaaaa'
+        ];
+        $cities = [
+            'from_city_id' => $this->create('Playfields\City')->id,
+            'to_city_id' => $this->create('Playfields\City')->id
+        ];
 
-    // }
+        // When
+        $res = $this->json('PUT','api/transits/'.$old_transit->id, array_merge($new_values, $cities));
+
+        // Then
+        $res->assertStatus(200)
+            ->assertJsonFragment($new_values);
+
+        $this->assertDatabaseHas('transits',$new_values);
+        $this->assertDatabaseMissing('transits',$old_values);
+        
+    }
+    
+    /**
+     * @test
+     */
+    public function can_update_game_text_answere_on_a_couple_of_model_attributes()
+    {
+        
+        $old_values = [
+            'name' => 'sdad hx as hh dsuah ihas',
+        ];
+
+        $old_values_to_remain_after_update = [
+            'from_city_id' => $this->create('Playfields\City')->id,
+            'to_city_id' => $this->create('Playfields\City')->id
+        ];
+
+        $old_transit = $this->create('Playfields\Transit', array_merge($old_values, $old_values_to_remain_after_update));
+
+        $new_values = [
+            'name' => 'aaaaaaaaaaaaaaaaaaa'
+        ];
+
+        // When
+        $res = $this->json('PUT','api/transits/'.$old_transit->id, $new_values);
+
+        // Then
+        $res->assertStatus(200)
+            ->assertJsonFragment(array_merge($new_values)); 
+
+        $this->assertDatabaseHas('transits',array_merge($new_values, $old_values_to_remain_after_update));
+        $this->assertDatabaseMissing('transits',$old_values);
+
+    }
+    
+    /**
+     * @test
+     */
+    public function can_add_new_routes_to_transit()
+    {
+        // Given
+        $old_values = [
+            'name' => 'sdad hx as hh dsuah ihas',
+            'from_city_id' => $this->create('Playfields\City')->id,
+            'to_city_id' => $this->create('Playfields\City')->id
+        ];
+
+        $old_transit = $this->create('Playfields\Transit', $old_values);
+
+        $this->create('Playfields\Route', ['transit_id' => $old_transit->id]);
+        $this->create('Playfields\Route', ['transit_id' => $old_transit->id]);
+
+        // update every attribute
+        $new_values = [
+            'name' => 'sdad hx as hh dsuah ihas',
+            'from_city_id' => $this->create('Playfields\City')->id,
+            'to_city_id' => $this->create('Playfields\City')->id
+        ];
+
+        $routes = [
+            'routes' => [
+                $this->create('Playfields\Route')->id,
+                $this->create('Playfields\Route')->id
+            ] // route ids
+        ];
+
+        // When
+        $response = $this->json('PUT','api/transits/'.$old_transit->id, array_merge($new_values, $routes));
+
+
+        // Then
+        $response->assertStatus(200)
+                    ->assertJsonCount(4, 'data.routes');
+                
+            
+    }
+
+
+
+    /**
+     * @test
+     */
+    public function will_fail_with_error_422_if_relational_city_does_not_exist()
+    {
+        $old_values = [
+            'name' => 'sdad hx as hh dsuah ihas',
+            'from_city_id' => $this->create('Playfields\City')->id,
+            'to_city_id' => $this->create('Playfields\City')->id
+        ];
+        $old_transit = $this->create('Playfields\Transit', $old_values);
+        // attach 2 routes to transit
+        $this->create('Playfields\Route', ['transit_id' => $old_transit->id]);
+        $this->create('Playfields\Route', ['transit_id' => $old_transit->id]);
+
+        // 'from_city_id' does not exist
+        $new_values = [
+            'name' => 'aaaaaaaaaaaaaaaaaaa',
+            'from_city_id' => -1,
+            'to_city_id' => $this->create('Playfields\City')->id
+        ];
+
+        // When
+        $res = $this->json('PUT','api/transits/'.$old_transit->id, $new_values);
+
+        // Then
+        $res->assertStatus(422);
+
+        $this->assertDatabaseHas('transits',$old_values);
+        $this->assertDatabaseMissing('transits',$new_values);
+    }
+   
+    /**
+     * @test
+     */
+    public function will_fail_with_error_422_if_relational_route_does_not_exist()
+    {
+        $old_values = [
+            'name' => 'sdad hx as hh dsuah ihas',
+            'from_city_id' => $this->create('Playfields\City')->id,
+            'to_city_id' => $this->create('Playfields\City')->id
+        ];
+        $old_transit = $this->create('Playfields\Transit', $old_values);
+        // attach 2 routes to transit
+        $this->create('Playfields\Route', ['transit_id' => $old_transit->id]);
+        $this->create('Playfields\Route', ['transit_id' => $old_transit->id]);
+
+        // 'from_city_id' does not exist
+        $new_values = [
+            'name' => 'aaaaaaaaaaaaaaaaaaa',
+            'from_city_id' => $this->create('Playfields\City')->id,
+            'to_city_id' => $this->create('Playfields\City')->id
+        ];
+        $routes = [
+            'routes' => [
+                -1,
+                $this->create('Playfields\Route')->id
+            ]
+        ];
+
+        // When
+        $res = $this->json('PUT','api/transits/'.$old_transit->id, array_merge($new_values, $routes));
+
+        // Then
+        $res->assertStatus(422);
+
+        $this->assertDatabaseHas('transits',$old_values);
+        $this->assertDatabaseMissing('transits',$new_values);
+    }
+
+    /**
+     * @test
+     */
+    public function will_fail_with_error_422_when_body_data_is_of_wrong_type()
+    {
+        // Given
+        $old_values = [
+            'name' => 'sdad hx as hh dsuah ihas',
+            'from_city_id' => $this->create('Playfields\City')->id,
+            'to_city_id' => $this->create('Playfields\City')->id
+        ];
+
+        $old_transit = $this->create('Playfields\Transit', $old_values);
+
+        // 'name' is of wrong type
+        $new_values = [
+            'name' => 00001,
+            'from_city_id' => $this->create('Playfields\City')->id,
+            'to_city_id' => $this->create('Playfields\City')->id
+        ];
+
+        // When
+        $response = $this->json('PUT','api/transits/'.$old_transit->id, $new_values);
+
+        // Then
+        $response->assertStatus(422);
+
+        $this->assertDatabaseHas('transits', $old_values);          
+        $this->assertDatabaseMissing('transits', $new_values);
+
+    }
+
+
 }
 
 trait Delete

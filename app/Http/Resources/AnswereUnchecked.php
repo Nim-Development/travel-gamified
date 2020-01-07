@@ -37,7 +37,7 @@ class AnswereUnchecked extends JsonResource
                     'family_name' => $user->family_name,
                     'age' => $user->age,
                     'gender' => $user->gender,
-                    'score' => $user->score,
+                    'score' => (integer)$user->score,
                     'created_at' => (string)$user->created_at
                 ],
             'challenge' => (!$challenge) ? null :

@@ -731,40 +731,302 @@ trait Post
 
 trait Put
 {
-    /**
-     * @test
-     */
-    // public function will_fail_with_a_404_if_the_team_we_want_to_update_is_not_found()
-    // {
-    //     $res = $this->json('PUT', 'api/teams/-1');
-    //     $res->assertStatus(404);
-    // }
+    // $body = [
+    //     'trip_id' => $this->create('Trip')->id,
+    //     'name' => 'sda fads',
+    //     'color' => 'sdafas',
+    //     'score' => 1234
+    // ];
+    // $users = [
+    //     'users' => [
+    //         $this->create('User')->id, 
+    //         $this->create('User')->id, 
+    //         $this->create('User')->id
+    //         ] // ids of existing users.
+    // ];
+
+    // $files = [          
+    //     'badge' => [
+    //         UploadedFile::fake()->image('liverpool.jpg')            
+    //     ]
+    // ];
+
 
     /**
      * @test
      */
-    // public function can_update_a_team()
-    // {
-    //     // Given
-    //     $old_team = $this->create('Team');
+    public function will_fail_with_a_404_if_the_team_we_want_to_update_is_not_found()
+    {
+        $res = $this->json('PUT', 'api/teams/-1');
+        $res->assertStatus(404);
+    }
 
-    //     $new_team = [
-    //         'name' => $old_team->name.'_update',
-    //         'slug' => $old_team->slug.'_update',
-    //         'price' => $old_team->price + 3
-    //     ];
+    /**
+     * @test
+     */
+    public function can_add_media_of_badge_collection_to_end_of_collection()
+    {
+        $old_values = [
+            'trip_id' => $this->create('Trip')->id,
+            'name' => 'sda fads',
+            'color' => 'sdafas',
+            'score' => 1234
+        ];
 
-    //     // When
-    //     $response = $this->json('PUT',
-    //                             'api/teams/'.$old_team->id,
-    //                             $new_team);
-    //     // Then
-    //     $response->assertStatus(200)
-    //              ->assertJsonFragment($new_team);
-    //     $this->assertDatabaseHas('teams', $new_team);
+        $old_team = $this->create('Team', $old_values);
+        $this->file_factory($old_team, 'badge', ['badge1', 'badge2']);
 
-    // }
+        // attach users
+        $users = [
+            'users' => [
+                $this->create('User', ['team_id' => $old_team->id])->id, 
+                $this->create('User', ['team_id' => $old_team->id])->id
+                ] // ids of existing users.
+        ];
 
+        $new_values = [
+
+        ];
+
+        $files = [          
+            'badge' => [
+                UploadedFile::fake()->image('badge3.jpg'),
+                UploadedFile::fake()->image('badge4.jpg')     
+            ]
+        ];
+
+        // When
+        $res = $this->json('PUT','api/teams/'.$old_team->id, $files);
+
+        // Then
+        $res->assertStatus(200)
+                    ->assertJsonCount(4, 'data.badge'); // assert that 2 images have been added to badge
+
+        // Check if db file media data urls actually exist as files in storage
+        if($stored_header_files_array = $this->spread_media_urls($res->getData()->data->badge)){
+            \Storage::disk('test')->assertExists($stored_header_files_array);
+        }
+    }
+
+    /**
+     * @test
+     */
+    public function can_add_user_to_the_end_of_relational_users_array()
+    {
+        $old_values = [
+            'trip_id' => $this->create('Trip')->id,
+            'name' => 'sda fads',
+            'color' => 'sdafas',
+            'score' => 1234
+        ];
+
+        $old_team = $this->create('Team', $old_values);
+        $this->file_factory($old_team, 'badge', ['badge1', 'badge2']);
+
+        // attach users
+        $users = [
+            'users' => [
+                $this->create('User', ['team_id' => $old_team->id])->id, 
+                $this->create('User', ['team_id' => $old_team->id])->id
+           ] // ids of existing users.
+        ];
+
+        // 2 new users to add to team
+        $new_values = [
+            'users' => [
+                $this->create('User')->id, 
+                $this->create('User')->id, 
+            ]
+        ];
+
+        // When
+        $res = $this->json('PUT','api/teams/'.$old_team->id, $new_values);
+
+        // Then
+        $res->assertStatus(200)
+                    ->assertJsonCount(4, 'data.users'); // assert that 2 images have been added to badge
+    }
+
+    /**
+     * @test
+     */
+    public function can_update_team_fully_on_each_model_attribute()
+    {
+        $old_values = [
+            'name' => 'sda fads',
+            'color' => 'sdafas',
+            'score' => 1234
+        ];
+
+        $trip_id = [
+            'trip_id' => $this->create('Trip')->id
+        ];
+
+        $old_team = $this->create('Team', array_merge($old_values, $trip_id));
+
+        $new_values = [
+            'name' => 'aaaaaaaa',
+            'color' => 'aaaaaaaa',
+            'score' => 000001,
+   
+        ];
+        $new_trip_id = [
+            'trip_id' => $this->create('Trip')->id
+        ];
+
+        // When
+        $res = $this->json('PUT','api/teams/'.$old_team->id, array_merge($new_values, $new_trip_id));
+
+        // Then
+        $res->assertStatus(200)
+                    ->assertJsonFragment($new_values); // assert that 2 images have been added to badge
+
+        $this->assertDatabaseHas('teams', $new_values);
+        $this->assertDatabaseMissing('teams', $old_values);
+    }
+        /**
+     * @test
+     */
+    public function can_update_team_on_a_couple_of_model_attributes()
+    {
+        $old_values = [
+            'name' => 'sda fads',
+            'color' => 'sdafas',
+        ];
+
+        $values_to_remain_after_update = [
+            'score' => 1234
+        ];
+
+        $trip_id = [
+            'trip_id' => $this->create('Trip')->id
+        ];
+
+        $old_team = $this->create('Team', array_merge(array_merge($old_values,  $values_to_remain_after_update), $trip_id));
+
+        $new_values = [
+            'name' => 'aaaaaaaa',
+            'color' => 'aaaaaaaa'
+        ];
+
+        // When
+        $res = $this->json('PUT','api/teams/'.$old_team->id, $new_values);
+
+        // Then
+        $res->assertStatus(200)
+                    ->assertJsonFragment(array_merge($new_values, $values_to_remain_after_update));
+
+        $this->assertDatabaseHas('teams', array_merge($new_values, $values_to_remain_after_update));
+        $this->assertDatabaseMissing('teams', $old_values);
+    }
+
+    /**
+     * @test
+     */
+    public function will_fail_with_error_422_when_body_data_is_of_wrong_type()
+    {
+        $old_values = [
+            'name' => 'sda fads',
+            'color' => 'sdafas',
+            'score' => 1234
+        ];
+
+        $trip_id = [
+            'trip_id' => $this->create('Trip')->id
+        ];
+
+        $old_team = $this->create('Team', array_merge($old_values, $trip_id));
+
+        // 'name' is of wrong data type
+        $new_values = [
+            'name' => 000001,
+            'color' => 'aaaaaaaa',
+            'score' => 000002
+        ];
+
+        // When
+        $res = $this->json('PUT','api/teams/'.$old_team->id, $new_values);
+
+        // Then
+        $res->assertStatus(422); 
+
+        $this->assertDatabaseHas('teams', $old_values);
+        $this->assertDatabaseMissing('teams', $new_values);
+    }
+        /**
+     * @test
+     */
+    public function will_fail_with_error_422_relational_trip_does_not_exist()
+    {
+        $old_values = [
+            'name' => 'sda fads',
+            'color' => 'sdafas',
+            'score' => 1234
+        ];
+
+        $trip_id = [
+            'trip_id' => $this->create('Trip')->id
+        ];
+
+        $old_team = $this->create('Team', array_merge($old_values, $trip_id));
+
+        // 'trip' does not exist
+        $new_values = [
+            'name' => 'aaaaa',
+            'color' => 'aaaaaaaa',
+            'score' => 000002,
+            'trip_id' => -1
+        ];
+
+        // When
+        $res = $this->json('PUT','api/teams/'.$old_team->id, $new_values);
+
+        // Then
+        $res->assertStatus(422); 
+
+        $this->assertDatabaseHas('teams', $old_values);
+        $this->assertDatabaseMissing('teams', $new_values);
+    }
+    
+    /**
+     * @test
+     */
+    public function will_fail_with_error_422_if_relational_user_does_not_exist()
+    {
+        $old_values = [
+            'trip_id' => $this->create('Trip')->id,
+            'name' => 'sda fads',
+            'color' => 'sdafas',
+            'score' => 1234
+        ];
+
+        $old_team = $this->create('Team', $old_values);
+        $this->file_factory($old_team, 'badge', ['badge1', 'badge2']);
+
+        // attach users
+        $users = [
+            'users' => [
+                $this->create('User', ['team_id' => $old_team->id])->id, 
+                $this->create('User', ['team_id' => $old_team->id])->id
+           ] // ids of existing users.
+        ];
+
+        // user with id -1 does not exist
+        $new_values = [
+            'users' => [
+                -1, 
+                $this->create('User')->id, 
+            ]
+        ];
+
+        // When
+        $res = $this->json('PUT','api/teams/'.$old_team->id, $new_values);
+
+        // Then
+        $res->assertStatus(422); // assert that 2 images have been added to badge
+
+        $this->assertDatabaseHas('teams', $old_values);
+    }
 }
 
 trait Delete
