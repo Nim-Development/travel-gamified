@@ -13,8 +13,8 @@ $factory->define(Challenge::class, function (Faker $faker) {
     return [
         'sort_order' => 1,
         'playfield_type' => 'city',
-        'playfield_id' => 1,
+        'playfield_id' => NULL,
         'game_type' => 'media_upload',
-        'game_id' => 1,
+        'game_id' => NULL,
     ];
 });

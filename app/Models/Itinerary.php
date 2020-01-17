@@ -19,4 +19,6 @@ class Itinerary extends Model
 
     protected $fillable = ['tour_id', 'step', 'duration', 'playfield_type', 'playfield_id'];
 
+    
+
 }

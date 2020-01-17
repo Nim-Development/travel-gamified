@@ -144,4 +144,16 @@ class TripController extends Controller
                                 ->setStatusCode(200);
     }
 
+    public function destroy($id)
+    {
+        $trip = Trip::findOrFail($id);
+
+        try {
+            // forceDelete makes sure the media will be deleted to.
+            $trip->forceDelete();
+            return response()->json(null, 204);
+        } catch (\Throwable $th) {
+            return response()->json(['error' => $th->getMessage()], 422);
+        }
+    }
 }

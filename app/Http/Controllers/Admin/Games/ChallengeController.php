@@ -259,4 +259,17 @@ class ChallengeController extends Controller
             ->response()
             ->setStatusCode(200);
     }
+
+
+    public function destroy($id)
+    {
+        $challenge = Challenge::findOrFail($id);
+
+        try {
+            $challenge->delete();
+            return response()->json(null, 204);
+        } catch (\Throwable $th) {
+            return response()->json(['error' => $th->getMessage()], 422);
+        }
+    }
 }

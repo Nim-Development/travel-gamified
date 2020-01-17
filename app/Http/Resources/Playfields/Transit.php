@@ -18,7 +18,6 @@ class Transit extends JsonResource
     public function toArray($request)
     {
 
-        $itinerary = $this->itinerary;
         $routes = $this->routes;
         $challenges = $this->challenges;
         $from = $this->from;
@@ -41,13 +40,6 @@ class Transit extends JsonResource
                 'name' => $to->name,
                 'created_at' => (string)$to->created_at
             ],
-            'itinerary' => (!$itinerary) ? null :
-                [
-                    'id' => $itinerary->id,
-                    'step' => (integer)$itinerary->step,
-                    'duration' => (double)$itinerary->duration,
-                    'created_at' => (string)$itinerary->created_at
-                ],
             'routes' => (!$routes) ? null : $this->insert_routes_into_transit($routes),
             'challenges' => (!$challenges) ? null : $this->insert_challenges_into_transit($challenges),
             'created_at' => (string)$this->created_at

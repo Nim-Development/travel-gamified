@@ -41,7 +41,7 @@ class User extends JsonResource
             'trip' => (!$trip) ? null :
                 [
                     'id' => $trip->id,
-                    'tour_id' => (integer)$trip->tour_id,
+                    'tour_id' => (!$trip->tour_id) ? null : (integer)$trip->tour_id,
                     'name' => $trip->name,
                     'start_date_time' => $trip->start_date_time,
                     'created_at' => (string)$trip->created_at,

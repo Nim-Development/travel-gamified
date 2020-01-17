@@ -15,8 +15,13 @@ class CreateAnswereCheckedsTable extends Migration
     {
         Schema::create('answere_checkeds', function (Blueprint $table) {
             $table->bigIncrements('id');
-            $table->bigInteger('challenge_id');
-            $table->bigInteger('user_id');
+
+            $table->unsignedBigInteger('challenge_id')->nullable();
+            $table->foreign('challenge_id')->references('id')->on('challenges')->onDelete('set null');
+
+            $table->unsignedBigInteger('user_id')->nullable();
+            $table->foreign('user_id')->references('id')->on('users')->onDelete('set null');
+
             $table->string('answere');
             $table->bigInteger('score');
             $table->timestamps();

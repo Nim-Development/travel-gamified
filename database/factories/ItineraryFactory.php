@@ -30,10 +30,10 @@ use App\Playfields\Transit;
 
 $factory->define(Itinerary::class, function (Faker $faker) {
     return [
-        'tour_id' => 1,
+        'tour_id' => NULL,
         'step' => 1,
         'duration' => $faker->randomFloat($nbMaxDecimals = 2, $min = 24, $max = 72),
         'playfield_type' => 'city',
-        'playfield_id' => 1
+        'playfield_id' => NULL
     ];
 });

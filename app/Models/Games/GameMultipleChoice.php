@@ -2,6 +2,7 @@
 
 namespace App\Games;
 
+use App\Events\UnlinkPoly;
 use Spatie\MediaLibrary\Models\Media;
 use Illuminate\Database\Eloquent\Model;
 use Spatie\MediaLibrary\HasMedia\HasMedia;
@@ -13,7 +14,7 @@ class GameMultipleChoice extends Model implements HasMedia
 
     public function challenge()
     {
-        return $this->belongsTo('App\Games\Challenge', 'game_id', 'id');
+        return $this->morphOne('App\Games\Challenge', 'game');
     }
 
     public function options()
@@ -51,4 +52,13 @@ class GameMultipleChoice extends Model implements HasMedia
     }
 
     protected $fillable = ['title', 'content_text', 'correct_answere', 'points_min', 'points_max'];
+    
+    // clean up relationships at deletion of this model. 
+    public static function boot() {         
+        parent::boot();         
+        static::deleting(function($game) { // before delete() method call this    
+            // set foreign polymorphic data relational to this instance to NULL
+            event(new UnlinkPoly($game->challenge, 'game_type', 'game_id'));
+        }); 
+    }
 }

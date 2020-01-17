@@ -748,35 +748,45 @@ trait Put
 trait Delete
 {
 
-        /**
+    /**
      * @test
      */
-    // public function will_fail_with_a_404_if_the_trip_we_want_to_delete_is_not_found()
-    // {
-    //     $res = $this->json('DELETE', 'api/trips/-1');
-    //     $res->assertStatus(404);
-    // }
+    public function will_fail_with_a_404_if_the_trip_we_want_to_delete_is_not_found()
+    {
+        $res = $this->json('DELETE', 'api/trips/-1');
+        $res->assertStatus(404);
+    }
 
-       /**
+    /**
      * @test
      */
-    // public function can_delete_a_trip()
-    // {
-    //     // Given
-    //     // first create a trip in the database to delete
-    //     $trip = $this->create('Trip');
+    public function can_delete_a_trip_and_unlink_all_relationships()
+    {
+        // Given
+        // first create a game in the database to delete
+        $trip = $this->create('Trip');
+        $team = $this->create('Team', [
+            'trip_id' => $trip->id
+        ]);
 
-    //     // When
-    //     // call the delete api
-    //     $res = $this->json('DELETE', '/api/trips/'.$trip->id);
+        // When
+        // call the delete api
+        $res = $this->json('DELETE', '/api/trips/'.$trip->id);
 
-    //     // Then
-    //     $res->assertStatus(204)
-    //         ->assertSee(null);
+        // Then
+        $res->assertStatus(204)
+            ->assertSee(null);
 
-    //     // check if $trip is deleted from database
-    //     $this->assertDatabaseMissing('trips', ['id' => $trip->id]);
-    // }
+        // check if $game is deleted from database
+        $this->assertDatabaseMissing('trips', ['id' => $trip->id]);
+
+        $team->refresh();
+        if(!$team->trip_id){
+            $this->assertTrue(true);
+        }else{
+            $this->assertTrue(false);
+        }
+    }
 }
 
 

@@ -166,6 +166,7 @@ abstract class TestCase extends BaseTestCase
 
     public function collection_of_answeres($type, $qty)
     {
+        
         // Create a full challenge with all of its relational data inserted.
         $challenge = $this->create(
             'Games\Challenge',

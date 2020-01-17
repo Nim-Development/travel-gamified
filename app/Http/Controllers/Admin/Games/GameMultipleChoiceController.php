@@ -199,4 +199,17 @@ class GameMultipleChoiceController extends Controller
             ->response()
             ->setStatusCode(200);
     }
+
+    public function destroy($id)
+    {
+        $game = GameMultipleChoice::findOrFail($id);
+
+        try {
+            // forceDelete makes sure the media will be deleted to.
+            $game->forceDelete();
+            return response()->json(null, 204);
+        } catch (\Throwable $th) {
+            return response()->json(['error' => $th->getMessage()], 422);
+        }
+    }
 }

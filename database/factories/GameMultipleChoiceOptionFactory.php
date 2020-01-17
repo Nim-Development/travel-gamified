@@ -15,7 +15,7 @@ use App\Games\GameMultipleChoice;
 
 $factory->define(GameMultipleChoiceOption::class, function (Faker $faker) {
     return [
-        'game_id' => random_int(0, 60), // Change manually (only 1 per game)
+        'game_id' => NULL, // Change manually (only 1 per game)
         'sort_order' => random_int(0, 3), // cant fake this.
         'text' => $faker->sentence($nbWords = 6, $variableNbWords = true)
     ];

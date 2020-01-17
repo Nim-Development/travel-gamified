@@ -331,33 +331,55 @@ trait Put
 
 trait Delete
 {
-            /**
+    /**
      * @test
      */
-    // public function will_fail_with_a_404_if_the_tour_we_want_to_delete_is_not_found()
-    // {
-    //     $res = $this->json('DELETE', 'api/tours/-1');
-    //     $res->assertStatus(404);
-    // }
+    public function will_fail_with_a_404_if_the_tour_we_want_to_delete_is_not_found()
+    {
+        $res = $this->json('DELETE', 'api/tours/-1');
+        $res->assertStatus(404);
+    }
 
-       /**
+    /**
      * @test
      */
-    // public function can_delete_a_tour()
-    // {
-    //     // Given
-    //     // first create a tour in the database to delete
-    //     $tour = $this->create('Tour');
+    public function can_delete_a_tour_and_unlink_all_relationships()
+    {
+        // Given
+        // first create a game in the database to delete
+        $tour = $this->create('Tour');
+        $trip = $this->create('Trip', [
+            'tour_id' => $tour->id
+        ]);
+        $itinerary = $this->create('Itinerary', [
+            'tour_id' => $tour->id
+        ]);
 
-    //     // When
-    //     // call the delete api
-    //     $res = $this->json('DELETE', '/api/tours/'.$tour->id);
+        // When
+        // call the delete api
+        $res = $this->json('DELETE', '/api/tours/'.$tour->id);
 
-    //     // Then
-    //     $res->assertStatus(204)
-    //         ->assertSee(null);
+        // Then
+        $res->assertStatus(204)
+            ->assertSee(null);
 
-    //     // check if $tour is deleted from database
-    //     $this->assertDatabaseMissing('tours', ['id' => $tour->id]);
-    // }
+        // check if $game is deleted from database
+        $this->assertDatabaseMissing('tours', ['id' => $tour->id]);
+
+        $trip->refresh();
+        if(!$trip->tour_id){
+            $this->assertTrue(true);
+        }else{
+            $this->assertTrue(false);
+        }
+
+        $itinerary->refresh();
+        if(!$itinerary->tour_id){
+            $this->assertTrue(true);
+        }else{
+            $this->assertTrue(false);
+        }
+
+    }
+
 }

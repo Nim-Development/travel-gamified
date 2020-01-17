@@ -4,7 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-class CreateTripsTable extends Migration
+class CreateTeamsTable extends Migration
 {
     /**
      * Run the migrations.
@@ -13,13 +13,14 @@ class CreateTripsTable extends Migration
      */
     public function up()
     {
-        Schema::create('trips', function (Blueprint $table) {
+        Schema::create('teams', function (Blueprint $table) {
             $table->bigIncrements('id');
+                $table->unsignedBigInteger('trip_id')->nullable();
+                $table->foreign('trip_id')->references('id')->on('trips')->onDelete('set null');
 
-                $table->bigInteger('tour_id');
                 $table->string('name');
-                $table->string('timezone');
-                $table->dateTime('start_date_time')->nullable();
+                $table->string('color')->nullable();
+                $table->bigInteger('score')->nullable();
 
             $table->timestamps();
         });
@@ -32,6 +33,6 @@ class CreateTripsTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('trips');
+        Schema::dropIfExists('teams');
     }
 }

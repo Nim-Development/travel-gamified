@@ -107,14 +107,12 @@ trait Get
                             'name' => $to->name,
                             'created_at' => (string)$to->created_at
                         ], // City relationship
-                        'itinerary' => null,
                         'routes' => null,
                         'challenges' => null,
                         'created_at' => (string)$transit->created_at,
                     ]
                 ]);
     }
-
 
     /**
      * @test
@@ -186,12 +184,6 @@ trait Get
                             'name' => $to->name,
                             'created_at' => (string)$to->created_at
                         ], // City relationship
-                        'itinerary' => [
-                            'id' => $itinerary->id,
-                            'step' => (integer)$itinerary->step,
-                            'duration' => (double)$itinerary->duration,
-                            'created_at' => (string)$itinerary->created_at,
-                        ],
                         'routes' => [
                             [
                                 'id' => (integer)$route_1->id,
@@ -292,12 +284,6 @@ trait Get
                                 'name',
                                 'created_at'
                             ],
-                            'itinerary' => [
-                                'id',
-                                'step',
-                                'duration',
-                                'created_at'
-                            ],
                             'routes' => [
                                 '*' =>
                                     [
@@ -372,12 +358,6 @@ trait Get
                                 'type',
                                 'short_code',
                                 'name',
-                                'created_at'
-                            ],
-                            'itinerary' => [
-                                'id',
-                                'step',
-                                'duration',
                                 'created_at'
                             ],
                             'routes' => [
@@ -468,7 +448,6 @@ trait Post
                         'name',
                         'created_at'
                     ],
-                    'itinerary', //null
                     'routes' => [
                         '*' => [
                             'id',
@@ -526,7 +505,6 @@ trait Post
                         'name',
                         'created_at'
                     ],
-                    'itinerary', //null
                     'routes',
                     'challenges', //null
                     'created_at'
@@ -853,35 +831,121 @@ trait Put
 
 trait Delete
 {
-           /**
+    /**
      * @test
      */
-    // public function will_fail_with_a_404_if_the_transit_we_want_to_delete_is_not_found()
-    // {
-    //     $res = $this->json('DELETE', 'api/transits/-1');
-    //     $res->assertStatus(404);
-    // }
+    public function will_fail_with_a_404_if_the_transit_we_want_to_delete_is_not_found()
+    {
+        $res = $this->json('DELETE', 'api/transits/-1');
+        $res->assertStatus(404);
+    }
+
 
     /**
      * @test
      */
-    // public function can_delete_a_transit()
-    // {
-    //     // Given
-    //     // first create a transit in the database to delete
-    //     $transit = $this->create('Playfields\Transit');
+    public function foreign_transit_poly_relationships_are_set_to_null_after_delete()
+    {
 
-    //     // When
-    //     // call the delete api
-    //     $res = $this->json('DELETE', '/api/transits/'.$transit->id);
+        /**
+         * playfields:
+         * - challenges
+         * - itineraries
+         */
 
-    //     // Then
-    //     $res->assertStatus(204)
-    //         ->assertSee(null);
+        // Given
+        // first create a game in the database to delete
+        $transit = $this->create('Playfields\Transit');
 
-    //     // check if $transit is deleted from database
-    //     $this->assertDatabaseMissing('Playfields\Transits', ['id' => $transit->id]);
-    // }
+        // holds the polymoprhic relationship type and key
+        $challenge = $this->create('Games\Challenge', [
+            'playfield_type' => 'transit',
+            'playfield_id' =>  $transit->id
+        ]);
+        $itineraries = $this->create_collection('Itinerary', [
+            'playfield_type' => 'transit',
+            'playfield_id' =>  $transit->id
+        ], false, 3);
+        
+        // When
+        // call the delete api
+        $res = $this->json('DELETE', '/api/transits/'.$transit->id);
+
+        // Then
+        $res->assertStatus(204)
+            ->assertSee(null);
+
+        // check if $game is deleted from database
+        $this->assertDatabaseMissing('transits', ['id' => $transit->id]);
+
+
+        // refresh the poly relation from database
+        $challenge->refresh();
+        // check if polymorphic keys have been set to null
+        if(!$challenge->playfield_type && !$challenge->playfield_id){
+            // game_type and game_id have been set to NULL !
+            $this->assertTrue(true);
+        }else{
+            $this->assertTrue(false);
+        }
+
+                
+        // ::nk FAILS because $route->itenireary should be morphMany()!..
+        // or this test should always bge for songular relation.
+
+        // check if polymorphic keys have been set to null
+        foreach($itineraries as $itinerary){
+            $itinerary->refresh();
+            if(!$itinerary->playfield_type && !$itinerary->playfield_id){
+                $this->assertTrue(true);
+            }else{
+                $this->assertTrue(false);
+            }
+        }
+    }
+
+
+        /**
+     * @test
+     */
+    public function foreign_transit_keys_in_relational_routes_are_set_to_null_after_city_delete()
+    {
+
+        /**
+         * relation city_ids
+         * - routes->transit_id
+         */
+
+        // Given
+        // first create a game in the database to delete
+        $transit = $this->create('Playfields\Transit');
+
+        // holds the polymoprhic relationship type and key
+        $routes = $this->create_collection('Playfields\Route', [
+            'transit_id' =>  $transit->id
+        ], false, 3);
+        
+        // When
+        // call the delete api
+        $res = $this->json('DELETE', '/api/transits/'.$transit->id);
+
+        // Then
+        $res->assertStatus(204)
+            ->assertSee(null);
+
+        // check if $game is deleted from database
+        $this->assertDatabaseMissing('transits', ['id' => $transit->id]);
+
+        // assert if game_id of all previously relational options have been set to null.
+        foreach($routes as $route){
+            $route->refresh();
+            if(!$route->transit_id){
+                $this->assertTrue(true);
+            }else{
+                $this->assertTrue(false);
+            }
+        }
+    }
 
 
 }

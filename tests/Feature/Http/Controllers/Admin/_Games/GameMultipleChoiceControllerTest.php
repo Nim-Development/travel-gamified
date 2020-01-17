@@ -1199,24 +1199,121 @@ trait Put
 
 trait Delete
 {
-    // /**
-    //  * @test
-    //  */
-    // public function can_delete_a_game()
-    // {
-    //     // Given
-    //     // first create a game in the database to delete
-    //     $game = $this->create('Games\Game');
+    /**
+     * @test
+     */
+    public function will_fail_with_a_404_if_the_game_multiple_choice_we_want_to_delete_is_not_found()
+    {
+        $res = $this->json('DELETE', 'api/games/multiple_choice/-1');
+        $res->assertStatus(404);
+    }
 
-    //     // When
-    //     // call the delete api
-    //     $res = $this->json('DELETE', '/api/games/'.$game->id);
+    /**
+     * @test
+     */
+    public function can_delete_a_game_multiple_choice_including_its_files()
+    {
+        // Given
+        // first create a game in the database to delete
+        $game = $this->create('Games\GameMultipleChoice');
 
-    //     // Then
-    //     $res->assertStatus(204)
-    //         ->assertSee(null);
+        // attach media
+        $media = ['media1', 'media2'];
+        $this->file_factory($game, 'media', $media);
+        // attach media
+        $header = ['header1', 'header2'];
+        $this->file_factory($game, 'header', $header);
 
-    //     // check if $game is deleted from database
-    //     $this->assertDatabaseMissing('games', ['id' => $game->id]);
-    // }
+        // When
+        // call the delete api
+        $res = $this->json('DELETE', '/api/games/multiple_choice/'.$game->id);
+
+        // Then
+        $res->assertStatus(204)
+            ->assertSee(null);
+
+        // check if $game is deleted from database
+        $this->assertDatabaseMissing('game_multiple_choices', ['id' => $game->id]);
+
+        \Storage::disk('test')->assertMissing($media);
+        \Storage::disk('test')->assertMissing($header);
+
+    }
+
+
+        /**
+     * @test
+     */
+    public function foreign_poly_relationship_is_set_to_null_after_delete()
+    {
+        // Given
+        // first create a game in the database to delete
+        $game = $this->create('Games\GameMultipleChoice');
+
+        // holds the polymoprhic relationship type and key
+        $challenge = $this->create('Games\Challenge', [
+            'game_type' => 'multiple_choice',
+            'game_id' =>  $game->id
+        ]);
+        
+        // When
+        // call the delete api
+        $res = $this->json('DELETE', '/api/games/multiple_choice/'.$game->id);
+
+        // Then
+        $res->assertStatus(204)
+            ->assertSee(null);
+
+        // check if $game is deleted from database
+        $this->assertDatabaseMissing('game_multiple_choices', ['id' => $game->id]);
+
+
+        // refresh the poly relation from database
+        $challenge->refresh();
+
+        // check if polymorphic keys have been set to null
+        if(!$challenge->game_type && !$challenge->game_id){
+            // game_type and game_id have been set to NULL !
+            $this->assertTrue(true);
+        }else{
+            $this->assertTrue(false);
+        }
+    }
+
+            /**
+     * @test
+     */
+    public function relational_options_are_set_to_null_after_delete()
+    {
+        // Given
+        // first create a game in the database to delete
+        $game = $this->create('Games\GameMultipleChoice');
+
+        // holds the polymoprhic relationship type and key
+        $options = $this->create_collection('Games\GameMultipleChoiceOption', [
+            'game_id' =>  $game->id
+        ], false, 3);
+        
+        // When
+        // call the delete api
+        $res = $this->json('DELETE', '/api/games/multiple_choice/'.$game->id);
+
+        // Then
+        $res->assertStatus(204)
+            ->assertSee(null);
+
+        // check if $game is deleted from database
+        $this->assertDatabaseMissing('game_multiple_choices', ['id' => $game->id]);
+
+        
+        // assert if game_id of all previously relational options have been set to null.
+        foreach($options as $option){
+            $option->refresh();
+            if(!$option->game_id){
+                $this->assertTrue(true);
+            }else{
+                $this->assertTrue(false);
+            }
+        }
+    }
 }

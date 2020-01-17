@@ -657,33 +657,148 @@ trait Delete
     /**
      * @test
      */
-    // public function will_fail_with_a_404_if_the_city_we_want_to_delete_is_not_found()
-    // {
-    //     $res = $this->json('DELETE', 'api/cities/-1');
-    //     $res->assertStatus(404);
-    // }
-
-
-
+    public function will_fail_with_a_404_if_the_city_we_want_to_delete_is_not_found()
+    {
+        $res = $this->json('DELETE', 'api/cities/-1');
+        $res->assertStatus(404);
+    }
 
     /**
      * @test
      */
-    // public function can_delete_a_city()
-    // {
-    //     // Given
-    //     // first create a cityin the database to delete
-    //     $city= $this->create('City');
+    public function can_delete_a_city_including_its_files()
+    {
+        // Given
+        // first create a game in the database to delete
+        $city = $this->create('Playfields\City');
 
-    //     // When
-    //     // call the delete api
-    //     $res = $this->json('DELETE', '/api/cities/'.$city->id);
+        // attach media
+        $media = ['media1', 'media2'];
+        $this->file_factory($city, 'media', $media);
+        // attach media
+        $header = ['header1', 'header2'];
+        $this->file_factory($city, 'header', $header);
 
-    //     // Then
-    //     $res->assertStatus(204)
-    //         ->assertSee(null);
+        // When
+        // call the delete api
+        $res = $this->json('DELETE', '/api/cities/'.$city->id);
 
-    //     // check if $cityis deleted from database
-    //     $this->assertDatabaseMissing('cities', ['id' => $city->id]);
-    // }
+        // Then
+        $res->assertStatus(204)
+            ->assertSee(null);
+
+
+        // check if $game is deleted from database
+        $this->assertDatabaseMissing('cities', ['id' => $city->id]);
+
+        \Storage::disk('test')->assertMissing($media);
+        \Storage::disk('test')->assertMissing($header);
+
+    }
+
+
+        /**
+     * @test
+     */
+    public function foreign_city_poly_relationships_are_set_to_null_after_delete()
+    {
+
+        /**
+         * playfields:
+         * - challenges
+         * - itineraries
+         */
+
+        // Given
+        // first create a game in the database to delete
+        $city = $this->create('Playfields\City');
+
+        // holds the polymoprhic relationship type and key
+        $challenge = $this->create('Games\Challenge', [
+            'playfield_type' => 'city',
+            'playfield_id' =>  $city->id
+        ]);
+        $itineraries = $this->create_collection('Itinerary', [
+            'playfield_type' => 'city',
+            'playfield_id' =>  $city->id
+        ], false, 3);
+        
+        // When
+        // call the delete api
+        $res = $this->json('DELETE', '/api/cities/'.$city->id);
+
+        // Then
+        $res->assertStatus(204)
+            ->assertSee(null);
+
+        // check if $game is deleted from database
+        $this->assertDatabaseMissing('cities', ['id' => $city->id]);
+
+
+        // refresh the poly relation from database
+        $challenge->refresh();
+
+        // check if polymorphic keys have been set to null
+        if(!$challenge->playfield_type && !$challenge->playfield_id){
+            // game_type and game_id have been set to NULL !
+            $this->assertTrue(true);
+        }else{
+            $this->assertTrue(false);
+        }
+
+        // check if polymorphic keys have been set to null
+        foreach($itineraries as $itinerary){
+            $itinerary->refresh();
+            
+            if(!$itinerary->playfield_type && !$itinerary->playfield_id){
+                $this->assertTrue(true);
+            }else{
+                $this->assertTrue(false);
+            }
+        }
+    }
+
+    /**
+     * @test
+     */
+    public function foreign_city_keys_in_relational_transit_are_set_to_null_after_city_delete()
+    {
+
+        /**
+         * relation city_ids
+         * - transits->from_city_id
+         * - transits->to_city_id
+         */
+
+        // Given
+        // first create a game in the database to delete
+        $city = $this->create('Playfields\City');
+
+        // holds the polymoprhic relationship type and key
+        $transits = $this->create_collection('Playfields\Transit', [
+            'from_city_id' =>  $city->id,
+            'to_city_id' => $city->id
+        ], false, 3);
+        
+        // When
+        // call the delete api
+        $res = $this->json('DELETE', '/api/cities/'.$city->id);
+
+        // Then
+        $res->assertStatus(204)
+            ->assertSee(null);
+
+        // check if $game is deleted from database
+        $this->assertDatabaseMissing('cities', ['id' => $city->id]);
+
+        // assert if game_id of all previously relational options have been set to null.
+        foreach($transits as $transit){
+            $transit->refresh();
+            if(!$transit->from_city_id && !$transit->to_city_id){
+                $this->assertTrue(true);
+            }else{
+                $this->assertTrue(false);
+            }
+        }
+    }
 }

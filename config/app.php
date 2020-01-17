@@ -181,6 +181,7 @@ return [
         App\Providers\ConfigServiceProvider::class,
         App\Providers\ValidateServiceProvider::class,
         App\Providers\MediaServiceProvider::class,
+        App\Providers\UtilServiceProvider::class,
         
     ],
 
@@ -236,7 +237,8 @@ return [
         'GameHelper' => App\Helpers\Game\GameFacade::class,
         'ConfigHelper' => App\Helpers\Config\ConfigFacade::class,
         'Validate' => App\Helpers\Validate\ValidateFacade::class,
-        'MediaHelper' => App\Helpers\Media\MediaFacade::class
+        'MediaHelper' => App\Helpers\Media\MediaFacade::class,
+        'Util' => App\Helpers\Util\UtilFacade::class,
     ],
 
 ];

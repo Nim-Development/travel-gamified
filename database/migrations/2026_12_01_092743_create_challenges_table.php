@@ -16,10 +16,10 @@ class CreateChallengesTable extends Migration
         Schema::create('challenges', function (Blueprint $table) {
             $table->bigIncrements('id');
             $table->integer('sort_order');
-            $table->string('playfield_type');
-            $table->bigInteger('playfield_id');
-            $table->string('game_type');
-            $table->bigInteger('game_id');
+            $table->string('playfield_type')->nullable(); // set to null from code (db layer doesnt understand polymorphism)
+            $table->bigInteger('playfield_id')->nullable(); // set to null from code (db layer doesnt understand polymorphism)
+            $table->string('game_type')->nullable(); // set to null from code (db layer doesnt understand polymorphism)
+            $table->bigInteger('game_id')->nullable(); // set to null from code (db layer doesnt understand polymorphism)
             $table->timestamps();
         });
     }

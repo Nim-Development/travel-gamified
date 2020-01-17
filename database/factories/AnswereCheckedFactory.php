@@ -17,8 +17,8 @@ use App\User;
 
 $factory->define(AnswereChecked::class, function (Faker $faker) {
     return [
-        'challenge_id' => 1,
-        'user_id' => 1,
+        'challenge_id' => NULL,
+        'user_id' => NULL,
         'answere' => 'Lorem ipsum dolor sit amet consectetur adipisicing elit.',
         'score' => $faker->numberBetween(20, 400)
     ];

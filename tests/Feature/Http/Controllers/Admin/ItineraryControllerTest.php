@@ -1274,35 +1274,35 @@ trait Put
 
 trait Delete
 {
-    /**
-     * @test
-     */
-    // public function will_fail_with_a_404_if_the_itinerary_we_want_to_delete_is_not_found()
-    // {
-    //     $res = $this->json('DELETE', 'api/itineraries/-1');
-    //     $res->assertStatus(404);
-    // }
 
     /**
      * @test
      */
-    // public function can_delete_a_itinerary()
-    // {
-    //     // Given
-    //     // first create a itinerary in the database to delete
-    //     $itinerary = $this->create('Itinerary');
+    public function will_fail_with_a_404_if_the_itinerary_we_want_to_delete_is_not_found()
+    {
+        $res = $this->json('DELETE', 'api/itineraries/-1');
+        $res->assertStatus(404);
+    }
 
-    //     // When
-    //     // call the delete api
-    //     $res = $this->json('DELETE', '/api/itineraries/'.$itinerary->id);
+    /**
+     * @test
+     */
+    public function can_delete_a_itinerary()
+    {
+        // Given
+        // first create a game in the database to delete
+        $itinerary = $this->create('Itinerary');
 
-    //     // Then
-    //     $res->assertStatus(204)
-    //         ->assertSee(null);
+        // When
+        // call the delete api
+        $res = $this->json('DELETE', '/api/itineraries/'.$itinerary->id);
 
-    //     // check if $itinerary is deleted from database
-    //     $this->assertDatabaseMissing('itineraries', ['id' => $itinerary->id]);
-    // }
+        // Then
+        $res->assertStatus(204)
+            ->assertSee(null);
 
+        // check if $game is deleted from database
+        $this->assertDatabaseMissing('itineraries', ['id' => $itinerary->id]);
+    }
 
 }

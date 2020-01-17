@@ -2,6 +2,7 @@
 
 namespace App;
 
+use App\Events\UnlinkRelations;
 use Spatie\MediaLibrary\Models\Media;
 use Illuminate\Database\Eloquent\Model;
 use Spatie\MediaLibrary\HasMedia\HasMedia;
@@ -38,4 +39,5 @@ class Team extends Model implements HasMedia
     }
 
     protected $fillable = ['trip_id', 'name', 'color', 'score'];
+
 }

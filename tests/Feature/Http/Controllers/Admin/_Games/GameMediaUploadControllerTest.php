@@ -5,6 +5,7 @@ namespace Tests\Feature\Http\Controllers\Admin\Games\GameMediaUploadController;
 use Faker\Factory;
 use Tests\TestCase;
 
+use App\Games\Challenge;
 use Illuminate\Support\Str;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Foundation\Testing\WithFaker;
@@ -801,33 +802,84 @@ trait Put
 
 trait Delete
 {
-    // /**
-    //  * @test
-    //  */
-    // public function will_fail_with_a_404_if_the_game_we_want_to_delete_is_not_found()
-    // {
-    //     $res = $this->json('DELETE', 'api/games/-1');
-    //     $res->assertStatus(404);
-    // }
+    /**
+     * @test
+     */
+    public function will_fail_with_a_404_if_the_game_media_upload_we_want_to_delete_is_not_found()
+    {
+        $res = $this->json('DELETE', 'api/games/media_upload/-1');
+        $res->assertStatus(404);
+    }
 
-    // /**
-    //  * @test
-    //  */
-    // public function can_delete_a_game()
-    // {
-    //     // Given
-    //     // first create a game in the database to delete
-    //     $game = $this->create('Games\Game');
+    /**
+     * @test
+     */
+    public function can_delete_a_game_media_upload_including_its_files()
+    {
+        // Given
+        // first create a game in the database to delete
+        $game = $this->create('Games\GameMediaUpload');
 
-    //     // When
-    //     // call the delete api
-    //     $res = $this->json('DELETE', '/api/games/'.$game->id);
+        // attach media
+        $media = ['media1', 'media2'];
+        $this->file_factory($game, 'media', $media);
+        // attach media
+        $header = ['header1', 'header2'];
+        $this->file_factory($game, 'header', $header);
 
-    //     // Then
-    //     $res->assertStatus(204)
-    //         ->assertSee(null);
+        // When
+        // call the delete api
+        $res = $this->json('DELETE', '/api/games/media_upload/'.$game->id);
 
-    //     // check if $game is deleted from database
-    //     $this->assertDatabaseMissing('games', ['id' => $game->id]);
-    // }
+        // Then
+        $res->assertStatus(204)
+            ->assertSee(null);
+
+        // check if $game is deleted from database
+        $this->assertDatabaseMissing('game_media_uploads', ['id' => $game->id]);
+
+        \Storage::disk('test')->assertMissing($media);
+        \Storage::disk('test')->assertMissing($header);
+
+    }
+
+
+        /**
+     * @test
+     */
+    public function foreign_poly_relationship_is_set_to_null_after_delete()
+    {
+        // Given
+        // first create a game in the database to delete
+        $game = $this->create('Games\GameMediaUpload');
+
+        // holds the polymoprhic relationship type and key
+        $challenge = $this->create('Games\Challenge', [
+            'game_type' => 'media_upload',
+            'game_id' =>  $game->id
+        ]);
+        
+        // When
+        // call the delete api
+        $res = $this->json('DELETE', '/api/games/media_upload/'.$game->id);
+
+        // Then
+        $res->assertStatus(204)
+            ->assertSee(null);
+
+        // check if $game is deleted from database
+        $this->assertDatabaseMissing('game_media_uploads', ['id' => $game->id]);
+
+
+        // refresh the poly relation from database
+        $challenge->refresh();
+
+        // check if polymorphic keys have been set to null
+        if(!$challenge->game_type && !$challenge->game_id){
+            // game_type and game_id have been set to NULL !
+            $this->assertTrue(true);
+        }else{
+            $this->assertTrue(false);
+        }
+    }
 }

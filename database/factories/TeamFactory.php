@@ -28,7 +28,7 @@ use App\Trip;
 $factory->define(Team::class, function (Faker $faker) {
     return [
 
-        'trip_id' => 1,
+        'trip_id' => NULL,
         'name' => $faker->name,
         'color' => $faker->hexcolor,
         'score' => $faker->numberBetween($min = 10000, $max = 9000000)

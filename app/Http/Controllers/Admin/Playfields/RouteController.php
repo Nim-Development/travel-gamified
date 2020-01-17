@@ -109,4 +109,18 @@ class RouteController extends Controller
             ->setStatusCode(200);
     }
 
+
+    public function destroy($id)
+    {
+        $route = Route::findOrFail($id);
+
+        try {
+            // forceDelete makes sure the media will be deleted to.
+            $route->forceDelete();
+            return response()->json(null, 204);
+        } catch (\Throwable $th) {
+            return response()->json(['error' => $th->getMessage()], 422);
+        }
+    }
+
 }

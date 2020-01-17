@@ -17,6 +17,6 @@
 
 Route::get('/test', function(){
 
-    MediaHelper::test();
+    Util::test();
 
 });

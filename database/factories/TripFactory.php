@@ -30,7 +30,7 @@ use App\Tour;
 
 $factory->define(Trip::class, function (Faker $faker) {
     return [
-        'tour_id' => 1,
+        'tour_id' => NULL,
         'name' => $faker->name,
         'timezone' => 'GMT+7',
         'start_date_time' => now()

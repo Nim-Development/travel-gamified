@@ -20,8 +20,8 @@ use App\Team;
 
 $factory->define(User::class, function (Faker $faker) {
     return [
-        'team_id' => 1,
-        'trip_id' => 1,
+        'team_id' => null,
+        'trip_id' => null,
         'email' => $faker->unique()->safeEmail,
         'phone' => $faker->e164PhoneNumber,
         'email_verified_at' => now(),

@@ -235,4 +235,34 @@ class AnswereController extends Controller
                 break;
         }
     }
+
+    public function destroy($type, $id)
+    {
+        switch ($type) {
+            case 'checked':
+                $answere = AnswereChecked::findOrFail($id);
+                try {
+                    // forceDelete makes sure the media will be deleted to.
+                    $answere->forceDelete();
+                    return response()->json(null, 204);
+                } catch (\Throwable $th) {
+                    return response()->json(['error' => $th->getMessage()], 422);
+                }
+                break;
+
+            case 'unchecked':
+                $answere = AnswereUnchecked::findOrFail($id);
+                try {
+                    // forceDelete makes sure the media will be deleted to.
+                    $answere->forceDelete();
+                    return response()->json(null, 204);
+                } catch (\Throwable $th) {
+                    return response()->json(['error' => $th->getMessage()], 422);
+                }
+                break;
+            
+            default:
+                break;
+        }
+    }
 }

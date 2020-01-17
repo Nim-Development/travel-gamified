@@ -220,5 +220,19 @@ class ItineraryController extends Controller
             ->response()
             ->setStatusCode(200);
     }
+
+
+    public function destroy($id)
+    {
+        $itinerary = Itinerary::findOrFail($id);
+
+        try {
+            // forceDelete makes sure the media will be deleted to.
+            $itinerary->forceDelete();
+            return response()->json(null, 204);
+        } catch (\Throwable $th) {
+            return response()->json(['error' => $th->getMessage()], 422);
+        }
+    }
     
 }

@@ -130,4 +130,18 @@ class CityController extends Controller
             ->response()
             ->setStatusCode(200);
     }
+
+
+    public function destroy($id)
+    {
+        $city = City::findOrFail($id);
+
+        try {
+            // forceDelete makes sure the media will be deleted to.
+            $city->forceDelete();
+            return response()->json(null, 204);
+        } catch (\Throwable $th) {
+            return response()->json(['error' => $th->getMessage()], 422);
+        }
+    }
 }

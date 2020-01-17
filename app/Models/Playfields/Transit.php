@@ -2,6 +2,7 @@
 
 namespace App\Playfields;
 
+use App\Events\UnlinkPoly;
 use Illuminate\Database\Eloquent\Model;
 
 class Transit extends Model
@@ -12,9 +13,9 @@ class Transit extends Model
         return $this->hasMany('App\Playfields\Route');
     }    
     
-    public function itinerary()
+    public function itineraries()
     {
-        return $this->morphOne('App\Itinerary', 'playfield');
+        return $this->morphMany('App\Itinerary', 'playfield');
     }
 
     public function challenges()
@@ -35,4 +36,15 @@ class Transit extends Model
     }
 
     protected $fillable = ['name', 'from_city_id', 'to_city_id'];
+
+    // clean up relationships at deletion of this model. 
+    public static function boot() {         
+        parent::boot();         
+        static::deleting(function($transit) { // before delete() method call this    
+
+            // set foreign polymorphic data relational to this instance to NULL
+            event(new UnlinkPoly($transit->itineraries, 'playfield_type', 'playfield_id'));
+            event(new UnlinkPoly($transit->challenges, 'playfield_type', 'playfield_id'));
+        }); 
+    }
 }

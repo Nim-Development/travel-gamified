@@ -33,7 +33,7 @@ use App\Playfields\Transit;
 
 $factory->define(Route::class, function (Faker $faker) {
     return [
-        'transit_id' => 1,
+        'transit_id' => NULL,
         'name' => $faker->name,
         'maps_url' => $faker->url,
         'kilometers' => $faker->randomFloat($nbMaxDecimals = 2, $min = 1, $max = 300),

@@ -657,33 +657,77 @@ trait Put
 
 trait Delete
 {
-            /**
+    /**
      * @test
      */
-    // public function will_fail_with_a_404_if_the_route_we_want_to_delete_is_not_found()
-    // {
-    //     $res = $this->json('DELETE', 'api/routes/-1');
-    //     $res->assertStatus(404);
-    // }
+    public function will_fail_with_a_404_if_the_route_we_want_to_delete_is_not_found()
+    {
+        $res = $this->json('DELETE', 'api/routes/-1');
+        $res->assertStatus(404);
+    }
 
-       /**
+
+    /**
      * @test
      */
-    // public function can_delete_a_route()
-    // {
-    //     // Given
-    //     // first create a route in the database to delete
-    //     $route = $this->create('Playfields\Route');
+    public function foreign_route_poly_relationships_are_set_to_null_after_delete()
+    {
 
-    //     // When
-    //     // call the delete api
-    //     $res = $this->json('DELETE', '/api/routes/'.$route->id);
+        /**
+         * playfields:
+         * - challenges
+         * - itineraries
+         */
 
-    //     // Then
-    //     $res->assertStatus(204)
-    //         ->assertSee(null);
+        // Given
+        // first create a game in the database to delete
+        $route = $this->create('Playfields\Route');
 
-    //     // check if $route is deleted from database
-    //     $this->assertDatabaseMissing('Playfields\Routes', ['id' => $route->id]);
-    // }
+        // holds the polymoprhic relationship type and key
+        $challenge = $this->create('Games\Challenge', [
+            'playfield_type' => 'route',
+            'playfield_id' =>  $route->id
+        ]);
+        $itineraries = $this->create_collection('Itinerary', [
+            'playfield_type' => 'route',
+            'playfield_id' =>  $route->id
+        ], false, 3);
+        
+        // When
+        // call the delete api
+        $res = $this->json('DELETE', '/api/routes/'.$route->id);
+
+        // Then
+        $res->assertStatus(204)
+            ->assertSee(null);
+
+        // check if $game is deleted from database
+        $this->assertDatabaseMissing('routes', ['id' => $route->id]);
+
+        // refresh the poly relation from database
+        $challenge->refresh();
+
+        // check if polymorphic keys have been set to null
+        if(!$challenge->playfield_type && !$challenge->playfield_id){
+            // game_type and game_id have been set to NULL !
+            $this->assertTrue(true);
+        }else{
+            $this->assertTrue(false);
+        }
+
+
+        // ::nk FAILS because $route->itenireary should be morphMany()!..
+        // or this test should always bge for songular relation.
+
+        // check if polymorphic keys have been set to null
+        foreach($itineraries as $itinerary){
+            $itinerary->refresh();
+            
+            if(!$itinerary->playfield_type && !$itinerary->playfield_id){
+                $this->assertTrue(true);
+            }else{
+                $this->assertTrue(false);
+            }
+        }
+    }
 }

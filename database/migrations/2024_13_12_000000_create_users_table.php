@@ -15,8 +15,12 @@ class CreateUsersTable extends Migration
     {
         Schema::create('users', function (Blueprint $table) {
             $table->bigIncrements('id');
-            $table->bigInteger('team_id');
-            $table->bigInteger('trip_id');
+
+            $table->unsignedBigInteger('team_id')->nullable();
+            $table->foreign('team_id')->references('id')->on('teams')->onDelete('set null');
+
+            $table->unsignedBigInteger('trip_id')->nullable();
+            $table->foreign('trip_id')->references('id')->on('trips')->onDelete('set null');
 
             $table->string('email')->unique();
             $table->string('phone');

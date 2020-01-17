@@ -2,6 +2,7 @@
 
 namespace App;
 
+use App\Events\UnlinkRelations;
 use Illuminate\Database\Eloquent\Model;
 
 class Trip extends Model

@@ -29,8 +29,8 @@ class Team extends JsonResource
             'users' => (!$users) ? null : $this->insert_users_into_team($users),
             'trip' => (!$trip) ? null :
                 [
-                    'id' => (integer)$trip->id,
-                    'tour_id' => (integer)$trip->tour_id,
+                    'id' => (!$trip->id) ? null : (integer)$trip->id,
+                    'tour_id' => (!$trip->tour_id) ? null : (integer)$trip->tour_id,
                     'name' => $trip->name,
                     'timezone' => $trip->timezone,
                     'start_date_time' => (string)$trip->start_date_time,

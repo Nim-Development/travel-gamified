@@ -70,7 +70,7 @@ trait Insert {
                 return [
                     'id' => $playfield->id,
                     'type' => $playfield_type,
-                    'transit_id' => (integer)$playfield->transit_id,
+                    'transit_id' => (!$playfield->transit_id) ? null : (integer)$playfield->transit_id,
                     'name' => $playfield->name,
                     'maps_url' => $playfield->maps_url,
                     'kilometers' => (double)$playfield->kilometers,
@@ -162,7 +162,7 @@ trait Insert {
             array_push($users_array,
                 [
                     'id' => (integer)$user->id,
-                    'team_id' => (integer)$user->team_id,
+                    'team_id' => (!$user->team_id) ? null : (integer)$user->team_id,
                     'email' => $user->email,
                     'phone' => $user->phone,
                     'first_name' => $user->first_name,

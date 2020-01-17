@@ -1827,33 +1827,82 @@ trait Put
 
 trait Delete
 {
-    //  /**
-    //  * @test
-    //  */
-    // public function will_fail_with_a_404_if_the_answere_we_want_to_delete_is_not_found()
-    // {
-    //     $res = $this->json('DELETE', 'api/answeres/-1');
-    //     $res->assertStatus(404);
-    // }
 
-    // /**
-    //  * @test
-    //  */
-    // public function can_delete_a_answere()
-    // {
-    //     // Given
-    //     // first create a answere in the database to delete
-    //     $answere = $this->create('Answere');
+    /**
+     * @test
+     */
+    public function will_fail_with_a_404_if_the_answere_checked_we_want_to_delete_is_not_found()
+    {
+        $res = $this->json('DELETE', 'api/answeres/checked/-1');
+        $res->assertStatus(404);
+    }
 
-    //     // When
-    //     // call the delete api
-    //     $res = $this->json('DELETE', '/api/answeres/'.$answere->id);
+    /**
+     * @test
+     */
+    public function will_fail_with_a_404_if_the_answere_unchecked_we_want_to_delete_is_not_found()
+    {
+        $res = $this->json('DELETE', 'api/answeres/unchecked/-1');
+        $res->assertStatus(404);
+    }
 
-    //     // Then
-    //     $res->assertStatus(204)
-    //         ->assertSee(null);
+    /**
+     * @test
+     */
+    public function can_delete_a_answere_checked_including_its_files()
+    {
+        // Given
+        // first create a game in the database to delete
+        $answere = $this->create('AnswereChecked');
 
-    //     // check if $answere is deleted from database
-    //     $this->assertDatabaseMissing('answeres', ['id' => $answere->id]);
-    // }
+        // attach media
+        $media = ['media1', 'media2'];
+        $this->file_factory($answere, 'submission', $media);
+
+        // When
+        // call the delete api
+        $res = $this->json('DELETE', '/api/answeres/checked/'.$answere->id);
+
+        // Then
+        $res->assertStatus(204)
+            ->assertSee(null);
+
+
+        // check if $game is deleted from database
+        $this->assertDatabaseMissing('answere_checkeds', ['id' => $answere->id]);
+
+        \Storage::disk('test')->assertMissing($media);
+
+    }
+
+
+    /**
+     * @test
+     */
+    public function can_delete_a_answere_unchecked_including_its_files()
+    {
+        // Given
+        // first create a game in the database to delete
+        $answere = $this->create('AnswereUnchecked');
+
+        // attach media
+        $media = ['media1', 'media2'];
+        $this->file_factory($answere, 'submission', $media);
+
+        // When
+        // call the delete api
+        $res = $this->json('DELETE', '/api/answeres/unchecked/'.$answere->id);
+
+        // Then
+        $res->assertStatus(204)
+            ->assertSee(null);
+
+
+        // check if $game is deleted from database
+        $this->assertDatabaseMissing('answere_uncheckeds', ['id' => $answere->id]);
+
+        \Storage::disk('test')->assertMissing($media);
+
+    }
+
 }

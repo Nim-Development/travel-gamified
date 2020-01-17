@@ -15,7 +15,10 @@ class CreateRoutesTable extends Migration
     {
         Schema::create('routes', function (Blueprint $table) {
             $table->bigIncrements('id');
-            $table->bigInteger('transit_id');
+
+            $table->unsignedBigInteger('transit_id')->nullable();
+            $table->foreign('transit_id')->references('id')->on('transits')->onDelete('set null');
+
             $table->string('name');
             $table->text('maps_url');
             $table->float('kilometers');

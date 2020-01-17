@@ -15,11 +15,14 @@ class CreateItinerariesTable extends Migration
     {
         Schema::create('itineraries', function (Blueprint $table) {
             $table->bigIncrements('id');
-                $table->bigInteger('tour_id')->nullable();
+                $table->unsignedBigInteger('tour_id')->nullable();
+                $table->foreign('tour_id')->references('id')->on('tours')->onDelete('set null');
+
+
                 $table->integer('step');
                 $table->float('duration');
-                $table->string('playfield_type')->nullable();
-                $table->bigInteger('playfield_id')->nullable();
+                $table->string('playfield_type')->nullable(); // set to null from code (db layer doesnt understand polymorphism)
+                $table->unsignedBigInteger('playfield_id')->nullable(); // set to null from code (db layer doesnt understand polymorphism)
             $table->timestamps();
         });
     }

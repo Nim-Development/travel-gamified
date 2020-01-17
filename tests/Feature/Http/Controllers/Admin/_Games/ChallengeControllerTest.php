@@ -1237,13 +1237,14 @@ trait Put
 
         // When
         $response = $this->json('PUT','api/challenges/'.$old_challenge->id, $body);
+
         // Then
         $response->assertStatus(200)
                  ->assertJsonFragment([
                      'playfield' => [
                         'id' => $playfield->id,
                         'type' => 'route',
-                        'transit_id' => (integer)$playfield->transit_id,
+                        'transit_id' => (!$playfield->transit_id) ? null : (integer)$playfield->transit_id,
                         'name' => $playfield->name,
                         'maps_url' => $playfield->maps_url,
                         'kilometers' => (double)$playfield->kilometers,
@@ -1264,7 +1265,15 @@ trait Put
                         'created_at' => (string)$game->created_at
                      ]
                  ]);
-        $this->assertDatabaseHas('challenges', $body);
+
+
+
+                //  [{"playfield":{"created_at":"2020-01-17 18:17:55","difficulty":61,"highway":23,"hours":11.55,"id":1,"kilometers":135.77,"maps_url":"http:\/\/www.jacobson.com\/optio-doloribus-est-ea-sequi","name":"Dwight Skiles","nature":83,"transit_id":0,"type":"route"}}]
+                //  [ "playfield":{"created_at":"2020-01-17 18:19:25","difficulty":31,"highway":78,"hours":7.24,"id":1,"kilometers":146.84,"maps_url":"http:\/\/www.roberts.info\/voluptates-incidunt-quo-vero-iusto-eligendi.html","name":"Rebeka Borer","nature":57,"transit_id":null,"type":"route"},"sort_order":1}}]
+        
+        
+        
+                 $this->assertDatabaseHas('challenges', $body);
         $this->assertDatabaseMissing('challenges', $old_challenge_values);
 
     }
@@ -1576,5 +1585,85 @@ trait Put
 
 trait Delete
 {
-    
+    /**
+     * @test
+     */
+    public function will_fail_with_a_404_if_the_challenge_we_want_to_delete_is_not_found()
+    {
+        $res = $this->json('DELETE', 'api/challenges/-1');
+        $res->assertStatus(404);
+    }
+
+    /**
+     * @test
+     */
+    public function can_delete_a_challange_and_unlink_all_relationships()
+    {
+        $playfield = $this->create('Playfields\City');
+        $game = $this->create('Games\GameTextAnswere');
+
+        // Given
+        // first create a game in the database to delete
+        $challenge = $this->create('Games\Challenge', [
+            'playfield_type' => 'city',
+            'playfield_id' => $playfield->id,
+            'game_type' => 'text_answere',
+            'game_id' =>  $game->id
+        ]);
+
+        // When
+        // call the delete api
+        $res = $this->json('DELETE', '/api/challenges/'.$challenge->id);
+
+        // Then
+        $res->assertStatus(204)
+            ->assertSee(null);
+
+        // check if $game is deleted from database
+        $this->assertDatabaseMissing('challenges', ['id' => $challenge->id]);
+    }
+
+        /**
+     * @test
+     */
+    public function can_delete_a_challange_and_set_its_forgeign_keys_to_null()
+    {
+        // Given
+        // first create a game in the database to delete
+        $challenge = $this->create('Games\Challenge');
+
+        $answere_unchecked = $this->create('AnswereUnchecked', [
+            'challenge_id' => $challenge->id
+        ]);
+        $answere_checked = $this->create('AnswereChecked', [
+            'challenge_id' => $challenge->id
+        ]);
+
+        // When
+        // call the delete api
+        $res = $this->json('DELETE', '/api/challenges/'.$challenge->id);
+
+        // Then
+        $res->assertStatus(204)
+            ->assertSee(null);
+
+        // check if $game is deleted from database
+        $this->assertDatabaseMissing('challenges', ['id' => $challenge->id]);
+
+        $answere_unchecked->refresh();
+        if(!$answere_unchecked->challenge_id){
+            $this->assertTrue(true);
+        }else{
+            $this->assertTrue(false);
+        }
+
+        $answere_checked->refresh();
+        if(!$answere_checked->challenge_id){
+            $this->assertTrue(true);
+        }else{
+            $this->assertTrue(false);
+        }
+
+    }
+
 }

@@ -18,6 +18,9 @@ class EventServiceProvider extends ServiceProvider
         Registered::class => [
             SendEmailVerificationNotification::class,
         ],
+        \App\Events\UnlinkPoly::class => [
+            \App\Listeners\UnlinkPoly_Listener::class
+        ]
     ];
 
     /**

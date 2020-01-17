@@ -93,7 +93,7 @@ trait Get
                     ]
                 ]);
     }
-
+    
     /**
      * @test
      */
@@ -1031,33 +1031,74 @@ trait Put
 
 trait Delete
 {
+
+       /**
+     * @test
+     */
+    public function will_fail_with_a_404_if_the_team_we_want_to_delete_is_not_found()
+    {
+        $res = $this->json('DELETE', 'api/teams/-1');
+        $res->assertStatus(404);
+    }
+
     /**
      * @test
      */
-    // public function will_fail_with_a_404_if_the_team_we_want_to_delete_is_not_found()
-    // {
-    //     $res = $this->json('DELETE', 'api/teams/-1');
-    //     $res->assertStatus(404);
-    // }
+    public function can_delete_a_team_including_its_files()
+    {
+        // Given
+        // first create a game in the database to delete
+        $team = $this->create('Team');
+
+        // attach media
+        $media = ['media1', 'media2'];
+        $this->file_factory($team, 'badge', $media);
+
+        // When
+        // call the delete api
+        $res = $this->json('DELETE', '/api/teams/'.$team->id);
+
+        // Then
+        $res->assertStatus(204)
+            ->assertSee(null);
+
+
+        // check if $game is deleted from database
+        $this->assertDatabaseMissing('teams', ['id' => $team->id]);
+
+        \Storage::disk('test')->assertMissing($media);
+
+    }
 
     /**
      * @test
      */
-    // public function can_delete_a_team()
-    // {
-    //     // Given
-    //     // first create a team in the database to delete
-    //     $team = $this->create('Team');
+    public function can_delete_a_team_and_unlink_all_relationships()
+    {
+        // Given
+        // first create a game in the database to delete
+        $team = $this->create('Team');
+        $user = $this->create('User', [
+            'team_id' => $team->id
+        ]);
 
-    //     // When
-    //     // call the delete api
-    //     $res = $this->json('DELETE', '/api/teams/'.$team->id);
+        // When
+        // call the delete api
+        $res = $this->json('DELETE', '/api/teams/'.$team->id);
 
-    //     // Then
-    //     $res->assertStatus(204)
-    //         ->assertSee(null);
+        // Then
+        $res->assertStatus(204)
+            ->assertSee(null);
 
-    //     // check if $team is deleted from database
-    //     $this->assertDatabaseMissing('teams', ['id' => $team->id]);
-    // }
+        // check if $game is deleted from database
+        $this->assertDatabaseMissing('teams', ['id' => $team->id]);
+
+        $user->refresh();
+        if(!$user->team_id){
+            $this->assertTrue(true);
+        }else{
+            $this->assertTrue(false);
+        }
+    }
+
 }

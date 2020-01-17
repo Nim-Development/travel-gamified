@@ -15,7 +15,10 @@ class CreateGameMultipleChoiceOptionsTable extends Migration
     {
         Schema::create('game_multiple_choice_options', function (Blueprint $table) {
             $table->bigIncrements('id');
-            $table->integer('game_id');
+
+            $table->unsignedBigInteger('game_id')->nullable();
+            $table->foreign('game_id')->references('id')->on('game_multiple_choices')->onDelete('set null');
+
             $table->integer('sort_order');
             $table->string('text');
             $table->timestamps();
