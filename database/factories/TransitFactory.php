@@ -1,11 +1,11 @@
 <?php
 
 /** @var \Illuminate\Database\Eloquent\Factory $factory */
-use App\Playfields\Transit;
+use App\Transit;
 use Faker\Generator as Faker;
 use Illuminate\Support\Str;
 
-use App\Playfields\City;
+use App\City;
 
 /*
 |--------------------------------------------------------------------------

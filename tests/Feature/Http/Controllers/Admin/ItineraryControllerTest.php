@@ -20,16 +20,18 @@ class ItineraryControllerTest extends TestCase
     use Put;
     use Delete;
 
+    protected $api_base = "/api/admin/itineraries";
+
     /**
      * @test
      */
     // public function non_authenticated_user_can_not_access_itinerary_api_endpoints()
     // {
-    //     $this->json('GET', '/api/itineraries')->assertStatus(401);
-    //     $this->json('GET', 'api/itineraries/1')->assertStatus(401);
-    //     $this->json('PUT', 'api/itineraries/1')->assertStatus(401);
-    //     $this->json('DELETE', 'api/itineraries/1')->assertStatus(401);
-    //     $this->json('POST', '/api/itineraries')->assertStatus(401);
+    //     $this->json("GET", "/$this->api_base")->assertStatus(401);
+    //     $this->json("GET", "$this->api_base/1")->assertStatus(401);
+    //     $this->json("PUT", "$this->api_base/1")->assertStatus(401);
+    //     $this->json("DELETE", "$this->api_base/1")->assertStatus(401);
+    //     $this->json("POST", "/$this->api_base")->assertStatus(401);
     // }
 }
 
@@ -41,7 +43,7 @@ trait Get
      */
     public function will_fail_with_a_404_if_itinerary_is_not_found()
     {
-        $res = $this->json('GET', 'api/itineraries/-1');
+        $res = $this->json("GET", "$this->api_base/-1");
         $res->assertStatus(404);
     }
 
@@ -51,7 +53,7 @@ trait Get
     public function will_return_204_when_requesting_all_itineraries_whilst_no_entries_in_database()
     {
         // Skip any creates
-        $res = $this->json('GET', 'api/itineraries');
+        $res = $this->json("GET", "$this->api_base");
         $res->assertStatus(204);
     }
 
@@ -61,7 +63,7 @@ trait Get
     public function will_return_204_when_requesting_paginated_itineraries_whilst_no_entries_in_database()
     {
         // Skip any creates
-        $res = $this->json('GET', 'api/itineraries/paginate/3');
+        $res = $this->json("GET", "$this->api_base/paginate/3");
         $res->assertStatus(204);
     }
 
@@ -72,22 +74,22 @@ trait Get
     {
         // Given
 
-        $itinerary = $this->create('Itinerary');
+        $itinerary = $this->create("Itinerary");
 
         // When
-        $response = $this->json('GET', '/api/itineraries/'.$itinerary->id);
+        $response = $this->json("GET", "/$this->api_base/".$itinerary->id);
 
         // Then
         // assert status code
         $response->assertStatus(200)
                  ->assertExactJson([
-                    'data' => [
-                        'id' => $itinerary->id,
-                        'tour' => null,
-                        'step' => $itinerary->step,
-                        'duration' => $itinerary->duration,
-                        'playfield' => null,
-                        'created_at' => (string)$itinerary->created_at,
+                    "data" => [
+                        "id" => $itinerary->id,
+                        "tour" => null,
+                        "step" => $itinerary->step,
+                        "duration" => $itinerary->duration,
+                        "playfield" => null,
+                        "created_at" => (string)$itinerary->created_at,
                     ]
                 ]
             );
@@ -101,40 +103,40 @@ trait Get
     {
         // Given
         // Create playfield
-        $playfield = $this->create('Playfields\City', [], false);
-        $tour = $this->create('Tour');
+        $playfield = $this->create("City", [], false);
+        $tour = $this->create("Tour");
 
-        $itinerary = $this->create('Itinerary', [
-            'tour_id' => $tour->id,
-            'playfield_type' => 'city',
-            'playfield_id' => $playfield->id
+        $itinerary = $this->create("Itinerary", [
+            "tour_id" => $tour->id,
+            "playfield_type" => "city",
+            "playfield_id" => $playfield->id
         ]);
 
         // When
-        $response = $this->json('GET', '/api/itineraries/'.$itinerary->id);
+        $response = $this->json("GET", "/$this->api_base/".$itinerary->id);
 
         // Then
         // assert status code
         $response->assertStatus(200)
                  ->assertExactJson([
-                    'data' => [
-                        'id' => $itinerary->id,
-                        'tour' => [
-                            'id' => $tour->id,
-                            'name' => $tour->name,
-                            'duration' => $tour->duration,
-                            'created_at' => (string)$tour->created_at
+                    "data" => [
+                        "id" => $itinerary->id,
+                        "tour" => [
+                            "id" => $tour->id,
+                            "name" => $tour->name,
+                            "duration" => $tour->duration,
+                            "created_at" => (string)$tour->created_at
                         ],
-                        'step' => $itinerary->step,
-                        'duration' => $itinerary->duration,
-                        'playfield' => [
-                            'id' => $playfield->id,
-                            'type' => $itinerary->playfield_type,
-                            'short_code' => $playfield->short_code,
-                            'name' => $playfield->name,
-                            'created_at' => (string)$playfield->created_at
+                        "step" => $itinerary->step,
+                        "duration" => $itinerary->duration,
+                        "playfield" => [
+                            "id" => $playfield->id,
+                            "type" => $itinerary->playfield_type,
+                            "short_code" => $playfield->short_code,
+                            "name" => $playfield->name,
+                            "created_at" => (string)$playfield->created_at
                         ],
-                        'created_at' => (string)$itinerary->created_at,
+                        "created_at" => (string)$itinerary->created_at,
                     ]
                 ]
             );
@@ -147,46 +149,46 @@ trait Get
     {
         // Given
         // Create playfield
-        $playfield = $this->create('Playfields\Route', [], false);
-        $tour = $this->create('Tour');
+        $playfield = $this->create("Route", [], false);
+        $tour = $this->create("Tour");
 
-        $itinerary = $this->create('Itinerary', [
-            'tour_id' => $tour->id,
-            'playfield_type' => 'route',
-            'playfield_id' => $playfield->id
+        $itinerary = $this->create("Itinerary", [
+            "tour_id" => $tour->id,
+            "playfield_type" => "route",
+            "playfield_id" => $playfield->id
         ]);
 
         // When
-        $response = $this->json('GET', '/api/itineraries/'.$itinerary->id);
+        $response = $this->json("GET", "/$this->api_base/".$itinerary->id);
 
         // Then
         // assert status code
         $response->assertStatus(200)
                  ->assertExactJson([
-                    'data' => [
-                        'id' => $itinerary->id,
-                        'tour' => [
-                            'id' => $tour->id,
-                            'name' => $tour->name,
-                            'duration' => $tour->duration,
-                            'created_at' => (string)$tour->created_at
+                    "data" => [
+                        "id" => $itinerary->id,
+                        "tour" => [
+                            "id" => $tour->id,
+                            "name" => $tour->name,
+                            "duration" => $tour->duration,
+                            "created_at" => (string)$tour->created_at
                         ],
-                        'step' => $itinerary->step,
-                        'duration' => $itinerary->duration,
-                        'playfield' => [
-                            'id' => $playfield->id,
-                            'type' => $itinerary->playfield_type,
-                            'transit_id' => $playfield->transit_id,
-                            'name' => $playfield->name,
-                            'maps_url' => $playfield->maps_url,
-                            'kilometers' => $playfield->kilometers,
-                            'hours' => $playfield->hours,
-                            'difficulty' => $playfield->difficulty,
-                            'nature' => $playfield->nature,
-                            'highway' => $playfield->highway,
-                            'created_at' => (string)$playfield->created_at
+                        "step" => $itinerary->step,
+                        "duration" => $itinerary->duration,
+                        "playfield" => [
+                            "id" => $playfield->id,
+                            "type" => $itinerary->playfield_type,
+                            "transit_id" => $playfield->transit_id,
+                            "name" => $playfield->name,
+                            "maps_url" => $playfield->maps_url,
+                            "kilometers" => $playfield->kilometers,
+                            "hours" => $playfield->hours,
+                            "difficulty" => $playfield->difficulty,
+                            "nature" => $playfield->nature,
+                            "highway" => $playfield->highway,
+                            "created_at" => (string)$playfield->created_at
                         ],
-                        'created_at' => (string)$itinerary->created_at,
+                        "created_at" => (string)$itinerary->created_at,
                     ]
                 ]
             );
@@ -198,66 +200,66 @@ trait Get
     public function can_return_a_itinerary_with_playfield_type_OFF_transit()
     {
         // Given
-        $from = $this->create('Playfields\City');
-        $to = $this->create('Playfields\City');
+        $from = $this->create("City");
+        $to = $this->create("City");
 
         // Create playfield
-        $playfield = $this->create('Playfields\Transit',[
-            'from_city_id' => $from->id,
-            'to_city_id' => $to->id
+        $playfield = $this->create("Transit",[
+            "from_city_id" => $from->id,
+            "to_city_id" => $to->id
         ], false);
-        $tour = $this->create('Tour');
+        $tour = $this->create("Tour");
 
-        $itinerary = $this->create('Itinerary', [
-            'tour_id' => $tour->id,
-            'playfield_type' => 'transit',
-            'playfield_id' => $playfield->id
+        $itinerary = $this->create("Itinerary", [
+            "tour_id" => $tour->id,
+            "playfield_type" => "transit",
+            "playfield_id" => $playfield->id
         ]);
 
         // When
-        $response = $this->json('GET', '/api/itineraries/'.$itinerary->id);
+        $response = $this->json("GET", "/$this->api_base/".$itinerary->id);
 
         // Then
         // assert status code
         $response->assertStatus(200)
                  ->assertExactJson([
-                    'data' => [
-                        'id' => $itinerary->id,
-                        'tour' => [
-                            'id' => $tour->id,
-                            'name' => $tour->name,
-                            'duration' => $tour->duration,
-                            'created_at' => (string)$tour->created_at
+                    "data" => [
+                        "id" => $itinerary->id,
+                        "tour" => [
+                            "id" => $tour->id,
+                            "name" => $tour->name,
+                            "duration" => $tour->duration,
+                            "created_at" => (string)$tour->created_at
                         ],
-                        'step' => $itinerary->step,
-                        'duration' => $itinerary->duration,
-                        'playfield' => [
-                            'id' => $playfield->id,
-                            'type' => $itinerary->playfield_type,
-                            'name' => $playfield->name,
-                            'from' => [
-                                'id' => $from->id,
-                                'type' => 'city',
-                                'short_code' => $from->short_code,
-                                'name' => $from->name,
-                                'created_at' => (string)$from->created_at
+                        "step" => $itinerary->step,
+                        "duration" => $itinerary->duration,
+                        "playfield" => [
+                            "id" => $playfield->id,
+                            "type" => $itinerary->playfield_type,
+                            "name" => $playfield->name,
+                            "from" => [
+                                "id" => $from->id,
+                                "type" => "city",
+                                "short_code" => $from->short_code,
+                                "name" => $from->name,
+                                "created_at" => (string)$from->created_at
                             ], // City relationship
-                            'to' => [
-                                'id' => $to->id,
-                                'type' => 'city',
-                                'short_code' => $to->short_code,
-                                'name' => $to->name,
-                                'created_at' => (string)$to->created_at
+                            "to" => [
+                                "id" => $to->id,
+                                "type" => "city",
+                                "short_code" => $to->short_code,
+                                "name" => $to->name,
+                                "created_at" => (string)$to->created_at
                             ],
-                            'created_at' => (string)$playfield->created_at
+                            "created_at" => (string)$playfield->created_at
                         ],
-                        'created_at' => (string)$itinerary->created_at,
+                        "created_at" => (string)$itinerary->created_at,
                     ]
                 ]
             );
     }
 
-    // Route::get('itineraries', 'Admin\ItineraryController@all');
+    // Route::get("itineraries", "Admin\ItineraryController@all");
 
 
     /**
@@ -266,34 +268,34 @@ trait Get
     public function can_return_a_collection_of_all_itineraries()
     {
 
-        $city = $this->create('Playfields\City');
-        $tour = $this->create('Tour');
+        $city = $this->create("City");
+        $tour = $this->create("Tour");
 
-        $this->create_collection('Itinerary', ['tour_id' => $tour->id, 'playfield_type' => 'city', 'playfield_id' => $city->id], false, 3);
+        $this->create_collection("Itinerary", ["tour_id" => $tour->id, "playfield_type" => "city", "playfield_id" => $city->id], false, 3);
 
-        $response = $this->json('GET', "api/itineraries");
+        $response = $this->json("GET", "$this->api_base");
         $response->assertStatus(200)
-                 ->assertJsonCount(3, 'data')
+                 ->assertJsonCount(3, "data")
                  ->assertJsonStructure([
-                     'data' => [
-                         '*' => [
-                            'id',
-                            'tour' => [
-                                'id',
-                                'name',
-                                'duration',
-                                'created_at'
+                     "data" => [
+                         "*" => [
+                            "id",
+                            "tour" => [
+                                "id",
+                                "name",
+                                "duration",
+                                "created_at"
                             ],
-                            'step',
-                            'duration',
-                            'playfield' => [
-                                'id',
-                                'type',
-                                'short_code',
-                                'name',
-                                'created_at'
+                            "step",
+                            "duration",
+                            "playfield" => [
+                                "id",
+                                "type",
+                                "short_code",
+                                "name",
+                                "created_at"
                             ],
-                            'created_at'
+                            "created_at"
                         ]
                     ]
                  ]);
@@ -305,41 +307,41 @@ trait Get
     public function can_return_a_collection_of_all_itineraries_paginated()
     {
 
-        $city = $this->create('Playfields\City');
-        $tour = $this->create('Tour');
+        $city = $this->create("City");
+        $tour = $this->create("Tour");
 
-        $this->create_collection('Itinerary', ['tour_id' => $tour->id,'playfield_type' => 'city', 'playfield_id' => $city->id], false, 6);
+        $this->create_collection("Itinerary", ["tour_id" => $tour->id,"playfield_type" => "city", "playfield_id" => $city->id], false, 6);
 
-        $response = $this->json('GET', "api/itineraries/paginate/3");
+        $response = $this->json("GET", "$this->api_base/paginate/3");
         $response->assertStatus(200)
-                 ->assertJsonCount(3, 'data')
+                 ->assertJsonCount(3, "data")
                  ->assertJsonStructure([
-                     'data' => [
-                        '*' => [ //* to say we checking keys of multiple collections
-                                'id',
-                                'tour' => [
-                                    'id',
-                                    'name',
-                                    'duration',
-                                    'created_at'
+                     "data" => [
+                        "*" => [ //* to say we checking keys of multiple collections
+                                "id",
+                                "tour" => [
+                                    "id",
+                                    "name",
+                                    "duration",
+                                    "created_at"
                                 ],
-                                'step',
-                                'duration',
-                                'playfield' => [
-                                    'id',
-                                    'type',
-                                    'short_code',
-                                    'name',
-                                    'created_at'
+                                "step",
+                                "duration",
+                                "playfield" => [
+                                    "id",
+                                    "type",
+                                    "short_code",
+                                    "name",
+                                    "created_at"
                                 ],
-                                'created_at'
+                                "created_at"
                             ]
                     ],
                     // Check if it is paginated
-                    'links' => ['first', 'last', 'prev', 'next'],
-                    'meta' => [
-                        'current_page', 'last_page', 'from', 'to',
-                        'path', 'per_page', 'total'
+                    "links" => ["first", "last", "prev", "next"],
+                    "meta" => [
+                        "current_page", "last_page", "from", "to",
+                        "path", "per_page", "total"
                     ]
                 ]);
     }
@@ -349,40 +351,40 @@ trait Get
      */
     public function can_return_a_collection_of_all_itineraries_with_playfield_OFF_city()
     {
-        $city = $this->create('Playfields\City');
-        $tour = $this->create('Tour');
+        $city = $this->create("City");
+        $tour = $this->create("Tour");
 
-        $this->create_collection('Itinerary', ['tour_id' => $tour->id,'playfield_type' => 'city', 'playfield_id' => $city->id], false, 6);
+        $this->create_collection("Itinerary", ["tour_id" => $tour->id,"playfield_type" => "city", "playfield_id" => $city->id], false, 6);
 
         // create 1 more itinerary with other playfield type
-        $this->create('Itinerary', ['playfield_type' => 'xxxx']);
+        $this->create("Itinerary", ["playfield_type" => "xxxx"]);
 
-        $response = $this->json('GET', "api/itineraries/playfield/city");
+        $response = $this->json("GET", "$this->api_base/playfield/city");
 
         // Assert if all itineraries have relation of type Transit
-        $this->assert_if_all_objects_have_same_type_in_specified_relation($response, 'playfield', 'city');
+        $this->assert_if_all_objects_have_same_type_in_specified_relation($response, "playfield", "city");
         $response->assertStatus(200)
-                 ->assertJsonCount(6, 'data')
+                 ->assertJsonCount(6, "data")
                  ->assertJsonStructure([
-                     'data' => [
-                         '*' => [
-                            'id',
-                            'tour' => [
-                                'id',
-                                'name',
-                                'duration',
-                                'created_at'
+                     "data" => [
+                         "*" => [
+                            "id",
+                            "tour" => [
+                                "id",
+                                "name",
+                                "duration",
+                                "created_at"
                             ],
-                            'step',
-                            'duration',
-                            'playfield' => [
-                                'id',
-                                'type',
-                                'short_code',
-                                'name',
-                                'created_at'
+                            "step",
+                            "duration",
+                            "playfield" => [
+                                "id",
+                                "type",
+                                "short_code",
+                                "name",
+                                "created_at"
                             ],
-                            'created_at'
+                            "created_at"
                          ]
                      ]
                  ]);
@@ -393,46 +395,46 @@ trait Get
      */
     public function can_return_a_collection_of_paginated_itineraries_with_playfield_OFF_city()
     {
-        $city = $this->create('Playfields\City');
-        $tour = $this->create('Tour');
+        $city = $this->create("City");
+        $tour = $this->create("Tour");
 
-        $this->create_collection('Itinerary', ['tour_id' => $tour->id,'playfield_type' => 'city', 'playfield_id' => $city->id], false, 6);
+        $this->create_collection("Itinerary", ["tour_id" => $tour->id,"playfield_type" => "city", "playfield_id" => $city->id], false, 6);
 
         // create 1 more itinerary with other playfield type
-        $this->create('Itinerary', ['playfield_type' => 'xxxx']);
+        $this->create("Itinerary", ["playfield_type" => "xxxx"]);
 
-        $response = $this->json('GET', "api/itineraries/playfield/city/paginate/3");
+        $response = $this->json("GET", "$this->api_base/playfield/city/paginate/3");
 
         // Assert if all itineraries have relation of type Transit
-        $this->assert_if_all_objects_have_same_type_in_specified_relation($response, 'playfield', 'city');
+        $this->assert_if_all_objects_have_same_type_in_specified_relation($response, "playfield", "city");
         $response->assertStatus(200)
-                 ->assertJsonCount(3, 'data')
+                 ->assertJsonCount(3, "data")
                  ->assertJsonStructure([
-                     'data' => [
-                         '*' => [
-                            'id',
-                            'tour' => [
-                                'id',
-                                'name',
-                                'duration',
-                                'created_at'
+                     "data" => [
+                         "*" => [
+                            "id",
+                            "tour" => [
+                                "id",
+                                "name",
+                                "duration",
+                                "created_at"
                             ],
-                            'step',
-                            'duration',
-                            'playfield' => [
-                                'id',
-                                'type',
-                                'short_code',
-                                'name',
-                                'created_at'
+                            "step",
+                            "duration",
+                            "playfield" => [
+                                "id",
+                                "type",
+                                "short_code",
+                                "name",
+                                "created_at"
                             ],
-                            'created_at'
+                            "created_at"
                          ]
                         ],
-                    'links' => ['first', 'last', 'prev', 'next'],
-                    'meta' => [
-                        'current_page', 'last_page', 'from', 'to',
-                        'path', 'per_page', 'total'
+                    "links" => ["first", "last", "prev", "next"],
+                    "meta" => [
+                        "current_page", "last_page", "from", "to",
+                        "path", "per_page", "total"
                     ]
                  ]);
     }
@@ -442,45 +444,45 @@ trait Get
      */
     public function can_return_a_collection_of_all_itineraries_with_playfield_OFF_route()
     {
-        $route = $this->create('Playfields\Route');
-        $tour = $this->create('Tour');
+        $route = $this->create("Route");
+        $tour = $this->create("Tour");
 
-        $this->create_collection('Itinerary', ['tour_id' => $tour->id,'playfield_type' => 'route', 'playfield_id' => $route->id], false, 6);
+        $this->create_collection("Itinerary", ["tour_id" => $tour->id,"playfield_type" => "route", "playfield_id" => $route->id], false, 6);
 
         // create 1 more itinerary with other playfield type
-        $this->create('Itinerary', ['playfield_type' => 'xxxx']);
+        $this->create("Itinerary", ["playfield_type" => "xxxx"]);
 
-        $response = $this->json('GET', "api/itineraries/playfield/route");
+        $response = $this->json("GET", "$this->api_base/playfield/route");
 
         // Assert if all itineraries have relation of type Transit
-        $this->assert_if_all_objects_have_same_type_in_specified_relation($response, 'playfield', 'route');
+        $this->assert_if_all_objects_have_same_type_in_specified_relation($response, "playfield", "route");
         $response->assertStatus(200)
-                 ->assertJsonCount(6, 'data')
+                 ->assertJsonCount(6, "data")
                  ->assertJsonStructure([
-                    'data' => [
-                        '*' => [
-                           'id',
-                           'tour' => [
-                                'id',
-                                'name',
-                                'duration',
-                                'created_at'
+                    "data" => [
+                        "*" => [
+                           "id",
+                           "tour" => [
+                                "id",
+                                "name",
+                                "duration",
+                                "created_at"
                             ],
-                           'step',
-                           'duration',
-                           'playfield' => [
-                               'id',
-                               'type',
-                               'name',
-                               'maps_url',
-                               'kilometers',
-                               'hours',
-                               'difficulty',
-                               'nature',
-                               'highway',
-                               'created_at'
+                           "step",
+                           "duration",
+                           "playfield" => [
+                               "id",
+                               "type",
+                               "name",
+                               "maps_url",
+                               "kilometers",
+                               "hours",
+                               "difficulty",
+                               "nature",
+                               "highway",
+                               "created_at"
                            ],
-                           'created_at'
+                           "created_at"
                         ]
                     ]
                 ]);
@@ -492,51 +494,51 @@ trait Get
      */
     public function can_return_a_collection_of_paginated_itineraries_with_playfield_OFF_route()
     {
-        $route = $this->create('Playfields\Route');
-        $tour = $this->create('Tour');
+        $route = $this->create("Route");
+        $tour = $this->create("Tour");
 
-        $this->create_collection('Itinerary', ['tour_id' => $tour->id,'playfield_type' => 'route', 'playfield_id' => $route->id], false, 6);
+        $this->create_collection("Itinerary", ["tour_id" => $tour->id,"playfield_type" => "route", "playfield_id" => $route->id], false, 6);
 
         // create 1 more itinerary with other playfield type
-        $this->create('Itinerary', ['playfield_type' => 'xxxx']);
+        $this->create("Itinerary", ["playfield_type" => "xxxx"]);
 
-        $response = $this->json('GET', "api/itineraries/playfield/route/paginate/3");
+        $response = $this->json("GET", "$this->api_base/playfield/route/paginate/3");
 
         // Assert if all itineraries have relation of type Transit
-        $this->assert_if_all_objects_have_same_type_in_specified_relation($response, 'playfield', 'route');
+        $this->assert_if_all_objects_have_same_type_in_specified_relation($response, "playfield", "route");
         $response->assertStatus(200)
-                 ->assertJsonCount(3, 'data')
+                 ->assertJsonCount(3, "data")
                  ->assertJsonStructure([
-                    'data' => [
-                        '*' => [
-                           'id',
-                           'tour' => [
-                                'id',
-                                'name',
-                                'duration',
-                                'created_at'
+                    "data" => [
+                        "*" => [
+                           "id",
+                           "tour" => [
+                                "id",
+                                "name",
+                                "duration",
+                                "created_at"
                             ],
-                           'step',
-                           'duration',
-                           'playfield' => [
-                               'id',
-                               'type',
-                               'name',
-                               'maps_url',
-                               'kilometers',
-                               'hours',
-                               'difficulty',
-                               'nature',
-                               'highway',
-                               'created_at'
+                           "step",
+                           "duration",
+                           "playfield" => [
+                               "id",
+                               "type",
+                               "name",
+                               "maps_url",
+                               "kilometers",
+                               "hours",
+                               "difficulty",
+                               "nature",
+                               "highway",
+                               "created_at"
                            ],
-                           'created_at'
+                           "created_at"
                         ]
                     ],
-                    'links' => ['first', 'last', 'prev', 'next'],
-                    'meta' => [
-                        'current_page', 'last_page', 'from', 'to',
-                        'path', 'per_page', 'total'
+                    "links" => ["first", "last", "prev", "next"],
+                    "meta" => [
+                        "current_page", "last_page", "from", "to",
+                        "path", "per_page", "total"
                     ]
                 ]);
     }
@@ -546,44 +548,44 @@ trait Get
      */
     public function can_return_a_collection_of_all_itineraries_with_playfield_OFF_transit()
     {
-        $transit = $this->create('Playfields\Transit', [
-            'from_city_id' => $this->create('Playfields\City')->id,
-            'to_city_id' => $this->create('Playfields\City')->id
+        $transit = $this->create("Transit", [
+            "from_city_id" => $this->create("City")->id,
+            "to_city_id" => $this->create("City")->id
         ]);
-        $tour = $this->create('Tour');
+        $tour = $this->create("Tour");
 
-        $this->create_collection('Itinerary', ['tour_id' => $tour->id,'playfield_type' => 'transit', 'playfield_id' => $transit->id], false, 6);
+        $this->create_collection("Itinerary", ["tour_id" => $tour->id,"playfield_type" => "transit", "playfield_id" => $transit->id], false, 6);
 
         // create 1 more itinerary with other playfield type
-        $this->create('Itinerary', ['playfield_type' => 'xxxx']);
+        $this->create("Itinerary", ["playfield_type" => "xxxx"]);
 
-        $response = $this->json('GET', "api/itineraries/playfield/transit");
+        $response = $this->json("GET", "$this->api_base/playfield/transit");
 
         // Assert if all itineraries have relation of type Transit
-        $this->assert_if_all_objects_have_same_type_in_specified_relation($response, 'playfield', 'transit');
+        $this->assert_if_all_objects_have_same_type_in_specified_relation($response, "playfield", "transit");
         $response->assertStatus(200)
-                 ->assertJsonCount(6, 'data')
+                 ->assertJsonCount(6, "data")
                  ->assertJsonStructure([
-                    'data' => [
-                        '*' => [
-                           'id',
-                            'tour' => [
-                                'id',
-                                'name',
-                                'duration',
-                                'created_at'
+                    "data" => [
+                        "*" => [
+                           "id",
+                            "tour" => [
+                                "id",
+                                "name",
+                                "duration",
+                                "created_at"
                             ],
-                           'step',
-                           'duration',
-                           'playfield' => [
-                               'id',
-                               'type',
-                               'name',
-                               'from',
-                               'to',
-                               'created_at'
+                           "step",
+                           "duration",
+                           "playfield" => [
+                               "id",
+                               "type",
+                               "name",
+                               "from",
+                               "to",
+                               "created_at"
                            ],
-                           'created_at'
+                           "created_at"
                         ]
                     ]
                 ]);
@@ -594,50 +596,50 @@ trait Get
      */
     public function can_return_a_collection_of_paginated_itineraries_with_playfield_OFF_transit()
     {
-        $transit = $this->create('Playfields\Transit', [
-            'from_city_id' => $this->create('Playfields\City')->id,
-            'to_city_id' => $this->create('Playfields\City')->id
+        $transit = $this->create("Transit", [
+            "from_city_id" => $this->create("City")->id,
+            "to_city_id" => $this->create("City")->id
         ]);
-        $tour = $this->create('Tour');
+        $tour = $this->create("Tour");
 
-        $this->create_collection('Itinerary', ['tour_id' => $tour->id,'playfield_type' => 'transit', 'playfield_id' => $transit->id], false, 6);
+        $this->create_collection("Itinerary", ["tour_id" => $tour->id,"playfield_type" => "transit", "playfield_id" => $transit->id], false, 6);
 
         // create 1 more itinerary with other playfield type
-        $this->create('Itinerary', ['playfield_type' => 'xxxx']);
+        $this->create("Itinerary", ["playfield_type" => "xxxx"]);
 
-        $response = $this->json('GET', "api/itineraries/playfield/transit/paginate/3");
+        $response = $this->json("GET", "$this->api_base/playfield/transit/paginate/3");
 
         // Assert if all itineraries have relation of type Transit
-        $this->assert_if_all_objects_have_same_type_in_specified_relation($response, 'playfield', 'transit');
+        $this->assert_if_all_objects_have_same_type_in_specified_relation($response, "playfield", "transit");
         $response->assertStatus(200)
-                 ->assertJsonCount(3, 'data')
+                 ->assertJsonCount(3, "data")
                  ->assertJsonStructure([
-                    'data' => [
-                        '*' => [
-                           'id',
-                            'tour' => [
-                                'id',
-                                'name',
-                                'duration',
-                                'created_at'
+                    "data" => [
+                        "*" => [
+                           "id",
+                            "tour" => [
+                                "id",
+                                "name",
+                                "duration",
+                                "created_at"
                             ],
-                           'step',
-                           'duration',
-                           'playfield' => [
-                               'id',
-                               'type',
-                               'name',
-                               'from',
-                               'to',
-                               'created_at'
+                           "step",
+                           "duration",
+                           "playfield" => [
+                               "id",
+                               "type",
+                               "name",
+                               "from",
+                               "to",
+                               "created_at"
                            ],
-                           'created_at'
+                           "created_at"
                         ]
                     ],
-                    'links' => ['first', 'last', 'prev', 'next'],
-                    'meta' => [
-                        'current_page', 'last_page', 'from', 'to',
-                        'path', 'per_page', 'total'
+                    "links" => ["first", "last", "prev", "next"],
+                    "meta" => [
+                        "current_page", "last_page", "from", "to",
+                        "path", "per_page", "total"
                     ]
                 ]);
     }
@@ -647,20 +649,20 @@ trait Post
 {
 
     // 
-    // $table->bigIncrements('id');
-    // $table->bigInteger('tour_id');
-    // $table->integer('step');
-    // $table->float('duration');
-    // $table->string('playfield_type');
-    // $table->bigInteger('playfield_id');
+    // $table->bigIncrements("id");
+    // $table->bigInteger("tour_id");
+    // $table->integer("step");
+    // $table->float("duration");
+    // $table->string("playfield_type");
+    // $table->bigInteger("playfield_id");
     // $table->timestamps();
     //
-    // 'id' => $this->id,
-    // 'tour_id' => (integer)$this->tour_id,
-    // 'step' => (integer)$this->step,
-    // 'duration' => (double)$this->duration,
-    // 'playfield' => (!$playfield) ? null : $this->insert_playfield($this->playfield_type, $playfield),
-    // 'created_at' => (string)$this->created_at,
+    // "id" => $this->id,
+    // "tour_id" => (integer)$this->tour_id,
+    // "step" => (integer)$this->step,
+    // "duration" => (double)$this->duration,
+    // "playfield" => (!$playfield) ? null : $this->insert_playfield($this->playfield_type, $playfield),
+    // "created_at" => (string)$this->created_at,
     //
 
        /**
@@ -670,41 +672,41 @@ trait Post
     {
 
         $body = [
-            'tour_id' => $this->create('Tour')->id,
-            'step' => 1,
-            'duration' => 12.34,
-            'playfield_type' => 'city',
-            'playfield_id' => $this->create('Playfields\City')->id
+            "tour_id" => $this->create("Tour")->id,
+            "step" => 1,
+            "duration" => 12.34,
+            "playfield_type" => "city",
+            "playfield_id" => $this->create("City")->id
         ];
 
-        $res = $this->json('POST', '/api/itineraries', $body);
+        $res = $this->json("POST", "/$this->api_base", $body);
 
         // Then
         $res->assertStatus(201)
              ->assertJsonStructure([
-                'data' => [
-                    'id',
-                    'tour' => [
-                        'id',
-                        'name',
-                        'duration',
-                        'created_at'
+                "data" => [
+                    "id",
+                    "tour" => [
+                        "id",
+                        "name",
+                        "duration",
+                        "created_at"
                     ],
-                    'step',
-                    'duration',
-                    'playfield' => [
-                        'id',
-                        'type',
-                        'short_code',
-                        'name',
-                        'created_at'
+                    "step",
+                    "duration",
+                    "playfield" => [
+                        "id",
+                        "type",
+                        "short_code",
+                        "name",
+                        "created_at"
                     ],
-                    'created_at'
+                    "created_at"
                 ]
         ]);
 
         // assert if the game has been added to the database
-        $this->assertDatabaseHas('itineraries', $body);
+        $this->assertDatabaseHas("itineraries", $body);
     }
 
            /**
@@ -714,47 +716,47 @@ trait Post
     {
 
         $body = [
-            'tour_id' => $this->create('Tour')->id,
-            'step' => 1,
-            'duration' => 12.34,
-            'playfield_type' => 'route',
-            'playfield_id' => $this->create('Playfields\Route')->id
+            "tour_id" => $this->create("Tour")->id,
+            "step" => 1,
+            "duration" => 12.34,
+            "playfield_type" => "route",
+            "playfield_id" => $this->create("Route")->id
         ];
 
-        $res = $this->json('POST', '/api/itineraries', $body);
+        $res = $this->json("POST", "/$this->api_base", $body);
 
         // Then
         $res->assertStatus(201)
              ->assertJsonStructure([
-                'data' => [
-                    'id',
-                    'tour' => [
-                        'id',
-                        'name',
-                        'duration',
-                        'created_at'
+                "data" => [
+                    "id",
+                    "tour" => [
+                        "id",
+                        "name",
+                        "duration",
+                        "created_at"
                     ],
-                    'step',
-                    'duration',
-                    'playfield' => [
-                        'id',
-                        'type',
-                        'transit_id',
-                        'name',
-                        'maps_url',
-                        'kilometers',
-                        'hours',
-                        'difficulty',
-                        'nature',
-                        'highway',
-                        'created_at'
+                    "step",
+                    "duration",
+                    "playfield" => [
+                        "id",
+                        "type",
+                        "transit_id",
+                        "name",
+                        "maps_url",
+                        "kilometers",
+                        "hours",
+                        "difficulty",
+                        "nature",
+                        "highway",
+                        "created_at"
                     ],
-                    'created_at'
+                    "created_at"
                 ]
         ]);
 
         // assert if the game has been added to the database
-        $this->assertDatabaseHas('itineraries', $body);
+        $this->assertDatabaseHas("itineraries", $body);
     }
 
            /**
@@ -764,57 +766,57 @@ trait Post
     {
 
         $body = [
-            'tour_id' => $this->create('Tour')->id,
-            'step' => 1,
-            'duration' => 12.34,
-            'playfield_type' => 'transit',
-            'playfield_id' => $this->create('Playfields\Transit', [
-                'from_city_id' => $this->create('Playfields\City')->id,
-                'to_city_id' => $this->create('Playfields\City')->id
+            "tour_id" => $this->create("Tour")->id,
+            "step" => 1,
+            "duration" => 12.34,
+            "playfield_type" => "transit",
+            "playfield_id" => $this->create("Transit", [
+                "from_city_id" => $this->create("City")->id,
+                "to_city_id" => $this->create("City")->id
             ])->id
         ];
 
-        $res = $this->json('POST', '/api/itineraries', $body);
+        $res = $this->json("POST", "/$this->api_base", $body);
 
         // Then
         $res->assertStatus(201)
              ->assertJsonStructure([
-                'data' => [
-                    'id',
-                    'tour' => [
-                        'id',
-                        'name',
-                        'duration',
-                        'created_at'
+                "data" => [
+                    "id",
+                    "tour" => [
+                        "id",
+                        "name",
+                        "duration",
+                        "created_at"
                     ],                    
-                    'step',
-                    'duration',
-                    'playfield' => [
-                        'id',
-                        'type',
-                        'name',
-                        'from' => [
-                            'id',
-                            'type',
-                            'short_code',
-                            'name',
-                            'created_at'
+                    "step",
+                    "duration",
+                    "playfield" => [
+                        "id",
+                        "type",
+                        "name",
+                        "from" => [
+                            "id",
+                            "type",
+                            "short_code",
+                            "name",
+                            "created_at"
                         ],
-                        'to' => [
-                            'id',
-                            'type',
-                            'short_code',
-                            'name',
-                            'created_at'
+                        "to" => [
+                            "id",
+                            "type",
+                            "short_code",
+                            "name",
+                            "created_at"
                         ],
-                        'created_at'
+                        "created_at"
                     ],
-                    'created_at'
+                    "created_at"
                 ]
         ]);
 
         // assert if the game has been added to the database
-        $this->assertDatabaseHas('itineraries', $body);
+        $this->assertDatabaseHas("itineraries", $body);
     }
 
     /**
@@ -822,35 +824,35 @@ trait Post
      */
     public function can_create_a_itinerary_without_a_playfield()
     {
-        // 'step' is of wrong data type
+        // "step" is of wrong data type
         $body = [
-            'tour_id' => $this->create('Tour')->id,
-            'step' => 1,
-            'duration' => 12.34
+            "tour_id" => $this->create("Tour")->id,
+            "step" => 1,
+            "duration" => 12.34
         ];
 
-        $res = $this->json('POST', '/api/itineraries', $body);
+        $res = $this->json("POST", "/$this->api_base", $body);
 
         // Then
         $res->assertStatus(201)
              ->assertJsonStructure([
-                'data' => [
-                    'id',
-                    'tour' => [
-                        'id',
-                        'name',
-                        'duration',
-                        'created_at'
+                "data" => [
+                    "id",
+                    "tour" => [
+                        "id",
+                        "name",
+                        "duration",
+                        "created_at"
                     ],
-                    'step',
-                    'duration',
-                    'playfield', //NULL
-                    'created_at'
+                    "step",
+                    "duration",
+                    "playfield", //NULL
+                    "created_at"
                 ]
         ]);
 
         // assert if the game has been added to the database
-        $this->assertDatabaseHas('itineraries', $body);
+        $this->assertDatabaseHas("itineraries", $body);
     }
 
         /**
@@ -858,37 +860,37 @@ trait Post
      */
     public function can_create_a_itinerary_without_a_tour()
     {
-        // 'step' is of wrong data type
+        // "step" is of wrong data type
         $body = [
-            'step' => 2,
-            'duration' => 12.34,
-            'playfield_type' => 'city',
-            'playfield_id' => $this->create('Playfields\City')->id
+            "step" => 2,
+            "duration" => 12.34,
+            "playfield_type" => "city",
+            "playfield_id" => $this->create("City")->id
         ];
 
-        $res = $this->json('POST', '/api/itineraries', $body);
+        $res = $this->json("POST", "/$this->api_base", $body);
 
         // Then
         $res->assertStatus(201)
              ->assertJsonStructure([
-                'data' => [
-                    'id',
-                    'tour',
-                    'step',
-                    'duration',
-                    'playfield' => [
-                        'id',
-                        'type',
-                        'short_code',
-                        'name',
-                        'created_at'
+                "data" => [
+                    "id",
+                    "tour",
+                    "step",
+                    "duration",
+                    "playfield" => [
+                        "id",
+                        "type",
+                        "short_code",
+                        "name",
+                        "created_at"
                     ],
-                    'created_at'
+                    "created_at"
                 ]
         ]);
 
         // assert if the game has been added to the database
-        $this->assertDatabaseHas('itineraries', $body);
+        $this->assertDatabaseHas("itineraries", $body);
     }
 
             /**
@@ -896,29 +898,29 @@ trait Post
      */
     public function can_create_a_itinerary_without_a_tour_and_without_a_playfield()
     {
-        // 'step' is of wrong data type
+        // "step" is of wrong data type
         $body = [
-            'step' => 2,
-            'duration' => 12.34
+            "step" => 2,
+            "duration" => 12.34
         ];
 
-        $res = $this->json('POST', '/api/itineraries', $body);
+        $res = $this->json("POST", "/$this->api_base", $body);
 
         // Then
         $res->assertStatus(201)
              ->assertJsonStructure([
-                'data' => [
-                    'id',
-                    'tour',
-                    'step',
-                    'duration',
-                    'playfield', //null
-                    'created_at'
+                "data" => [
+                    "id",
+                    "tour",
+                    "step",
+                    "duration",
+                    "playfield", //null
+                    "created_at"
                 ]
         ]);
 
         // assert if the game has been added to the database
-        $this->assertDatabaseHas('itineraries', $body);
+        $this->assertDatabaseHas("itineraries", $body);
     }
 
     /**
@@ -926,22 +928,22 @@ trait Post
      */
     public function returns_a_error_422_if_request_body_data_is_of_incorrect_type()
     {
-        // 'step' is of wrong data type
+        // "step" is of wrong data type
         $body = [
-            'tour_id' => $this->create('Tour')->id,
-            'step' => 'kjashf has kjfh',
-            'duration' => 12.34,
-            'playfield_type' => 'city',
-            'playfield_id' => $this->create('Playfields\City')->id
+            "tour_id" => $this->create("Tour")->id,
+            "step" => "kjashf has kjfh",
+            "duration" => 12.34,
+            "playfield_type" => "city",
+            "playfield_id" => $this->create("City")->id
         ];
 
-        $res = $this->json('POST', '/api/itineraries', $body);
+        $res = $this->json("POST", "/$this->api_base", $body);
 
         // Then
         $res->assertStatus(422);
 
         // assert if the game has been added to the database
-        $this->assertDatabaseMissing('itineraries', $body);
+        $this->assertDatabaseMissing("itineraries", $body);
     }
 
         /**
@@ -949,21 +951,21 @@ trait Post
      */
     public function returns_a_error_422_if_request_body_data_is_missing()
     {
-        // 'step' is is missing
+        // "step" is is missing
         $body = [
-            'tour_id' => $this->create('Tour')->id,
-            'duration' => 12.34,
-            'playfield_type' => 'city',
-            'playfield_id' => $this->create('Playfields\City')->id
+            "tour_id" => $this->create("Tour")->id,
+            "duration" => 12.34,
+            "playfield_type" => "city",
+            "playfield_id" => $this->create("City")->id
         ];
 
-        $res = $this->json('POST', '/api/itineraries', $body);
+        $res = $this->json("POST", "/$this->api_base", $body);
 
         // Then
         $res->assertStatus(422);
 
         // assert if the game has been added to the database
-        $this->assertDatabaseMissing('itineraries', $body);
+        $this->assertDatabaseMissing("itineraries", $body);
     }
 
            /**
@@ -973,20 +975,20 @@ trait Post
     {
 
         $body = [
-            'tour_id' => $this->create('Tour')->id,
-            'step' => 1,
-            'duration' => 12.34,
-            'playfield_type' => 'city',
-            'playfield_id' => -1
+            "tour_id" => $this->create("Tour")->id,
+            "step" => 1,
+            "duration" => 12.34,
+            "playfield_type" => "city",
+            "playfield_id" => -1
         ];
 
-        $res = $this->json('POST', '/api/itineraries', $body);
+        $res = $this->json("POST", "/$this->api_base", $body);
 
         // Then
         $res->assertStatus(422);
 
         // assert if the game has been added to the database
-        $this->assertDatabaseMissing('itineraries', $body);
+        $this->assertDatabaseMissing("itineraries", $body);
     }
 
            /**
@@ -996,20 +998,20 @@ trait Post
     {
 
         $body = [
-            'tour_id' => $this->create('Tour')->id,
-            'step' => 1,
-            'duration' => 12.34,
-            'playfield_type' => 'route',
-            'playfield_id' => -1
+            "tour_id" => $this->create("Tour")->id,
+            "step" => 1,
+            "duration" => 12.34,
+            "playfield_type" => "route",
+            "playfield_id" => -1
         ];
 
-        $res = $this->json('POST', '/api/itineraries', $body);
+        $res = $this->json("POST", "/$this->api_base", $body);
 
         // Then
         $res->assertStatus(422);
 
         // assert if the game has been added to the database
-        $this->assertDatabaseMissing('itineraries', $body);
+        $this->assertDatabaseMissing("itineraries", $body);
     }
 
     /**
@@ -1019,20 +1021,20 @@ trait Post
     {
 
         $body = [
-            'tour_id' => $this->create('Tour')->id,
-            'step' => 1,
-            'duration' => 12.34,
-            'playfield_type' => 'transit',
-            'playfield_id' => -1
+            "tour_id" => $this->create("Tour")->id,
+            "step" => 1,
+            "duration" => 12.34,
+            "playfield_type" => "transit",
+            "playfield_id" => -1
         ];
 
-        $res = $this->json('POST', '/api/itineraries', $body);
+        $res = $this->json("POST", "/$this->api_base", $body);
 
         // Then
         $res->assertStatus(422);
 
         // assert if the game has been added to the database
-        $this->assertDatabaseMissing('itineraries', $body);
+        $this->assertDatabaseMissing("itineraries", $body);
     }
 
         /**
@@ -1042,31 +1044,31 @@ trait Post
     {
 
         $body = [
-            'tour_id' => -1,
-            'step' => 1,
-            'duration' => 12.34,
-            'playfield_type' => 'city',
-            'playfield_id' => $this->create('Playfields\City')->id
+            "tour_id" => -1,
+            "step" => 1,
+            "duration" => 12.34,
+            "playfield_type" => "city",
+            "playfield_id" => $this->create("City")->id
         ];
 
-        $res = $this->json('POST', '/api/itineraries', $body);
+        $res = $this->json("POST", "/$this->api_base", $body);
 
         // Then
         $res->assertStatus(422);
 
         // assert if the game has been added to the database
-        $this->assertDatabaseMissing('itineraries', $body);
+        $this->assertDatabaseMissing("itineraries", $body);
     }
 }
 
 trait Put
 {
     // $body = [
-    //     'tour_id' => $this->create('Tour')->id,
-    //     'step' => 1,
-    //     'duration' => 12.34,
-    //     'playfield_type' => 'city',
-    //     'playfield_id' => $this->create('Playfields\City')->id
+    //     "tour_id" => $this->create("Tour")->id,
+    //     "step" => 1,
+    //     "duration" => 12.34,
+    //     "playfield_type" => "city",
+    //     "playfield_id" => $this->create("City")->id
     // ];
 
     
@@ -1075,7 +1077,7 @@ trait Put
      */
     public function will_fail_with_a_404_if_the_itinerary_we_want_to_update_is_not_found()
     {
-        $res = $this->json('PUT', 'api/itineraries/-1');
+        $res = $this->json("PUT", "$this->api_base/-1");
         $res->assertStatus(404);
     }
 
@@ -1086,37 +1088,37 @@ trait Put
     {
 
         $old_values = [
-            'tour_id' => $this->create('Tour')->id,
-            'step' => 1,
-            'duration' => 12.34,
-            'playfield_type' => 'city',
-            'playfield_id' => $this->create('Playfields\City')->id
+            "tour_id" => $this->create("Tour")->id,
+            "step" => 1,
+            "duration" => 12.34,
+            "playfield_type" => "city",
+            "playfield_id" => $this->create("City")->id
         ];
 
-        $old_itinerary = $this->create('Itinerary', $old_values);
+        $old_itinerary = $this->create("Itinerary", $old_values);
 
 
         // update every attribute
         $new_values = [
-            'step' => 000001,
-            'duration' => 00.02,
+            "step" => 000001,
+            "duration" => 00.02,
         ];
 
         $relations = [
-            'tour_id' => $this->create('Tour')->id,
-            'playfield_type' => 'city',
-            'playfield_id' => $this->create('Playfields\City')->id
+            "tour_id" => $this->create("Tour")->id,
+            "playfield_type" => "city",
+            "playfield_id" => $this->create("City")->id
         ];
 
         // When
-        $response = $this->json('PUT','api/itineraries/'.$old_itinerary->id, array_merge($new_values, $relations));
+        $response = $this->json("PUT","$this->api_base/".$old_itinerary->id, array_merge($new_values, $relations));
 
         // Then
         $response->assertStatus(200)
                     ->assertJsonFragment($new_values);
                     
-        $this->assertDatabaseHas('itineraries', $new_values);
-        $this->assertDatabaseMissing('itineraries', $old_values);
+        $this->assertDatabaseHas("itineraries", $new_values);
+        $this->assertDatabaseMissing("itineraries", $old_values);
             
     }
    
@@ -1126,34 +1128,34 @@ trait Put
     public function can_update_itinerary_on_a_couple_of_model_attributes()
     {
         $old_values = [
-            'step' => 1,
-            'duration' => 12.34,
+            "step" => 1,
+            "duration" => 12.34,
         ];
 
         $old_values_to_remain_after_update = [
-            'tour_id' => $this->create('Tour')->id,
-            'playfield_type' => 'city',
-            'playfield_id' => $this->create('Playfields\City')->id
+            "tour_id" => $this->create("Tour")->id,
+            "playfield_type" => "city",
+            "playfield_id" => $this->create("City")->id
         ];
 
-        $old_itinerary = $this->create('Itinerary', array_merge($old_values, $old_values_to_remain_after_update));
+        $old_itinerary = $this->create("Itinerary", array_merge($old_values, $old_values_to_remain_after_update));
 
 
         // update every attribute
         $new_values = [
-            'step' => 000001,
-            'duration' => 00.02,
+            "step" => 000001,
+            "duration" => 00.02,
         ];
 
         // When
-        $response = $this->json('PUT','api/itineraries/'.$old_itinerary->id, $new_values);
+        $response = $this->json("PUT","$this->api_base/".$old_itinerary->id, $new_values);
 
         // Then
         $response->assertStatus(200)
                     ->assertJsonFragment($new_values);
                     
-        $this->assertDatabaseHas('itineraries', array_merge($new_values, $old_values_to_remain_after_update));
-        $this->assertDatabaseMissing('itineraries', $old_values);
+        $this->assertDatabaseHas("itineraries", array_merge($new_values, $old_values_to_remain_after_update));
+        $this->assertDatabaseMissing("itineraries", $old_values);
     }
 
     /**
@@ -1162,36 +1164,36 @@ trait Put
     public function will_fail_with_error_422_when_body_data_is_of_wrong_type()
     {
         $old_values = [
-            'tour_id' => $this->create('Tour')->id,
-            'step' => 1,
-            'duration' => 12.34,
-            'playfield_type' => 'city',
-            'playfield_id' => $this->create('Playfields\City')->id
+            "tour_id" => $this->create("Tour")->id,
+            "step" => 1,
+            "duration" => 12.34,
+            "playfield_type" => "city",
+            "playfield_id" => $this->create("City")->id
         ];
 
-        $old_itinerary = $this->create('Itinerary', $old_values);
+        $old_itinerary = $this->create("Itinerary", $old_values);
 
 
-        // 'step' is of wrong data type
+        // "step" is of wrong data type
         $new_values = [
-            'step' => 'aaaaaaaa',
-            'duration' => 00.02,
+            "step" => "aaaaaaaa",
+            "duration" => 00.02,
         ];
 
         $relations = [
-            'tour_id' => $this->create('Tour')->id,
-            'playfield_type' => 'city',
-            'playfield_id' => $this->create('Playfields\City')->id
+            "tour_id" => $this->create("Tour")->id,
+            "playfield_type" => "city",
+            "playfield_id" => $this->create("City")->id
         ];
 
         // When
-        $response = $this->json('PUT','api/itineraries/'.$old_itinerary->id, array_merge($new_values, $relations));
+        $response = $this->json("PUT","$this->api_base/".$old_itinerary->id, array_merge($new_values, $relations));
 
         // Then
         $response->assertStatus(422);
                     
-        $this->assertDatabaseHas('itineraries', $old_values);
-        $this->assertDatabaseMissing('itineraries', $new_values);
+        $this->assertDatabaseHas("itineraries", $old_values);
+        $this->assertDatabaseMissing("itineraries", $new_values);
     }
 
     /**
@@ -1200,36 +1202,36 @@ trait Put
     public function will_fail_with_error_422_relational_tour_does_not_exist()
     {
         $old_values = [
-            'tour_id' => $this->create('Tour')->id,
-            'step' => 1,
-            'duration' => 12.34,
-            'playfield_type' => 'city',
-            'playfield_id' => $this->create('Playfields\City')->id
+            "tour_id" => $this->create("Tour")->id,
+            "step" => 1,
+            "duration" => 12.34,
+            "playfield_type" => "city",
+            "playfield_id" => $this->create("City")->id
         ];
 
-        $old_itinerary = $this->create('Itinerary', $old_values);
+        $old_itinerary = $this->create("Itinerary", $old_values);
 
         // update every attribute
         $new_values = [
-            'step' => 000001,
-            'duration' => 00.02,
+            "step" => 000001,
+            "duration" => 00.02,
         ];
 
         // tour_id does not exist
         $relations = [
-            'tour_id' => -1,
-            'playfield_type' => 'city',
-            'playfield_id' => $this->create('Playfields\City')->id
+            "tour_id" => -1,
+            "playfield_type" => "city",
+            "playfield_id" => $this->create("City")->id
         ];
 
         // When
-        $response = $this->json('PUT','api/itineraries/'.$old_itinerary->id, array_merge($new_values, $relations));
+        $response = $this->json("PUT","$this->api_base/".$old_itinerary->id, array_merge($new_values, $relations));
 
         // Then
         $response->assertStatus(422);
                     
-        $this->assertDatabaseHas('itineraries', $old_values);
-        $this->assertDatabaseMissing('itineraries', $new_values);
+        $this->assertDatabaseHas("itineraries", $old_values);
+        $this->assertDatabaseMissing("itineraries", $new_values);
     }
 
     /**
@@ -1238,36 +1240,36 @@ trait Put
     public function will_fail_with_error_422_relational_playfield_does_not_exist()
     {
         $old_values = [
-            'tour_id' => $this->create('Tour')->id,
-            'step' => 1,
-            'duration' => 12.34,
-            'playfield_type' => 'city',
-            'playfield_id' => $this->create('Playfields\City')->id
+            "tour_id" => $this->create("Tour")->id,
+            "step" => 1,
+            "duration" => 12.34,
+            "playfield_type" => "city",
+            "playfield_id" => $this->create("City")->id
         ];
 
-        $old_itinerary = $this->create('Itinerary', $old_values);
+        $old_itinerary = $this->create("Itinerary", $old_values);
 
         // update every attribute
         $new_values = [
-            'step' => 000001,
-            'duration' => 00.02,
+            "step" => 000001,
+            "duration" => 00.02,
         ];
 
         // playfield does not exist
         $relations = [
-            'tour_id' => $this->create('Tour')->id,
-            'playfield_type' => 'city',
-            'playfield_id' => -1
+            "tour_id" => $this->create("Tour")->id,
+            "playfield_type" => "city",
+            "playfield_id" => -1
         ];
 
         // When
-        $response = $this->json('PUT','api/itineraries/'.$old_itinerary->id, array_merge($new_values, $relations));
+        $response = $this->json("PUT","$this->api_base/".$old_itinerary->id, array_merge($new_values, $relations));
 
         // Then
         $response->assertStatus(422);
                     
-        $this->assertDatabaseHas('itineraries', $old_values);
-        $this->assertDatabaseMissing('itineraries', $new_values);
+        $this->assertDatabaseHas("itineraries", $old_values);
+        $this->assertDatabaseMissing("itineraries", $new_values);
     }
 
 }
@@ -1280,7 +1282,7 @@ trait Delete
      */
     public function will_fail_with_a_404_if_the_itinerary_we_want_to_delete_is_not_found()
     {
-        $res = $this->json('DELETE', 'api/itineraries/-1');
+        $res = $this->json("DELETE", "$this->api_base/-1");
         $res->assertStatus(404);
     }
 
@@ -1291,18 +1293,18 @@ trait Delete
     {
         // Given
         // first create a game in the database to delete
-        $itinerary = $this->create('Itinerary');
+        $itinerary = $this->create("Itinerary");
 
         // When
         // call the delete api
-        $res = $this->json('DELETE', '/api/itineraries/'.$itinerary->id);
+        $res = $this->json("DELETE", "/$this->api_base/".$itinerary->id);
 
         // Then
         $res->assertStatus(204)
             ->assertSee(null);
 
         // check if $game is deleted from database
-        $this->assertDatabaseMissing('itineraries', ['id' => $itinerary->id]);
+        $this->assertDatabaseMissing("itineraries", ["id" => $itinerary->id]);
     }
 
 }

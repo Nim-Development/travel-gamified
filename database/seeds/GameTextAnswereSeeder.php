@@ -11,6 +11,6 @@ class GameTextAnswereSeeder extends Seeder
      */
     public function run()
     {
-        factory(App\Games\GameTextAnswere::class, 30)->create();
+        factory(App\GameTextAnswere::class, 30)->create();
     }
 }

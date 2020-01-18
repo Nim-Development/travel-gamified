@@ -2,13 +2,13 @@
 
 namespace App\Http\Controllers\Admin;
 
-use App\Playfields\City;
-use App\Playfields\Route;
+use App\City;
+use App\Route;
 
-use App\Playfields\Transit;
+use App\Transit;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
-use App\Http\Resources\Playfields\Transit as TransitResource;
+use App\Http\Resources\Transit as TransitResource;
 
 class TransitController extends Controller
 {

@@ -10,6 +10,6 @@ class RouteSeeder extends Seeder
      */
     public function run()
     {
-        factory(App\Playfields\Route::class, 65)->create();
+        factory(App\Route::class, 65)->create();
     }
 }

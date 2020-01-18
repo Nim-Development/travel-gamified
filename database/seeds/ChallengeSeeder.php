@@ -11,6 +11,6 @@ class ChallengeSeeder extends Seeder
      */
     public function run()
     {
-        factory(App\Games\Challenge::class, 90)->create();
+        factory(App\Challenge::class, 90)->create();
     }
 }

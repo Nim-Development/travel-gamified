@@ -10,6 +10,6 @@ class CitySeeder extends Seeder
      */
     public function run()
     {
-        factory(App\Playfields\City::class, 8)->create();
+        factory(App\City::class, 8)->create();
     }
 }

@@ -1,7 +1,7 @@
 <?php
 
 /** @var \Illuminate\Database\Eloquent\Factory $factory */
-use App\Games\GameMultipleChoice;
+use App\GameMultipleChoice;
 use Faker\Generator as Faker;
 use Illuminate\Support\Str;
 

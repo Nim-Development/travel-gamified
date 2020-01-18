@@ -17,6 +17,6 @@
 
 Route::get('/test', function(){
 
-    Util::test();
+    Games::test();
 
 });

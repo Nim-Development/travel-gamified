@@ -2,12 +2,12 @@
 
 namespace App\Http\Controllers\Admin;
 
-use App\Playfields\Route;
-use App\Playfields\Transit;
+use App\Route;
+use App\Transit;
 
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
-use App\Http\Resources\Playfields\Route as RouteResource;
+use App\Http\Resources\Route as RouteResource;
 
 class RouteController extends Controller
 {

@@ -3,9 +3,9 @@
 namespace App\Http\Controllers\Admin;
 
 use Illuminate\Http\Request;
-use App\Games\GameTextAnswere;
+use App\GameTextAnswere;
 use App\Http\Controllers\Controller;
-use App\Http\Resources\Games\GameTextAnswere as GameTextAnswereResource;
+use App\Http\Resources\GameTextAnswere as GameTextAnswereResource;
 
 class GameTextAnswereController extends Controller
 {

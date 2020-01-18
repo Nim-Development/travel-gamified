@@ -11,12 +11,12 @@ abstract class TestCase extends BaseTestCase
     use CreatesApplication;
 
     public $polymorph_map = [
-        'media_upload' => 'Games\GameMediaUpload',
-        'multiple_choice' => 'Games\GameMultipleChoice',
-        'text_answere' => 'Games\GameTextAnswere',
-        'city' => 'Playfields\City',
-        'route' => 'Playfields\Route',
-        'transit' => 'Playfields\Transit'
+        'media_upload' => 'GameMediaUpload',
+        'multiple_choice' => 'GameMultipleChoice',
+        'text_answere' => 'GameTextAnswere',
+        'city' => 'City',
+        'route' => 'Route',
+        'transit' => 'Transit'
     ];
 
     // /** 
@@ -80,10 +80,10 @@ abstract class TestCase extends BaseTestCase
         foreach($transits as $transit){
             /** Link 2 Routes to transit */
             ;
-            $this->create('Playfields\Route', ['transit_id' => $transit->id]);
+            $this->create('Route', ['transit_id' => $transit->id]);
 
             // insert game into challenge and link the challenge to $transit.
-            $this->create('Games\Challenge', [
+            $this->create('Challenge', [
                     'game_type' => $game_type, 
                     'game_id' => $this->create($this->polymorph_map[$game_type])->id,
                     'playfield_type' => 'transit',
@@ -91,8 +91,8 @@ abstract class TestCase extends BaseTestCase
                 ]);
             
             // insert game into challenge and link the challenge to $transit.
-            $game_2 = $this->create('Games\GameTextAnswere');
-            $this->create('Games\Challenge', [
+            $game_2 = $this->create('GameTextAnswere');
+            $this->create('Challenge', [
                 'game_type' => $game_type, 
                 'game_id' => $this->create($this->polymorph_map[$game_type])->id,
                 'playfield_type' => 'transit',
@@ -128,14 +128,14 @@ abstract class TestCase extends BaseTestCase
         if($playfield_type == 'transit'){
             // inject relational cities in transit creation
             return $this->create_collection(
-                'Games\Challenge',
+                'Challenge',
                 [
                     'game_type' => $game_type,
                     'game_id' => $this->create($this->polymorph_map[$game_type], [], false)->id,
                     'playfield_type' => $playfield_type,
                     'playfield_id' => $this->create($this->polymorph_map[$playfield_type], [
-                        'from_city_id' => $this->create('Playfields\City')->id,
-                        'to_city_id' => $this->create('Playfields\City')->id
+                        'from_city_id' => $this->create('City')->id,
+                        'to_city_id' => $this->create('City')->id
                     ], false)->id
                 ],
                 true,
@@ -144,7 +144,7 @@ abstract class TestCase extends BaseTestCase
         }
 
         return $this->create_collection(
-            'Games\Challenge',
+            'Challenge',
             [
                 'game_type' => $game_type,
                 'game_id' => $this->create($this->polymorph_map[$game_type], [], false)->id,
@@ -169,12 +169,12 @@ abstract class TestCase extends BaseTestCase
         
         // Create a full challenge with all of its relational data inserted.
         $challenge = $this->create(
-            'Games\Challenge',
+            'Challenge',
             [
                 'game_type' => 'text_answere',
-                'game_id' => $this->create('Games\GameTextAnswere', [], false)->id,
+                'game_id' => $this->create('GameTextAnswere', [], false)->id,
                 'playfield_type' => 'city',
-                'playfield_id' => $this->create('Playfields\City', [], false)->id
+                'playfield_id' => $this->create('City', [], false)->id
             ],
             false
         );
@@ -194,7 +194,7 @@ abstract class TestCase extends BaseTestCase
         // loop over each game in game collection
         foreach ($game_collection as $game) {
             // create $qty x options and give them game_id of currently looped game
-            $this->create_collection('Games\GameMultipleChoiceOption', ['game_id' => $game->id], true, $options_qty);
+            $this->create_collection('GameMultipleChoiceOption', ['game_id' => $game->id], true, $options_qty);
         }
     }
 

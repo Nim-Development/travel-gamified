@@ -5,9 +5,9 @@ namespace App\Http\Controllers\Admin;
 use App\Tour;
 use App\Itinerary;
 
-use App\Playfields\City;
-use App\Playfields\Route;
-use App\Playfields\Transit;
+use App\City;
+use App\Route;
+use App\Transit;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use App\Http\Resources\Itinerary as ItineraryResource;
@@ -74,33 +74,10 @@ class ItineraryController extends Controller
         ]);
 
         if($request->playfield_type && $request->playfield_id){
-            // check if relational playfield row actually exists in database
-            switch ($request->playfield_type) {
 
-                case 'city':
-                    if(!City::find($request->playfield_id)){
-                        // Error: can't create answere for non existent challenge!
-                        return response()->json(['error' => 'Can not create Itinerary for non existing City'], 422);
-                    }
-                    break;
-
-                case 'route':
-                    if(!Route::find($request->playfield_id)){
-                        // Error: can't create answere for non existent challenge!
-                        return response()->json(['error' => 'Can not create Itinerary for non existing Route'], 422);
-                    }
-                    break;
-
-                case 'transit':
-                    if(!Transit::find($request->playfield_id)){
-                        // Error: can't create answere for non existent challenge!
-                        return response()->json(['error' => 'Can not create Itinerary for non existing Transit'], 422);
-                    }
-                    break;
-                
-                default:
-                    return response()->json(['error' => 'Playfield of type: '.$request->playfield_type.' does not exist.'], 400);
-                    break;
+            $playfield = \Playfields::find_morph_or_fail($request->playfield_type, $request->playfield_id);
+            if(is_array($playfield)){
+                return response()->json($playfield['message'], $playfield['status']);
             }
 
             if($request->tour_id){
@@ -183,31 +160,9 @@ class ItineraryController extends Controller
         
         if($request->playfield_type && $request->playfield_id){
             // check if relational playfield row actually exists in database
-            switch ($request->playfield_type) {
-                case 'city':
-                    if(!City::find($request->playfield_id)){
-                        // Error: can't create answere for non existent challenge!
-                        return response()->json(['error' => 'Can not create Itinerary for non existing City'], 422);
-                    }
-                    break;
-
-                case 'route':
-                    if(!Route::find($request->playfield_id)){
-                        // Error: can't create answere for non existent challenge!
-                        return response()->json(['error' => 'Can not create Itinerary for non existing Route'], 422);
-                    }
-                    break;
-
-                case 'transit':
-                    if(!Transit::find($request->playfield_id)){
-                        // Error: can't create answere for non existent challenge!
-                        return response()->json(['error' => 'Can not create Itinerary for non existing Transit'], 422);
-                    }
-                    break;
-                
-                default:
-                    return response()->json(['error' => 'Playfield of type: '.$request->playfield_type.' does not exist.'], 400);
-                    break;
+            $playfield = \Playfields::find_morph_or_fail($request->playfield_type, $request->playfield_id);
+            if(is_array($playfield)){
+                return response()->json($playfield['message'], $playfield['status']);
             }
         }
 

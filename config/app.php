@@ -177,11 +177,12 @@ return [
         App\Providers\EventServiceProvider::class,
         App\Providers\RouteServiceProvider::class,
 
-        App\Providers\GameServiceProvider::class,
-        App\Providers\ConfigServiceProvider::class,
         App\Providers\ValidateServiceProvider::class,
         App\Providers\MediaServiceProvider::class,
         App\Providers\UtilServiceProvider::class,
+
+        App\Providers\GamesServiceProvider::class,
+        App\Providers\PlayfieldsServiceProvider::class,
         
     ],
 
@@ -234,11 +235,12 @@ return [
         'Validator' => Illuminate\Support\Facades\Validator::class,
         'View' => Illuminate\Support\Facades\View::class,
 
-        'GameHelper' => App\Helpers\Game\GameFacade::class,
-        'ConfigHelper' => App\Helpers\Config\ConfigFacade::class,
         'Validate' => App\Helpers\Validate\ValidateFacade::class,
         'MediaHelper' => App\Helpers\Media\MediaFacade::class,
         'Util' => App\Helpers\Util\UtilFacade::class,
+
+        'Playfields' => App\Modules\Morph\PlayfieldsFacade::class,
+        'Games' => App\Modules\Morph\GamesFacade::class,
     ],
 
 ];

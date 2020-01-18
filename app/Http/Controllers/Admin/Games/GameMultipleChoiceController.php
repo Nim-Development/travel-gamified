@@ -3,11 +3,11 @@
 namespace App\Http\Controllers\Admin;
 
 use Illuminate\Http\Request;
-use App\Games\GameMultipleChoice;
+use App\GameMultipleChoice;
 use App\Http\Controllers\Controller;
-use App\Games\GameMultipleChoiceOption;
-use App\Http\Resources\Games\GameMultipleChoice as GameMultipleChoiceResource;
-use App\Http\Resources\Games\GameMultipleChoiceOption as GameMultipleChoiceOptionResource;
+use App\GameMultipleChoiceOption;
+use App\Http\Resources\GameMultipleChoice as GameMultipleChoiceResource;
+use App\Http\Resources\GameMultipleChoiceOption as GameMultipleChoiceOptionResource;
 
 class GameMultipleChoiceController extends Controller
 {

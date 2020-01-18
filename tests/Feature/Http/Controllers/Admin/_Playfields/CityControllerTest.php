@@ -1,6 +1,6 @@
 <?php
 
-namespace Tests\Feature\Http\Controllers\Admin\Playfields\CityController;
+namespace Tests\Feature\Http\Controllers\Admin\CityController;
 
 use Faker\Factory;
 use Tests\TestCase;
@@ -20,16 +20,20 @@ class CityControllerTest extends TestCase
     use Post;
     use Put;
     use Delete;
+
+
+    protected $api_base = "/api/admin/cities";
+
     /**
      * @test
      */
     // public function non_authenticated_user_can_not_access_city_api_endpoints()
     // {
-    //     $this->json('GET', '/api/cities')->assertStatus(401);
-    //     $this->json('GET', 'api/cities/1')->assertStatus(401);
-    //     $this->json('PUT', 'api/cities/1')->assertStatus(401);
-    //     $this->json('DELETE', 'api/cities/1')->assertStatus(401);
-    //     $this->json('POST', '/api/cities')->assertStatus(401);
+    //     $this->json("GET", "/$this->api_base")->assertStatus(401);
+    //     $this->json("GET", "$this->api_base/1")->assertStatus(401);
+    //     $this->json("PUT", "$this->api_base/1")->assertStatus(401);
+    //     $this->json("DELETE", "$this->api_base/1")->assertStatus(401);
+    //     $this->json("POST", "/$this->api_base")->assertStatus(401);
     // }
 
 }
@@ -42,7 +46,7 @@ trait Get
      */
     public function will_fail_with_a_404_if_city_is_not_found()
     {
-        $res = $this->json('GET', 'api/cities/-1');
+        $res = $this->json("GET", "$this->api_base/-1");
         $res->assertStatus(404);
     }
 
@@ -52,7 +56,7 @@ trait Get
     public function will_return_204_when_requesting_all_cities_whilst_no_entries_in_database()
     {
         // Skip any creates
-        $res = $this->json('GET', 'api/cities');
+        $res = $this->json("GET", "$this->api_base");
         $res->assertStatus(204);
     }
 
@@ -62,7 +66,7 @@ trait Get
     public function will_return_204_when_requesting_paginated_cities_whilst_no_entries_in_database()
     {
         // Skip any creates
-        $res = $this->json('GET', 'api/cities/paginate/3');
+        $res = $this->json("GET", "$this->api_base/paginate/3");
         $res->assertStatus(204);
     }
 
@@ -74,53 +78,53 @@ trait Get
     {
         // Given
         // inserting a model into the database (we know this will work because test can_create_a_citie() was asserted succesfully)
-        $city = $this->create('Playfields\City');
+        $city = $this->create("City");
 
         // add 2 headers
-        $this->file_factory($city, 'header', ['liverpool', 'chelsea']);
+        $this->file_factory($city, "header", ["liverpool", "chelsea"]);
         // add 2 media contents
-        $this->file_factory($city, 'media', ['liverpool', 'chelsea']);
+        $this->file_factory($city, "media", ["liverpool", "chelsea"]);
 
         // When
-        $response = $this->json('GET', "/api/cities/$city->id");
+        $response = $this->json("GET", "/$this->api_base/$city->id");
 
         // Then
         // assert status code
         $response->assertStatus(200)
                  ->assertExactJson([
-                     'data' => [
-                        'id' => $city->id,
-                        'short_code' => $city->short_code,
-                        'name' => $city->name,
-                        'header' => [
+                     "data" => [
+                        "id" => $city->id,
+                        "short_code" => $city->short_code,
+                        "name" => $city->name,
+                        "header" => [
                             [
-                                'def' => $city->getMedia('header')[0]->getUrl(),
-                                'md' => $city->getMedia('header')[0]->getUrl('md'),
-                                'sm' => $city->getMedia('header')[0]->getUrl('sm'),
-                                'thumb' => $city->getMedia('header')[0]->getUrl('thumb'),
+                                "def" => $city->getMedia("header")[0]->getUrl(),
+                                "md" => $city->getMedia("header")[0]->getUrl("md"),
+                                "sm" => $city->getMedia("header")[0]->getUrl("sm"),
+                                "thumb" => $city->getMedia("header")[0]->getUrl("thumb"),
                             ],
                             [
-                                'def' => $city->getMedia('header')[1]->getUrl(),
-                                'md' => $city->getMedia('header')[1]->getUrl('md'),
-                                'sm' => $city->getMedia('header')[1]->getUrl('sm'),
-                                'thumb' => $city->getMedia('header')[1]->getUrl('thumb'),
+                                "def" => $city->getMedia("header")[1]->getUrl(),
+                                "md" => $city->getMedia("header")[1]->getUrl("md"),
+                                "sm" => $city->getMedia("header")[1]->getUrl("sm"),
+                                "thumb" => $city->getMedia("header")[1]->getUrl("thumb"),
                             ]
                         ],
-                        'media' => [
+                        "media" => [
                             [
-                                'def' => $city->getMedia('media')[0]->getUrl(),
-                                'md' => $city->getMedia('media')[0]->getUrl('md'),
-                                'sm' => $city->getMedia('media')[0]->getUrl('sm'),
-                                'thumb' => $city->getMedia('media')[0]->getUrl('thumb'),
+                                "def" => $city->getMedia("media")[0]->getUrl(),
+                                "md" => $city->getMedia("media")[0]->getUrl("md"),
+                                "sm" => $city->getMedia("media")[0]->getUrl("sm"),
+                                "thumb" => $city->getMedia("media")[0]->getUrl("thumb"),
                             ],
                             [
-                                'def' => $city->getMedia('media')[1]->getUrl(),
-                                'md' => $city->getMedia('media')[1]->getUrl('md'),
-                                'sm' => $city->getMedia('media')[1]->getUrl('sm'),
-                                'thumb' => $city->getMedia('media')[1]->getUrl('thumb'),
+                                "def" => $city->getMedia("media")[1]->getUrl(),
+                                "md" => $city->getMedia("media")[1]->getUrl("md"),
+                                "sm" => $city->getMedia("media")[1]->getUrl("sm"),
+                                "thumb" => $city->getMedia("media")[1]->getUrl("thumb"),
                             ]
                         ],
-                        'created_at' => (string)$city->created_at
+                        "created_at" => (string)$city->created_at
                      ]
                 ]);
     }
@@ -132,22 +136,22 @@ trait Get
     {
         // Given
         // inserting a model into the database (we know this will work because test can_create_a_citie() was asserted succesfully)
-        $city = $this->create('Playfields\City');
+        $city = $this->create("City");
 
         // When
-        $response = $this->json('GET', "/api/cities/$city->id");
+        $response = $this->json("GET", "/$this->api_base/$city->id");
 
         // Then
         // assert status code
         $response->assertStatus(200)
                  ->assertExactJson([
-                     'data' => [
-                        'id' => $city->id,
-                        'short_code' => $city->short_code,
-                        'name' => $city->name,
-                        'header' => null,
-                        'media' => null,
-                        'created_at' => (string)$city->created_at
+                     "data" => [
+                        "id" => $city->id,
+                        "short_code" => $city->short_code,
+                        "name" => $city->name,
+                        "header" => null,
+                        "media" => null,
+                        "created_at" => (string)$city->created_at
                      ]
                 ]);
     }
@@ -157,39 +161,39 @@ trait Get
      */
     public function can_return_a_collection_of_all_cities()
     {
-        $cities = $this->create_collection('Playfields\City', [], $resource = true, $qty = 6);
+        $cities = $this->create_collection("City", [], $resource = true, $qty = 6);
 
         foreach($cities as $city){
-            $this->file_factory($city, 'header', ['chelsea', 'liverpool']); // add 2 header media files
-            $this->file_factory($city, 'media', ['chelsea', 'liverpool']); // add 2 media_content media files    
+            $this->file_factory($city, "header", ["chelsea", "liverpool"]); // add 2 header media files
+            $this->file_factory($city, "media", ["chelsea", "liverpool"]); // add 2 media_content media files    
         }
 
-        $response = $this->json('GET', '/api/cities');
+        $response = $this->json("GET", "/$this->api_base");
         $response->assertStatus(200)
-                ->assertJsonCount(6, 'data')
+                ->assertJsonCount(6, "data")
                 ->assertJsonStructure([
-                    'data' => [
-                        '*' => [ //* to say we checking keys of multiple collections
-                            'id', 
-                            'short_code', 
-                            'name',
-                           'header' => [
-                                '*' => [
-                                    'def',
-                                    'md',
-                                    'sm',
-                                    'thumb'
+                    "data" => [
+                        "*" => [ //* to say we checking keys of multiple collections
+                            "id", 
+                            "short_code", 
+                            "name",
+                           "header" => [
+                                "*" => [
+                                    "def",
+                                    "md",
+                                    "sm",
+                                    "thumb"
                                 ]
                             ],
-                            'media' => [
-                                '*' => [
-                                    'def',
-                                    'md',
-                                    'sm',
-                                    'thumb'
+                            "media" => [
+                                "*" => [
+                                    "def",
+                                    "md",
+                                    "sm",
+                                    "thumb"
                                 ]
                             ],
-                            'created_at'
+                            "created_at"
                         ]
                     ]
                 ]);
@@ -200,47 +204,47 @@ trait Get
      */
     public function can_return_a_collection_of_paginated_cities()
     {
-        $cities = $this->create_collection('Playfields\City', [], $resource = true, $qty = 6);
+        $cities = $this->create_collection("City", [], $resource = true, $qty = 6);
 
         foreach($cities as $city){
-            $this->file_factory($city, 'header', ['chelsea', 'liverpool']); // add 2 header media files
-            $this->file_factory($city, 'media', ['chelsea', 'liverpool']); // add 2 media_content media files    
+            $this->file_factory($city, "header", ["chelsea", "liverpool"]); // add 2 header media files
+            $this->file_factory($city, "media", ["chelsea", "liverpool"]); // add 2 media_content media files    
         }
 
-        $response = $this->json('GET', '/api/cities/paginate/3');
+        $response = $this->json("GET", "/$this->api_base/paginate/3");
 
         $response->assertStatus(200)
-                ->assertJsonCount(3, 'data')
+                ->assertJsonCount(3, "data")
                 ->assertJsonStructure([
-                    'data' => [
-                        '*' => [ //* to say we checking keys of multiple collections
-                            'id', 
-                            'short_code', 
-                            'name', 
-                            'header' => [
-                                '*' => [
-                                    'def',
-                                    'md',
-                                    'sm',
-                                    'thumb'
+                    "data" => [
+                        "*" => [ //* to say we checking keys of multiple collections
+                            "id", 
+                            "short_code", 
+                            "name", 
+                            "header" => [
+                                "*" => [
+                                    "def",
+                                    "md",
+                                    "sm",
+                                    "thumb"
                                 ]
                             ],
-                            'media' => [
-                                '*' => [
-                                    'def',
-                                    'md',
-                                    'sm',
-                                    'thumb'
+                            "media" => [
+                                "*" => [
+                                    "def",
+                                    "md",
+                                    "sm",
+                                    "thumb"
                                 ]
                             ],
-                            'created_at'
+                            "created_at"
                         ]
                     ],
                     // Check if it is paginated
-                    'links' => ['first', 'last', 'prev', 'next'],
-                    'meta' => [
-                        'current_page', 'last_page', 'from', 'to',
-                        'path', 'per_page', 'total'
+                    "links" => ["first", "last", "prev", "next"],
+                    "meta" => [
+                        "current_page", "last_page", "from", "to",
+                        "path", "per_page", "total"
                     ]
                 ]);
     }
@@ -254,61 +258,61 @@ trait Post
     public function can_create_a_city_with_valid_content_media()
     {
         $body = [
-            'short_code' => 'dsf',
-            'name' => 'fas af afs asdasd'
+            "short_code" => "dsf",
+            "name" => "fas af afs asdasd"
         ];
         $files = [          
-            'header' => [
-                UploadedFile::fake()->image('liverpool.jpg'),
-                UploadedFile::fake()->image('chelsea.jpg'),
+            "header" => [
+                UploadedFile::fake()->image("liverpool.jpg"),
+                UploadedFile::fake()->image("chelsea.jpg"),
             ],
-            'media' => [
-                UploadedFile::fake()->image('barcelona.jpg'),
-                UploadedFile::fake()->image('juventus.jpg')
+            "media" => [
+                UploadedFile::fake()->image("barcelona.jpg"),
+                UploadedFile::fake()->image("juventus.jpg")
             ]
         ];
 
-        $res = $this->json('POST', '/api/cities', array_merge($body, $files));
+        $res = $this->json("POST", "/$this->api_base", array_merge($body, $files));
 
         // Then
         $res->assertStatus(201)
              ->assertJsonStructure([
-                'data' => [
-                        'short_code',
-                        'name',
-                        'header' => [
-                            '*' => 
+                "data" => [
+                        "short_code",
+                        "name",
+                        "header" => [
+                            "*" => 
                             [
-                                'def',
-                                'md',
-                                'sm',
-                                'thumb'
+                                "def",
+                                "md",
+                                "sm",
+                                "thumb"
                             ]
                         ],
-                        'media' => [
-                            '*' => 
+                        "media" => [
+                            "*" => 
                             [
-                                'def',
-                                'md',
-                                'sm',
-                                'thumb'
+                                "def",
+                                "md",
+                                "sm",
+                                "thumb"
                             ]
                         ],
-                        'created_at'
+                        "created_at"
                 ]
             ]);
 
         // assert if the game has been added to the database
-        $this->assertDatabaseHas('cities', $body);
+        $this->assertDatabaseHas("cities", $body);
 
         // assert if the files are uploaded to storage
         // Check if db file media data urls actually exist as files in storage
         if($stored_header_files_array = $this->spread_media_urls($res->getData()->data->header)){
-            \Storage::disk('test')->assertExists($stored_header_files_array);
+            \Storage::disk("test")->assertExists($stored_header_files_array);
         }
 
         if($stored_header_files_array = $this->spread_media_urls($res->getData()->data->media)){
-            \Storage::disk('test')->assertExists($stored_header_files_array);
+            \Storage::disk("test")->assertExists($stored_header_files_array);
         }
     }
 
@@ -319,46 +323,46 @@ trait Post
     public function can_create_a_city_without_media_of_type_header()
     {
         $body = [
-            'short_code' => 'dsf',
-            'name' => 'fas af afs asdasd'
+            "short_code" => "dsf",
+            "name" => "fas af afs asdasd"
         ];
         $files = [
-            'media' => [
-                UploadedFile::fake()->image('barcelona.jpg'),
-                UploadedFile::fake()->image('juventus.jpg')
+            "media" => [
+                UploadedFile::fake()->image("barcelona.jpg"),
+                UploadedFile::fake()->image("juventus.jpg")
             ]
         ];
 
-        $res = $this->json('POST', '/api/cities', array_merge($body, $files));
+        $res = $this->json("POST", "/$this->api_base", array_merge($body, $files));
 
         // Then
         $res->assertStatus(201)
              ->assertJsonStructure([
-                'data' => [
-                        'short_code',
-                        'name',
-                        'media' => [
-                            '*' => 
+                "data" => [
+                        "short_code",
+                        "name",
+                        "media" => [
+                            "*" => 
                             [
-                                'def',
-                                'md',
-                                'sm',
-                                'thumb'
+                                "def",
+                                "md",
+                                "sm",
+                                "thumb"
                             ]
                         ],
-                        'created_at'
+                        "created_at"
                 ]
             ]);
 
         // assert if the game has been added to the database
-        $this->assertDatabaseHas('cities', $body);
+        $this->assertDatabaseHas("cities", $body);
 
         if($stored_header_files_array = $this->spread_media_urls($res->getData()->data->header)){
-            \Storage::disk('test')->assertExists($stored_header_files_array);
+            \Storage::disk("test")->assertExists($stored_header_files_array);
         }
         // assert if the files are uploaded to storage
         if($stored_header_files_array = $this->spread_media_urls($res->getData()->data->media)){
-            \Storage::disk('test')->assertExists($stored_header_files_array);
+            \Storage::disk("test")->assertExists($stored_header_files_array);
         }
     }
 
@@ -368,49 +372,49 @@ trait Post
     public function can_create_a_city_without_media_of_type_media()
     {
         $body = [
-            'short_code' => 'dsf',
-            'name' => 'fas af afs asdasd'
+            "short_code" => "dsf",
+            "name" => "fas af afs asdasd"
         ];
         $files = [
-            'header' => [
-                UploadedFile::fake()->image('barcelona.jpg'),
-                UploadedFile::fake()->image('juventus.jpg')
+            "header" => [
+                UploadedFile::fake()->image("barcelona.jpg"),
+                UploadedFile::fake()->image("juventus.jpg")
             ]
         ];
 
-        $res = $this->json('POST', '/api/cities', array_merge($body, $files));
+        $res = $this->json("POST", "/$this->api_base", array_merge($body, $files));
 
         // Then
         $res->assertStatus(201)
              ->assertJsonStructure([
-                'data' => [
-                        'short_code',
-                        'name',
-                        'header' => [
-                            '*' => 
+                "data" => [
+                        "short_code",
+                        "name",
+                        "header" => [
+                            "*" => 
                             [
-                                'def',
-                                'md',
-                                'sm',
-                                'thumb'
+                                "def",
+                                "md",
+                                "sm",
+                                "thumb"
                             ]
                         ],
-                        'media',
-                        'created_at'
+                        "media",
+                        "created_at"
                 ]
             ]);
 
         // assert if the game has been added to the database
-        $this->assertDatabaseHas('cities', $body);
+        $this->assertDatabaseHas("cities", $body);
 
         // assert if the files are uploaded to storage
         // Check if db file media data urls actually exist as files in storage
         if($stored_header_files_array = $this->spread_media_urls($res->getData()->data->header)){
-            \Storage::disk('test')->assertExists($stored_header_files_array);
+            \Storage::disk("test")->assertExists($stored_header_files_array);
         }
 
         if($stored_header_files_array = $this->spread_media_urls($res->getData()->data->media)){
-            \Storage::disk('test')->assertExists($stored_header_files_array);
+            \Storage::disk("test")->assertExists($stored_header_files_array);
         }
     }
 
@@ -420,27 +424,27 @@ trait Post
     public function can_create_a_city_without_any_media()
     {
         $body = [
-            'short_code' => 'dsf',
-            'name' => 'fas af afs asdasd'
+            "short_code" => "dsf",
+            "name" => "fas af afs asdasd"
         ];
 
-        $res = $this->json('POST', '/api/cities', $body);
+        $res = $this->json("POST", "/$this->api_base", $body);
 
         // Then
         $res->assertStatus(201)
              ->assertExactJson([
-                'data' => [
-                        'id' => $res->getData()->data->id,
-                        'short_code' => $body['short_code'],
-                        'name' => $body['name'],
-                        'header' => null,
-                        'media' => null,
-                        'created_at' => $res->getData()->data->created_at
+                "data" => [
+                        "id" => $res->getData()->data->id,
+                        "short_code" => $body["short_code"],
+                        "name" => $body["name"],
+                        "header" => null,
+                        "media" => null,
+                        "created_at" => $res->getData()->data->created_at
                 ]
             ]);
 
         // assert if the game has been added to the database
-        $this->assertDatabaseHas('cities', $body);
+        $this->assertDatabaseHas("cities", $body);
     }
 
     /**
@@ -448,14 +452,14 @@ trait Post
      */
     public function will_fail_with_a_422_if_request_body_failed_validation_because_of_wrong_data_types()
     {
-        // short_code' is wrong data type
+        // short_code" is wrong data type
         $body = [
-            'short_code' => 234,
-            'name' => 'fas af afs asdasd'
+            "short_code" => 234,
+            "name" => "fas af afs asdasd"
         ];
-        $res = $this->json('POST', '/api/cities', $body);
+        $res = $this->json("POST", "/$this->api_base", $body);
         $res->assertStatus(422);
-        $this->assertDatabaseMissing('cities', $body);
+        $this->assertDatabaseMissing("cities", $body);
     }
 
     /**
@@ -463,13 +467,13 @@ trait Post
      */
     public function will_fail_with_a_422_if_request_body_failed_validation_because_data_was_missing()
     {
-        // short_code' is missing
+        // short_code" is missing
         $body = [
-            'name' => 'fas af afs asdasd'
+            "name" => "fas af afs asdasd"
         ];
-        $res = $this->json('POST', '/api/cities', $body);
+        $res = $this->json("POST", "/$this->api_base", $body);
         $res->assertStatus(422);
-        $this->assertDatabaseMissing('cities', $body);
+        $this->assertDatabaseMissing("cities", $body);
     }
 }
 
@@ -481,7 +485,7 @@ trait Put
      */
     public function will_fail_with_a_404_if_the_city_we_want_to_update_is_not_found()
     {
-        $res = $this->json('PUT', 'api/cities/-1');
+        $res = $this->json("PUT", "$this->api_base/-1");
         $res->assertStatus(404);
     }
 
@@ -491,30 +495,30 @@ trait Put
     public function can_add_a_header_image_to_end_of_media_collection_from_game_text_answere()
     {
         $old_values = [
-            'short_code' => 'dsf',
-            'name' => 'fas af afs asdasd'
+            "short_code" => "dsf",
+            "name" => "fas af afs asdasd"
         ];
 
-        $old_city = $this->create('Playfields\City', $old_values);
-        $this->file_factory($old_city, 'header', ['header1', 'header2']);
+        $old_city = $this->create("City", $old_values);
+        $this->file_factory($old_city, "header", ["header1", "header2"]);
         
         $files = [
-            'header' => [
-                UploadedFile::fake()->image('header3.jpg'),
-                UploadedFile::fake()->image('header4.jpg'),
+            "header" => [
+                UploadedFile::fake()->image("header3.jpg"),
+                UploadedFile::fake()->image("header4.jpg"),
             ]
         ];
 
         // When
-        $res = $this->json('PUT','api/cities/'.$old_city->id, $files);
+        $res = $this->json("PUT","$this->api_base/".$old_city->id, $files);
 
         // Then
         $res->assertStatus(200)
-                    ->assertJsonCount(4, 'data.header'); // assert that 2 images have been added to header
+                    ->assertJsonCount(4, "data.header"); // assert that 2 images have been added to header
 
         // Check if db file media data urls actually exist as files in storage
         if($stored_header_files_array = $this->spread_media_urls($res->getData()->data->header)){
-            \Storage::disk('test')->assertExists($stored_header_files_array);
+            \Storage::disk("test")->assertExists($stored_header_files_array);
         }
     }
     
@@ -524,30 +528,30 @@ trait Put
     public function can_add_a_media_image_to_end_of_media_collection_from_city()
     {
         $old_values = [
-            'short_code' => 'dsf',
-            'name' => 'fas af afs asdasd'
+            "short_code" => "dsf",
+            "name" => "fas af afs asdasd"
         ];
 
-        $old_city = $this->create('Playfields\City', $old_values);
-        $this->file_factory($old_city, 'media', ['media1', 'media2']);
+        $old_city = $this->create("City", $old_values);
+        $this->file_factory($old_city, "media", ["media1", "media2"]);
         
         $files = [
-            'media' => [
-                UploadedFile::fake()->image('media3.jpg'),
-                UploadedFile::fake()->image('media4.jpg'),
+            "media" => [
+                UploadedFile::fake()->image("media3.jpg"),
+                UploadedFile::fake()->image("media4.jpg"),
             ]
         ];
 
         // When
-        $res = $this->json('PUT','api/cities/'.$old_city->id, $files);
+        $res = $this->json("PUT","$this->api_base/".$old_city->id, $files);
 
         // Then
         $res->assertStatus(200)
-                    ->assertJsonCount(4, 'data.media'); // assert that 2 images have been added to header
+                    ->assertJsonCount(4, "data.media"); // assert that 2 images have been added to header
 
         // Check if db file media data urls actually exist as files in storage
         if($stored_header_files_array = $this->spread_media_urls($res->getData()->data->media)){
-            \Storage::disk('test')->assertExists($stored_header_files_array);
+            \Storage::disk("test")->assertExists($stored_header_files_array);
         }
     }
 
@@ -558,27 +562,27 @@ trait Put
     {
         // Given
         $old_values = [
-            'short_code' => 'dsf',
-            'name' => 'fas af afs asdasd'
+            "short_code" => "dsf",
+            "name" => "fas af afs asdasd"
         ];
 
-        $old_city = $this->create('Playfields\City', $old_values);
+        $old_city = $this->create("City", $old_values);
 
         // update every attribute
         $new_values = [
-            'short_code' => 'aaaaaaaaa',
-            'name' => 'aaaaaaaaa'
+            "short_code" => "aaaaaaaaa",
+            "name" => "aaaaaaaaa"
         ];
 
         // When
-        $response = $this->json('PUT','api/cities/'.$old_city->id, $new_values);
+        $response = $this->json("PUT","$this->api_base/".$old_city->id, $new_values);
 
         // Then
         $response->assertStatus(200)
                     ->assertJsonFragment($new_values);
                     
-        $this->assertDatabaseHas('cities', $new_values);
-        $this->assertDatabaseMissing('cities', $old_values);
+        $this->assertDatabaseHas("cities", $new_values);
+        $this->assertDatabaseMissing("cities", $old_values);
             
     }
    
@@ -590,22 +594,22 @@ trait Put
         
         // Given
         $old_values = [
-            'short_code' => 'dsf'
+            "short_code" => "dsf"
         ];
 
         $old_values_to_remain_after_update = [
-            'name' => 'fas af afs asdasd'
+            "name" => "fas af afs asdasd"
         ];
 
-        $old_city = $this->create('Playfields\City', array_merge($old_values, $old_values_to_remain_after_update));
+        $old_city = $this->create("City", array_merge($old_values, $old_values_to_remain_after_update));
 
         // update every attribute
         $new_values = [
-            'short_code' => 'aaaaaaaaa',
+            "short_code" => "aaaaaaaaa",
         ];
 
         // When
-        $response = $this->json('PUT','api/cities/'.$old_city->id, $new_values);
+        $response = $this->json("PUT","$this->api_base/".$old_city->id, $new_values);
 
         // Then
         $response->assertStatus(200)
@@ -615,8 +619,8 @@ trait Put
         $response->assertStatus(200)
                     ->assertJsonFragment(array_merge($new_values, $old_values_to_remain_after_update));
                     
-        $this->assertDatabaseHas('cities', array_merge($new_values, $old_values_to_remain_after_update));
-        $this->assertDatabaseMissing('cities', $old_values);
+        $this->assertDatabaseHas("cities", array_merge($new_values, $old_values_to_remain_after_update));
+        $this->assertDatabaseMissing("cities", $old_values);
 
     }
 
@@ -627,26 +631,26 @@ trait Put
     {
         // Given
         $old_values = [
-            'short_code' => 'dsf',
-            'name' => 'fas af afs asdasd'
+            "short_code" => "dsf",
+            "name" => "fas af afs asdasd"
         ];
 
-        $old_game = $this->create('Playfields\City', $old_values);
+        $old_game = $this->create("City", $old_values);
 
-        // 'short_code' is of wrong type
+        // "short_code" is of wrong type
         $new_values = [
-            'short_code' => 00001,
-            'name' => 'fas af afs asdasd'
+            "short_code" => 00001,
+            "name" => "fas af afs asdasd"
         ];
 
         // When
-        $response = $this->json('PUT','api/cities/'.$old_game->id, $new_values);
+        $response = $this->json("PUT","$this->api_base/".$old_game->id, $new_values);
 
         // Then
         $response->assertStatus(422);
 
-        $this->assertDatabaseHas('cities', $old_values);          
-        $this->assertDatabaseMissing('cities', $new_values);
+        $this->assertDatabaseHas("cities", $old_values);          
+        $this->assertDatabaseMissing("cities", $new_values);
 
     }
 
@@ -659,7 +663,7 @@ trait Delete
      */
     public function will_fail_with_a_404_if_the_city_we_want_to_delete_is_not_found()
     {
-        $res = $this->json('DELETE', 'api/cities/-1');
+        $res = $this->json("DELETE", "$this->api_base/-1");
         $res->assertStatus(404);
     }
 
@@ -670,18 +674,18 @@ trait Delete
     {
         // Given
         // first create a game in the database to delete
-        $city = $this->create('Playfields\City');
+        $city = $this->create("City");
 
         // attach media
-        $media = ['media1', 'media2'];
-        $this->file_factory($city, 'media', $media);
+        $media = ["media1", "media2"];
+        $this->file_factory($city, "media", $media);
         // attach media
-        $header = ['header1', 'header2'];
-        $this->file_factory($city, 'header', $header);
+        $header = ["header1", "header2"];
+        $this->file_factory($city, "header", $header);
 
         // When
         // call the delete api
-        $res = $this->json('DELETE', '/api/cities/'.$city->id);
+        $res = $this->json("DELETE", "/$this->api_base/".$city->id);
 
         // Then
         $res->assertStatus(204)
@@ -689,10 +693,10 @@ trait Delete
 
 
         // check if $game is deleted from database
-        $this->assertDatabaseMissing('cities', ['id' => $city->id]);
+        $this->assertDatabaseMissing("cities", ["id" => $city->id]);
 
-        \Storage::disk('test')->assertMissing($media);
-        \Storage::disk('test')->assertMissing($header);
+        \Storage::disk("test")->assertMissing($media);
+        \Storage::disk("test")->assertMissing($header);
 
     }
 
@@ -711,28 +715,28 @@ trait Delete
 
         // Given
         // first create a game in the database to delete
-        $city = $this->create('Playfields\City');
+        $city = $this->create("City");
 
         // holds the polymoprhic relationship type and key
-        $challenge = $this->create('Games\Challenge', [
-            'playfield_type' => 'city',
-            'playfield_id' =>  $city->id
+        $challenge = $this->create("Challenge", [
+            "playfield_type" => "city",
+            "playfield_id" =>  $city->id
         ]);
-        $itineraries = $this->create_collection('Itinerary', [
-            'playfield_type' => 'city',
-            'playfield_id' =>  $city->id
+        $itineraries = $this->create_collection("Itinerary", [
+            "playfield_type" => "city",
+            "playfield_id" =>  $city->id
         ], false, 3);
         
         // When
         // call the delete api
-        $res = $this->json('DELETE', '/api/cities/'.$city->id);
+        $res = $this->json("DELETE", "/$this->api_base/".$city->id);
 
         // Then
         $res->assertStatus(204)
             ->assertSee(null);
 
         // check if $game is deleted from database
-        $this->assertDatabaseMissing('cities', ['id' => $city->id]);
+        $this->assertDatabaseMissing("cities", ["id" => $city->id]);
 
 
         // refresh the poly relation from database
@@ -772,24 +776,24 @@ trait Delete
 
         // Given
         // first create a game in the database to delete
-        $city = $this->create('Playfields\City');
+        $city = $this->create("City");
 
         // holds the polymoprhic relationship type and key
-        $transits = $this->create_collection('Playfields\Transit', [
-            'from_city_id' =>  $city->id,
-            'to_city_id' => $city->id
+        $transits = $this->create_collection("Transit", [
+            "from_city_id" =>  $city->id,
+            "to_city_id" => $city->id
         ], false, 3);
         
         // When
         // call the delete api
-        $res = $this->json('DELETE', '/api/cities/'.$city->id);
+        $res = $this->json("DELETE", "/$this->api_base/".$city->id);
 
         // Then
         $res->assertStatus(204)
             ->assertSee(null);
 
         // check if $game is deleted from database
-        $this->assertDatabaseMissing('cities', ['id' => $city->id]);
+        $this->assertDatabaseMissing("cities", ["id" => $city->id]);
 
         // assert if game_id of all previously relational options have been set to null.
         foreach($transits as $transit){

@@ -24,13 +24,11 @@ class MorphServiceProvider extends ServiceProvider
      */
     public function boot()
     {
-        Relation::morphMap([
-            'media_upload' => \App\Games\GameMediaUpload::class,
-            'multiple_choice' => \App\Games\GameMultipleChoice::class,
-            'text_answere' => \App\Games\GameTextAnswere::class,
-            'city' => \App\Playfields\City::class,
-            'route' => \App\Playfields\Route::class,
-            'transit' => \App\Playfields\Transit::class,
-          ]);
+        Relation::morphMap(
+            array_merge(
+                config('morphMap.games'),
+                config('morphMap.playfields')
+            )
+        );
     }
 }

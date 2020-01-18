@@ -5,14 +5,14 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 
-use App\Games\GameMediaUpload;
-use App\Games\GameTextAnswere;
-use App\Games\GameMultipleChoice;
+use App\GameMediaUpload;
+use App\GameTextAnswere;
+use App\GameMultipleChoice;
 
-use App\Games\GameMultipleChoiceOption;
+use App\GameMultipleChoiceOption;
 
-use App\Http\Resources\Games\GameMultipleChoiceOption as GameMultipleChoiceOptionResource;
-use App\Http\Resources\Games\GameMultipleChoiceOptionCollection;
+use App\Http\Resources\GameMultipleChoiceOption as GameMultipleChoiceOptionResource;
+use App\Http\Resources\GameMultipleChoiceOptionCollection;
 
 class GameController extends Controller
 {

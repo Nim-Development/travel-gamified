@@ -6,8 +6,8 @@ use Faker\Generator as Faker;
 use Illuminate\Support\Str;
 
 use App\Tour;
-use App\Playfields\City;
-use App\Playfields\Transit;
+use App\City;
+use App\Transit;
 
 /*
 |--------------------------------------------------------------------------

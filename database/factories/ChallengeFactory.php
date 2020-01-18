@@ -1,13 +1,13 @@
 <?php
 
 /** @var \Illuminate\Database\Eloquent\Factory $factory */
-use App\Games\Challenge;
+use App\Challenge;
 use Faker\Generator as Faker;
 use Illuminate\Support\Str;
 
-use App\Playfields\Route;
-use App\Playfields\City;
-use App\Games\GameTextAnswere;
+use App\Route;
+use App\City;
+use App\GameTextAnswere;
 
 $factory->define(Challenge::class, function (Faker $faker) {
     return [

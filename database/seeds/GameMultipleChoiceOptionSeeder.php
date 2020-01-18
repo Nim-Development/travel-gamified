@@ -11,6 +11,6 @@ class GameMultipleChoiceOptionSeeder extends Seeder
      */
     public function run()
     {
-        factory(App\Games\GameMultipleChoiceOption::class, 120)->create();
+        factory(App\GameMultipleChoiceOption::class, 120)->create();
     }
 }

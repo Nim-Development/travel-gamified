@@ -20,16 +20,18 @@ class TourControllerTest extends TestCase
     use Put;
     use Delete;
 
+    protected $api_base = '/api/admin/tours';
+
     /**
      * @test
      */
     // public function non_authenticated_user_can_not_access_tour_api_endpoints()
     // {
-    //     $this->json('GET', '/api/tours')->assertStatus(401);
-    //     $this->json('GET', 'api/tours/1')->assertStatus(401);
-    //     $this->json('PUT', 'api/tours/1')->assertStatus(401);
-    //     $this->json('DELETE', 'api/tours/1')->assertStatus(401);
-    //     $this->json('POST', '/api/tours')->assertStatus(401);
+    //     $this->json("GET", "/$this->api_base")->assertStatus(401);
+    //     $this->json("GET", "$this->api_base/1")->assertStatus(401);
+    //     $this->json("PUT", "$this->api_base/1")->assertStatus(401);
+    //     $this->json("DELETE", "$this->api_base/1")->assertStatus(401);
+    //     $this->json("POST", "/$this->api_base")->assertStatus(401);
     // }
 
 }
@@ -42,7 +44,7 @@ trait Get
      */
     public function will_fail_with_a_404_if_tour_is_not_found()
     {
-        $res = $this->json('GET', 'api/tours/-1');
+        $res = $this->json("GET", "$this->api_base/-1");
         $res->assertStatus(404);
     }
 
@@ -52,7 +54,7 @@ trait Get
     public function will_return_204_when_requesting_all_tours_whilst_no_entries_in_database()
     {
         // Skip any creates
-        $res = $this->json('GET', 'api/tours');
+        $res = $this->json("GET", "$this->api_base");
         $res->assertStatus(204);
     }
 
@@ -62,7 +64,7 @@ trait Get
     public function will_return_204_when_requesting_paginated_tours_whilst_no_entries_in_database()
     {
         // Skip any creates
-        $res = $this->json('GET', 'api/tours/paginate/3');
+        $res = $this->json("GET", "$this->api_base/paginate/3");
         $res->assertStatus(204);
     }
 
@@ -73,20 +75,20 @@ trait Get
     {
         // Given
         // inserting a model into the database (we know this will work because test can_create_a_tour() was asserted succesfully)
-        $tour = $this->create('Tour');
+        $tour = $this->create("Tour");
 
         // When
-        $response = $this->json('GET', '/api/tours/'.$tour->id);
+        $response = $this->json("GET", "/$this->api_base/".$tour->id);
 
         // Then
         // assert status code
         $response->assertStatus(200)
                  ->assertExactJson([
-                     'data' => [
-                        'id' => $tour->id,
-                        'name' => $tour->name,
-                        'duration' => $tour->duration,
-                        'created_at' => (string)$tour->created_at
+                     "data" => [
+                        "id" => $tour->id,
+                        "name" => $tour->name,
+                        "duration" => $tour->duration,
+                        "created_at" => (string)$tour->created_at
                      ]
                 ]);
     }
@@ -97,19 +99,19 @@ trait Get
     public function can_return_a_collection_of_all_tours()
     {
 
-        $this->create_collection('Tour', [], false, 6);
+        $this->create_collection("Tour", [], false, 6);
 
-        $response = $this->json('GET', '/api/tours');
+        $response = $this->json("GET", "/$this->api_base");
 
         $response->assertStatus(200)
-                ->assertJsonCount(6, 'data')
+                ->assertJsonCount(6, "data")
                 ->assertJsonStructure([
-                    'data' => [
-                        '*' => [
-                            'id', 
-                            'name', 
-                            'duration', 
-                            'created_at'
+                    "data" => [
+                        "*" => [
+                            "id", 
+                            "name", 
+                            "duration", 
+                            "created_at"
                         ]
                     ],
                 ]);
@@ -120,25 +122,25 @@ trait Get
      */
     public function can_return_a_collection_of_paginated_tours()
     {
-        $this->create_collection('Tour', [], false, 6);
+        $this->create_collection("Tour", [], false, 6);
 
-        $response = $this->json('GET', '/api/tours/paginate/3');
+        $response = $this->json("GET", "/$this->api_base/paginate/3");
         $response->assertStatus(200)
-                ->assertJsonCount(3, 'data')
+                ->assertJsonCount(3, "data")
                 ->assertJsonStructure([
-                    'data' => [
-                        '*' => [
-                            'id', 
-                            'name', 
-                            'duration', 
-                            'created_at'
+                    "data" => [
+                        "*" => [
+                            "id", 
+                            "name", 
+                            "duration", 
+                            "created_at"
                         ]
                     ],
                     // Check if it is paginated
-                    'links' => ['first', 'last', 'prev', 'next'],
-                    'meta' => [
-                        'current_page', 'last_page', 'from', 'to',
-                        'path', 'per_page', 'total'
+                    "links" => ["first", "last", "prev", "next"],
+                    "meta" => [
+                        "current_page", "last_page", "from", "to",
+                        "path", "per_page", "total"
                     ]
                 ]);
     }
@@ -155,25 +157,25 @@ trait Post
     {
 
         $body = [
-            'name' => '1234',
-            'duration' => 22.11
+            "name" => "1234",
+            "duration" => 22.11
         ];
 
-        $res = $this->json('POST', '/api/tours', $body);
+        $res = $this->json("POST", "/$this->api_base", $body);
 
         // Then
         $res->assertStatus(201)
              ->assertJsonStructure([
-                'data' => [
-                    'id',
-                    'name',
-                    'duration',
-                    'created_at'
+                "data" => [
+                    "id",
+                    "name",
+                    "duration",
+                    "created_at"
                 ]
         ]);
 
         // assert if the game has been added to the database
-        $this->assertDatabaseHas('tours', $body);
+        $this->assertDatabaseHas("tours", $body);
     }
 
              /**
@@ -181,19 +183,19 @@ trait Post
      */
     public function will_fail_with_error_422_if_request_body_data_is_of_wrong_type()
     {
-        // 'name' is of wrong type
+        // "name" is of wrong type
         $body = [
-            'name' => 111,
-            'duration' => 22.11
+            "name" => 111,
+            "duration" => 22.11
         ];
 
-        $res = $this->json('POST', '/api/tours', $body);
+        $res = $this->json("POST", "/$this->api_base", $body);
 
         // Then
         $res->assertStatus(422);
 
         // assert if the game has been added to the database
-        $this->assertDatabaseMissing('tours', $body);
+        $this->assertDatabaseMissing("tours", $body);
     }
 
     /**
@@ -201,18 +203,18 @@ trait Post
      */
     public function will_fail_with_error_422_if_request_body_data_is_missing()
     {
-        // 'name' is missing
+        // "name" is missing
         $body = [
-            'duration' => 22.11
+            "duration" => 22.11
         ];
 
-        $res = $this->json('POST', '/api/tours', $body);
+        $res = $this->json("POST", "/$this->api_base", $body);
 
         // Then
         $res->assertStatus(422);
 
         // assert if the game has been added to the database
-        $this->assertDatabaseMissing('tours', $body);
+        $this->assertDatabaseMissing("tours", $body);
     }
 
 }
@@ -220,8 +222,8 @@ trait Post
 trait Put
 {
     // $body = [
-    //     'name' => '1234',
-    //     'duration' => 22.11
+    //     "name" => "1234",
+    //     "duration" => 22.11
     // ];
 
 
@@ -230,7 +232,7 @@ trait Put
      */
     public function will_fail_with_a_404_if_the_tour_we_want_to_update_is_not_found()
     {
-        $res = $this->json('PUT', 'api/tours/-1');
+        $res = $this->json("PUT", "$this->api_base/-1");
         $res->assertStatus(404);
     }
 
@@ -243,27 +245,27 @@ trait Put
     {
 
         $old_values = [
-            'name' => '1234',
-            'duration' => 22.11
+            "name" => "1234",
+            "duration" => 22.11
         ];
 
-        $old_tour = $this->create('Tour', $old_values);
+        $old_tour = $this->create("Tour", $old_values);
 
         // update every attribute
         $new_values = [
-            'name' => 'aaaaaaaa',
-            'duration' => 00.01
+            "name" => "aaaaaaaa",
+            "duration" => 00.01
         ];
 
         // When
-        $response = $this->json('PUT','api/tours/'.$old_tour->id, $new_values);
+        $response = $this->json("PUT","$this->api_base/".$old_tour->id, $new_values);
 
         // Then
         $response->assertStatus(200)
                     ->assertJsonFragment($new_values);
                     
-        $this->assertDatabaseHas('tours', $new_values);
-        $this->assertDatabaseMissing('tours', $old_values);
+        $this->assertDatabaseHas("tours", $new_values);
+        $this->assertDatabaseMissing("tours", $old_values);
             
     }
    
@@ -273,29 +275,29 @@ trait Put
     public function can_update_tours_on_a_couple_of_model_attributes()
     {
         $old_values = [
-            'name' => '1234'
+            "name" => "1234"
         ];
 
         $values_to_remain_after_update = [
-            'duration' => 22.11
+            "duration" => 22.11
         ];
 
-        $old_tour = $this->create('Tour', array_merge($old_values, $values_to_remain_after_update));
+        $old_tour = $this->create("Tour", array_merge($old_values, $values_to_remain_after_update));
 
         // update every attribute
         $new_values = [
-            'name' => 'aaaaaaaa',
+            "name" => "aaaaaaaa",
         ];
 
         // When
-        $response = $this->json('PUT','api/tours/'.$old_tour->id, $new_values);
+        $response = $this->json("PUT","$this->api_base/".$old_tour->id, $new_values);
 
         // Then
         $response->assertStatus(200)
                     ->assertJsonFragment(array_merge($new_values, $values_to_remain_after_update));
                     
-        $this->assertDatabaseHas('tours', array_merge($new_values, $values_to_remain_after_update));
-        $this->assertDatabaseMissing('tours', $old_values);
+        $this->assertDatabaseHas("tours", array_merge($new_values, $values_to_remain_after_update));
+        $this->assertDatabaseMissing("tours", $old_values);
             
     }
 
@@ -305,26 +307,26 @@ trait Put
     public function will_fail_with_error_422_when_body_data_is_of_wrong_type()
     {
         $old_values = [
-            'name' => '1234',
-            'duration' => 22.11
+            "name" => "1234",
+            "duration" => 22.11
         ];
 
-        $old_tour = $this->create('Tour', $old_values);
+        $old_tour = $this->create("Tour", $old_values);
 
-        // 'name' is of wrong type
+        // "name" is of wrong type
         $new_values = [
-            'name' => 'aaaaaaaa'
+            "name" => "aaaaaaaa"
         ];
 
         // When
-        $response = $this->json('PUT','api/tours/'.$old_tour->id, $new_values);
+        $response = $this->json("PUT","$this->api_base/".$old_tour->id, $new_values);
 
         // Then
         $response->assertStatus(200)
                     ->assertJsonFragment($new_values);
                     
-        $this->assertDatabaseHas('tours', $new_values);
-        $this->assertDatabaseMissing('tours', $old_values);
+        $this->assertDatabaseHas("tours", $new_values);
+        $this->assertDatabaseMissing("tours", $old_values);
             
     }
 }
@@ -336,7 +338,7 @@ trait Delete
      */
     public function will_fail_with_a_404_if_the_tour_we_want_to_delete_is_not_found()
     {
-        $res = $this->json('DELETE', 'api/tours/-1');
+        $res = $this->json("DELETE", "$this->api_base/-1");
         $res->assertStatus(404);
     }
 
@@ -347,24 +349,24 @@ trait Delete
     {
         // Given
         // first create a game in the database to delete
-        $tour = $this->create('Tour');
-        $trip = $this->create('Trip', [
-            'tour_id' => $tour->id
+        $tour = $this->create("Tour");
+        $trip = $this->create("Trip", [
+            "tour_id" => $tour->id
         ]);
-        $itinerary = $this->create('Itinerary', [
-            'tour_id' => $tour->id
+        $itinerary = $this->create("Itinerary", [
+            "tour_id" => $tour->id
         ]);
 
         // When
         // call the delete api
-        $res = $this->json('DELETE', '/api/tours/'.$tour->id);
+        $res = $this->json("DELETE", "/$this->api_base/".$tour->id);
 
         // Then
         $res->assertStatus(204)
             ->assertSee(null);
 
         // check if $game is deleted from database
-        $this->assertDatabaseMissing('tours', ['id' => $tour->id]);
+        $this->assertDatabaseMissing("tours", ["id" => $tour->id]);
 
         $trip->refresh();
         if(!$trip->tour_id){

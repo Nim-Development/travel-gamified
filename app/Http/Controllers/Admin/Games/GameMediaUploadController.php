@@ -3,9 +3,9 @@
 namespace App\Http\Controllers\Admin;
 
 use Illuminate\Http\Request;
-use App\Games\GameMediaUpload;
+use App\GameMediaUpload;
 use App\Http\Controllers\Controller;
-use App\Http\Resources\Games\GameMediaUpload as GameMediaUploadResource;
+use App\Http\Resources\GameMediaUpload as GameMediaUploadResource;
 
 class GameMediaUploadController extends Controller
 {

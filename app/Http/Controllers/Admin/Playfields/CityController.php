@@ -5,8 +5,8 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 
-use App\Http\Resources\Playfields\City as CityResource;
-use App\Playfields\City;
+use App\Http\Resources\City as CityResource;
+use App\City;
 
 class CityController extends Controller
 {

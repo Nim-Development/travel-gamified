@@ -11,7 +11,7 @@ class TransitSeeder extends Seeder
     public function run()
     {
         //
-        factory(App\Playfields\Transit::class, 19)->create();
+        factory(App\Transit::class, 19)->create();
 
     }
 }

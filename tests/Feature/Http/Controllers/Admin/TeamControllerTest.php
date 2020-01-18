@@ -20,6 +20,9 @@ class TeamControllerTest extends TestCase
     use Post;
     use Put;
     use Delete;
+
+
+    protected $api_base = 'api/admin/teams';
     
     /**
      * @test
@@ -34,15 +37,17 @@ class TeamControllerTest extends TestCase
     // }
 }
 
+
 trait Get
 {
-
     /**
      * @test
      */
     public function will_fail_with_a_404_if_team_is_not_found()
     {
-        $res = $this->json('GET', 'api/teams/-1');
+        
+
+        $res = $this->json('GET', "$this->api_base/-1");
         $res->assertStatus(404);
     }
 
@@ -52,7 +57,7 @@ trait Get
     public function will_return_204_when_requesting_all_teams_whilst_no_entries_in_database()
     {
         // Skip any creates
-        $res = $this->json('GET', 'api/teams');
+        $res = $this->json('GET', $this->api_base);
         $res->assertStatus(204);
     }
 
@@ -62,7 +67,7 @@ trait Get
     public function will_return_204_when_requesting_paginated_teams_whilst_no_entries_in_database()
     {
         // Skip any creates
-        $res = $this->json('GET', 'api/teams/paginate/3');
+        $res = $this->json('GET', "$this->api_base/paginate/3");
         $res->assertStatus(204);
     }
 
@@ -75,7 +80,7 @@ trait Get
         $team = $this->create('Team');
 
         // When
-        $response = $this->json('GET', '/api/teams/'.$team->id);
+        $response = $this->json('GET', "$this->api_base/$team->id");
 
         // Then
         // assert status code
@@ -109,7 +114,7 @@ trait Get
         $this->file_factory($team, 'badge', ['liverpool']);
 
         // When
-        $response = $this->json('GET', '/api/teams/'.$team->id);
+        $response = $this->json('GET', "$this->api_base/$team->id");
 
         // Then
         // assert status code
@@ -184,7 +189,7 @@ trait Get
             $this->file_factory($team, 'badge', ['liverpool']);
         }
 
-        $response = $this->json('GET', '/api/teams');
+        $response = $this->json('GET', $this->api_base);
 
         $response->assertStatus(200)
                 ->assertJsonCount(6, 'data')
@@ -249,7 +254,7 @@ trait Get
             $this->file_factory($team, 'badge', ['liverpool']);
         }
 
-        $response = $this->json('GET', '/api/teams/paginate/3');
+        $response = $this->json('GET', "$this->api_base/paginate/3");
         $response->assertStatus(200)
                 ->assertJsonCount(3, 'data')
                 ->assertJsonStructure([
@@ -330,7 +335,7 @@ trait Post
             ]
         ];
 
-        $res = $this->json('POST', '/api/teams', array_merge(array_merge($body, $users), $files));
+        $res = $this->json('POST', $this->api_base, array_merge(array_merge($body, $users), $files));
         
         // Then
         $res->assertStatus(201)
@@ -401,7 +406,7 @@ trait Post
             ]
         ];
 
-        $res = $this->json('POST', '/api/teams', array_merge($body, $files));
+        $res = $this->json('POST', $this->api_base, array_merge($body, $files));
 
         // Then
         $res->assertStatus(201)
@@ -459,7 +464,7 @@ trait Post
             ]
         ];
 
-        $res = $this->json('POST', '/api/teams', array_merge(array_merge($body, $users), $files));
+        $res = $this->json('POST', $this->api_base, array_merge(array_merge($body, $users), $files));
 
 
         
@@ -526,7 +531,7 @@ trait Post
             ]
         ];
 
-        $res = $this->json('POST', '/api/teams', array_merge($body, $files));
+        $res = $this->json('POST', $this->api_base, array_merge($body, $files));
 
 
         
@@ -589,7 +594,7 @@ trait Post
                 ] // ids of existing users.
         ];
 
-        $res = $this->json('POST', '/api/teams', array_merge($body, $users));
+        $res = $this->json('POST', $this->api_base, array_merge($body, $users));
 
         // Then
         $res->assertStatus(201)
@@ -648,7 +653,7 @@ trait Post
             'score' => 1234
         ];
 
-        $res = $this->json('POST', '/api/teams', $body);
+        $res = $this->json('POST', $this->api_base, $body);
 
         // Then
         $res->assertStatus(422);
@@ -670,7 +675,7 @@ trait Post
             'score' => 1234
         ];
 
-        $res = $this->json('POST', '/api/teams', $body);
+        $res = $this->json('POST', $this->api_base, $body);
 
         // Then
         $res->assertStatus(422);
@@ -691,7 +696,7 @@ trait Post
             'score' => 1234
         ];
 
-        $res = $this->json('POST', '/api/teams', $body);
+        $res = $this->json('POST', $this->api_base, $body);
 
         // Then
         $res->assertStatus(422);
@@ -718,7 +723,7 @@ trait Post
             ]
         ];
 
-        $res = $this->json('POST', '/api/teams', array_merge($body,$files));
+        $res = $this->json('POST', $this->api_base, array_merge($body,$files));
 
         // Then
         $res->assertStatus(422);
@@ -757,7 +762,7 @@ trait Put
      */
     public function will_fail_with_a_404_if_the_team_we_want_to_update_is_not_found()
     {
-        $res = $this->json('PUT', 'api/teams/-1');
+        $res = $this->json('PUT', "$this->api_base/-1");
         $res->assertStatus(404);
     }
 
@@ -796,7 +801,7 @@ trait Put
         ];
 
         // When
-        $res = $this->json('PUT','api/teams/'.$old_team->id, $files);
+        $res = $this->json('PUT', "$this->api_base/$old_team->id", $files);
 
         // Then
         $res->assertStatus(200)
@@ -840,7 +845,7 @@ trait Put
         ];
 
         // When
-        $res = $this->json('PUT','api/teams/'.$old_team->id, $new_values);
+        $res = $this->json('PUT', "$this->api_base/$old_team->id", $new_values);
 
         // Then
         $res->assertStatus(200)
@@ -875,7 +880,7 @@ trait Put
         ];
 
         // When
-        $res = $this->json('PUT','api/teams/'.$old_team->id, array_merge($new_values, $new_trip_id));
+        $res = $this->json('PUT', "$this->api_base/$old_team->id", array_merge($new_values, $new_trip_id));
 
         // Then
         $res->assertStatus(200)
@@ -910,7 +915,7 @@ trait Put
         ];
 
         // When
-        $res = $this->json('PUT','api/teams/'.$old_team->id, $new_values);
+        $res = $this->json('PUT', "$this->api_base/$old_team->id", $new_values);
 
         // Then
         $res->assertStatus(200)
@@ -945,7 +950,7 @@ trait Put
         ];
 
         // When
-        $res = $this->json('PUT','api/teams/'.$old_team->id, $new_values);
+        $res = $this->json('PUT', "$this->api_base/$old_team->id", $new_values);
 
         // Then
         $res->assertStatus(422); 
@@ -979,7 +984,7 @@ trait Put
         ];
 
         // When
-        $res = $this->json('PUT','api/teams/'.$old_team->id, $new_values);
+        $res = $this->json('PUT', "$this->api_base/$old_team->id", $new_values);
 
         // Then
         $res->assertStatus(422); 
@@ -1020,7 +1025,7 @@ trait Put
         ];
 
         // When
-        $res = $this->json('PUT','api/teams/'.$old_team->id, $new_values);
+        $res = $this->json('PUT',"$this->api_base/$old_team->id", $new_values);
 
         // Then
         $res->assertStatus(422); // assert that 2 images have been added to badge
@@ -1037,7 +1042,7 @@ trait Delete
      */
     public function will_fail_with_a_404_if_the_team_we_want_to_delete_is_not_found()
     {
-        $res = $this->json('DELETE', 'api/teams/-1');
+        $res = $this->json('DELETE', "$this->api_base/-1");
         $res->assertStatus(404);
     }
 
@@ -1056,7 +1061,7 @@ trait Delete
 
         // When
         // call the delete api
-        $res = $this->json('DELETE', '/api/teams/'.$team->id);
+        $res = $this->json('DELETE', "$this->api_base/$team->id");
 
         // Then
         $res->assertStatus(204)
@@ -1084,7 +1089,7 @@ trait Delete
 
         // When
         // call the delete api
-        $res = $this->json('DELETE', '/api/teams/'.$team->id);
+        $res = $this->json('DELETE', "$this->api_base/$team->id");
 
         // Then
         $res->assertStatus(204)

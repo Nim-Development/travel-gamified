@@ -1,6 +1,6 @@
 <?php
 
-namespace Tests\Feature\Http\Controllers\Admin\Games\GameTextAnswereController;
+namespace Tests\Feature\Http\Controllers\Admin\GameTextAnswereController;
 
 use Faker\Factory;
 use Tests\TestCase;
@@ -21,16 +21,18 @@ class GameTextAnswereControllerTest extends TestCase
     use Put;
     use Delete;
 
+    protected $api_base = "/api/admin/games/text_answere";
+
     /**
      * @test
      */
     // public function non_authenticated_user_can_not_access_game_api_endpoints()
     // {
-    //     $this->json('GET', '/api/games')->assertStatus(401);
-    //     $this->json('GET', 'api/games/1')->assertStatus(401);
-    //     $this->json('PUT', 'api/games/1')->assertStatus(401);
-    //     $this->json('DELETE', 'api/games/1')->assertStatus(401);
-    //     $this->json('POST', '/api/games')->assertStatus(401);
+    //     $this->json("GET", "/api/games")->assertStatus(401);
+    //     $this->json("GET", "api/games/1")->assertStatus(401);
+    //     $this->json("PUT", "api/games/1")->assertStatus(401);
+    //     $this->json("DELETE", "api/games/1")->assertStatus(401);
+    //     $this->json("POST", "/api/games")->assertStatus(401);
     // }
 }
 
@@ -41,7 +43,7 @@ trait Get
      */
     public function will_fail_with_a_404_if_game_of_type_text_answere_is_not_found()
     {
-        $res = $this->json('GET', 'api/games/text_answere/-1');
+        $res = $this->json("GET", "$this->api_base/-1");
         $res->assertStatus(404);
     }
 
@@ -51,7 +53,7 @@ trait Get
     public function will_return_204_when_requesting_all_text_answere_whilst_no_entries_in_database()
     {
         // Skip any creates
-        $res = $this->json('GET', 'api/games/text_answere');
+        $res = $this->json("GET", "$this->api_base");
         $res->assertStatus(204);
     }
 
@@ -61,7 +63,7 @@ trait Get
     public function will_return_204_when_requesting_paginated_text_answere_whilst_no_entries_in_database()
     {
         // Skip any creates
-        $res = $this->json('GET', 'api/games/text_answere/paginate/3');
+        $res = $this->json("GET", "$this->api_base/paginate/3");
         $res->assertStatus(204);
     }
 
@@ -73,45 +75,45 @@ trait Get
     public function can_return_all_games_of_type_text_answere()
     {
         // Given, multiple multiple choice options
-        $games = $this->create_collection('Games\GameTextAnswere', [], true, $qty = 6);
+        $games = $this->create_collection("GameTextAnswere", [], true, $qty = 6);
 
         foreach($games as $game){
-            $this->file_factory($game, 'header', ['chelsea', 'liverpool']); // add 2 header media files
-            $this->file_factory($game, 'media', ['chelsea', 'liverpool']); // add 2 media_content media files    
+            $this->file_factory($game, "header", ["chelsea", "liverpool"]); // add 2 header media files
+            $this->file_factory($game, "media", ["chelsea", "liverpool"]); // add 2 media_content media files    
         }
 
         // When
-        $result = $this->json('GET', '/api/games/text_answere');
+        $result = $this->json("GET", "/$this->api_base");
 
         // Then
         $result->assertStatus(200)
-               ->assertJsonCount(6, 'data')
+               ->assertJsonCount(6, "data")
                ->assertJsonStructure([
-                'data' => [
-                    '*' => [
-                        'id',
-                        'title',
-                        'content_text',
-                        'correct_answere',
-                        'points_min',
-                        'points_max',
-                        'header' => [
-                            '*' => [
-                                'def',
-                                'md',
-                                'sm',
-                                'thumb'
+                "data" => [
+                    "*" => [
+                        "id",
+                        "title",
+                        "content_text",
+                        "correct_answere",
+                        "points_min",
+                        "points_max",
+                        "header" => [
+                            "*" => [
+                                "def",
+                                "md",
+                                "sm",
+                                "thumb"
                             ]
                         ],
-                        'media_content' => [
-                            '*' => [
-                                'def',
-                                'md',
-                                'sm',
-                                'thumb'
+                        "media_content" => [
+                            "*" => [
+                                "def",
+                                "md",
+                                "sm",
+                                "thumb"
                             ]
                         ],
-                        'created_at'
+                        "created_at"
                     ]
                 ],
             ]);
@@ -123,52 +125,52 @@ trait Get
     public function can_return_all_games_of_type_text_answere_paginated()
     {
         //Given
-        $games = $this->create_collection('Games\GameTextAnswere', [], false, $qty = 6);
+        $games = $this->create_collection("GameTextAnswere", [], false, $qty = 6);
 
         foreach($games as $game){
-            $this->file_factory($game, 'header', ['chelsea', 'liverpool']); // add 2 header media files
-            $this->file_factory($game, 'media', ['chelsea', 'liverpool']); // add 2 media_content media files    
+            $this->file_factory($game, "header", ["chelsea", "liverpool"]); // add 2 header media files
+            $this->file_factory($game, "media", ["chelsea", "liverpool"]); // add 2 media_content media files    
         }
 
         // When
-        $result = $this->json('GET', '/api/games/text_answere/paginate/3');
+        $result = $this->json("GET", "/$this->api_base/paginate/3");
 
         // Then
         $result->assertStatus(200)
-               ->assertJsonCount(3, 'data')
+               ->assertJsonCount(3, "data")
                ->assertJsonStructure([
-                'data' => [
-                    '*' => [
-                        'id',
-                        'title',
-                        'content_text',
-                        'correct_answere',
-                        'points_min',
-                        'points_max',
-                        'header' => [
-                            '*' => [
-                                'def',
-                                'md',
-                                'sm',
-                                'thumb'
+                "data" => [
+                    "*" => [
+                        "id",
+                        "title",
+                        "content_text",
+                        "correct_answere",
+                        "points_min",
+                        "points_max",
+                        "header" => [
+                            "*" => [
+                                "def",
+                                "md",
+                                "sm",
+                                "thumb"
                             ]
                         ],
-                        'media_content' => [
-                            '*' => [
-                                'def',
-                                'md',
-                                'sm',
-                                'thumb'
+                        "media_content" => [
+                            "*" => [
+                                "def",
+                                "md",
+                                "sm",
+                                "thumb"
                             ]
                         ],
-                        'created_at'
+                        "created_at"
                     ]
                 ],
                 // Check if it is paginated
-                'links' => ['first', 'last', 'prev', 'next'],
-                'meta' => [
-                    'current_page', 'last_page', 'from', 'to',
-                    'path', 'per_page', 'total'
+                "links" => ["first", "last", "prev", "next"],
+                "meta" => [
+                    "current_page", "last_page", "from", "to",
+                    "path", "per_page", "total"
                 ]
             ]);
     }
@@ -180,55 +182,55 @@ trait Get
     public function can_get_a_single_game_of_type_text_answere()
     {
         // Given
-        $game = $this->create('Games\GameTextAnswere');
+        $game = $this->create("GameTextAnswere");
 
         // add 2 headers
-        $this->file_factory($game, 'header', ['liverpool', 'chelsea']);
+        $this->file_factory($game, "header", ["liverpool", "chelsea"]);
         // add 2 media contents
-        $this->file_factory($game, 'media', ['liverpool', 'chelsea']);
+        $this->file_factory($game, "media", ["liverpool", "chelsea"]);
 
         // When
-        $result = $this->json('GET', "/api/games/text_answere/$game->id");
+        $result = $this->json("GET", "/$this->api_base/$game->id");
 
         // Then
         $result->assertStatus(200)
                ->assertExactJson([
-                'data' => [
-                    'id' => $game->id,
-                    'title' => $game->title,
-                    'content_text' => $game->content_text,
-                    'correct_answere' => $game->correct_answere,
-                    'points_min' => $game->points_min,
-                    'points_max' => $game->points_max,
-                    'header' => [
+                "data" => [
+                    "id" => $game->id,
+                    "title" => $game->title,
+                    "content_text" => $game->content_text,
+                    "correct_answere" => $game->correct_answere,
+                    "points_min" => $game->points_min,
+                    "points_max" => $game->points_max,
+                    "header" => [
                         [
-                            'def' => $game->getMedia('header')[0]->getUrl(),
-                            'md' => $game->getMedia('header')[0]->getUrl('md'),
-                            'sm' => $game->getMedia('header')[0]->getUrl('sm'),
-                            'thumb' => $game->getMedia('header')[0]->getUrl('thumb'),
+                            "def" => $game->getMedia("header")[0]->getUrl(),
+                            "md" => $game->getMedia("header")[0]->getUrl("md"),
+                            "sm" => $game->getMedia("header")[0]->getUrl("sm"),
+                            "thumb" => $game->getMedia("header")[0]->getUrl("thumb"),
                         ],
                         [
-                            'def' => $game->getMedia('header')[1]->getUrl(),
-                            'md' => $game->getMedia('header')[1]->getUrl('md'),
-                            'sm' => $game->getMedia('header')[1]->getUrl('sm'),
-                            'thumb' => $game->getMedia('header')[1]->getUrl('thumb'),
+                            "def" => $game->getMedia("header")[1]->getUrl(),
+                            "md" => $game->getMedia("header")[1]->getUrl("md"),
+                            "sm" => $game->getMedia("header")[1]->getUrl("sm"),
+                            "thumb" => $game->getMedia("header")[1]->getUrl("thumb"),
                         ]
                     ],
-                    'media_content' => [
+                    "media_content" => [
                         [
-                            'def' => $game->getMedia('media')[0]->getUrl(),
-                            'md' => $game->getMedia('media')[0]->getUrl('md'),
-                            'sm' => $game->getMedia('media')[0]->getUrl('sm'),
-                            'thumb' => $game->getMedia('media')[0]->getUrl('thumb'),
+                            "def" => $game->getMedia("media")[0]->getUrl(),
+                            "md" => $game->getMedia("media")[0]->getUrl("md"),
+                            "sm" => $game->getMedia("media")[0]->getUrl("sm"),
+                            "thumb" => $game->getMedia("media")[0]->getUrl("thumb"),
                         ],
                         [
-                            'def' => $game->getMedia('media')[1]->getUrl(),
-                            'md' => $game->getMedia('media')[1]->getUrl('md'),
-                            'sm' => $game->getMedia('media')[1]->getUrl('sm'),
-                            'thumb' => $game->getMedia('media')[1]->getUrl('thumb'),
+                            "def" => $game->getMedia("media")[1]->getUrl(),
+                            "md" => $game->getMedia("media")[1]->getUrl("md"),
+                            "sm" => $game->getMedia("media")[1]->getUrl("sm"),
+                            "thumb" => $game->getMedia("media")[1]->getUrl("thumb"),
                         ]
                     ],
-                    'created_at' => (string)$game->created_at
+                    "created_at" => (string)$game->created_at
                 ]
             ]);
 
@@ -244,67 +246,67 @@ trait Post
     public function can_create_a_text_answere_game_with_a_valid_content_media()
     {
         $body = [
-            'title' => 'dsfsdvafs',
-            'content_text' => 'fas af afs asdasd as',
-            'correct_answere' => 'fsadfafa fas as dfasdfas asdfas dfasfa das',
-            'points_min' => 123423,
-            'points_max' => 123456
+            "title" => "dsfsdvafs",
+            "content_text" => "fas af afs asdasd as",
+            "correct_answere" => "fsadfafa fas as dfasdfas asdfas dfasfa das",
+            "points_min" => 123423,
+            "points_max" => 123456
         ];
         $files = [          
-            'header' => [
-                UploadedFile::fake()->image('liverpool.jpg'),
-                UploadedFile::fake()->image('chelsea.jpg'),
+            "header" => [
+                UploadedFile::fake()->image("liverpool.jpg"),
+                UploadedFile::fake()->image("chelsea.jpg"),
             ],
-            'media_content' => [
-                UploadedFile::fake()->image('barcelona.jpg'),
-                UploadedFile::fake()->image('juventus.jpg')
+            "media_content" => [
+                UploadedFile::fake()->image("barcelona.jpg"),
+                UploadedFile::fake()->image("juventus.jpg")
             ]
         ];
 
-        $res = $this->json('POST', '/api/games/text_answere', array_merge($body, $files));
+        $res = $this->json("POST", "/$this->api_base", array_merge($body, $files));
 
         // Then
         $res->assertStatus(201)
              ->assertJsonStructure([
-                'data' => [
-                        'title',
-                        'content_text',
-                        'correct_answere',
-                        'points_min',
-                        'points_max' ,
-                        'header' => [
-                            '*' => 
+                "data" => [
+                        "title",
+                        "content_text",
+                        "correct_answere",
+                        "points_min",
+                        "points_max" ,
+                        "header" => [
+                            "*" => 
                             [
-                                'def',
-                                'md',
-                                'sm',
-                                'thumb'
+                                "def",
+                                "md",
+                                "sm",
+                                "thumb"
                             ]
                         ],
-                        'media_content' => [
-                            '*' => 
+                        "media_content" => [
+                            "*" => 
                             [
-                                'def',
-                                'md',
-                                'sm',
-                                'thumb'
+                                "def",
+                                "md",
+                                "sm",
+                                "thumb"
                             ]
                         ],
-                        'created_at'
+                        "created_at"
                 ]
             ]);
 
         // assert if the game has been added to the database
-        $this->assertDatabaseHas('game_text_answeres', $body);
+        $this->assertDatabaseHas("game_text_answeres", $body);
 
         // assert if the files are uploaded to storage
         // Check if db file media data urls actually exist as files in storage
         if($stored_header_files_array = $this->spread_media_urls($res->getData()->data->header)){
-            \Storage::disk('test')->assertExists($stored_header_files_array);
+            \Storage::disk("test")->assertExists($stored_header_files_array);
         }
 
         if($stored_header_files_array = $this->spread_media_urls($res->getData()->data->media_content)){
-            \Storage::disk('test')->assertExists($stored_header_files_array);
+            \Storage::disk("test")->assertExists($stored_header_files_array);
         }
     }
 
@@ -315,53 +317,53 @@ trait Post
     public function can_create_a_text_answere_game_without_media_of_type_header()
     {
         $body = [
-            'title' => 'dsfsdvafs',
-            'content_text' => 'fas af afs asdasd as',
-            'correct_answere' => 'fsadfafa fas as dfasdfas asdfas dfasfa das',
-            'points_min' => 123423,
-            'points_max' => 123456
+            "title" => "dsfsdvafs",
+            "content_text" => "fas af afs asdasd as",
+            "correct_answere" => "fsadfafa fas as dfasdfas asdfas dfasfa das",
+            "points_min" => 123423,
+            "points_max" => 123456
         ];
         $files = [          
-            'media_content' => [
-                UploadedFile::fake()->image('barcelona.jpg'),
-                UploadedFile::fake()->image('juventus.jpg')
+            "media_content" => [
+                UploadedFile::fake()->image("barcelona.jpg"),
+                UploadedFile::fake()->image("juventus.jpg")
             ]
         ];
 
-        $res = $this->json('POST', '/api/games/text_answere', array_merge($body, $files));
+        $res = $this->json("POST", "/$this->api_base", array_merge($body, $files));
 
         // Then
         $res->assertStatus(201)
              ->assertJsonStructure([
-                'data' => [
-                        'title',
-                        'content_text',
-                        'correct_answere',
-                        'points_min',
-                        'points_max' ,
-                        'header',
-                        'media_content' => [
-                            '*' => 
+                "data" => [
+                        "title",
+                        "content_text",
+                        "correct_answere",
+                        "points_min",
+                        "points_max" ,
+                        "header",
+                        "media_content" => [
+                            "*" => 
                             [
-                                'def',
-                                'md',
-                                'sm',
-                                'thumb'
+                                "def",
+                                "md",
+                                "sm",
+                                "thumb"
                             ]
                         ],
-                        'created_at'
+                        "created_at"
                 ]
             ]);
 
         // assert if the game has been added to the database
-        $this->assertDatabaseHas('game_text_answeres', $body);
+        $this->assertDatabaseHas("game_text_answeres", $body);
 
         if($stored_header_files_array = $this->spread_media_urls($res->getData()->data->header)){
-            \Storage::disk('test')->assertExists($stored_header_files_array);
+            \Storage::disk("test")->assertExists($stored_header_files_array);
         }
         // assert if the files are uploaded to storage
         if($stored_header_files_array = $this->spread_media_urls($res->getData()->data->media_content)){
-            \Storage::disk('test')->assertExists($stored_header_files_array);
+            \Storage::disk("test")->assertExists($stored_header_files_array);
         }
     }
 
@@ -371,59 +373,59 @@ trait Post
     public function can_create_a_text_answere_game_without_media_of_type_media()
     {
         $body = [
-            'title' => 'dsfsdvafs',
-            'content_text' => 'fas af afs asdasd as',
-            'correct_answere' => 'fsadfafa fas as dfasdfas asdfas dfasfa das',
-            'points_min' => 123423,
-            'points_max' => 123456
+            "title" => "dsfsdvafs",
+            "content_text" => "fas af afs asdasd as",
+            "correct_answere" => "fsadfafa fas as dfasdfas asdfas dfasfa das",
+            "points_min" => 123423,
+            "points_max" => 123456
         ];
         $files = [          
-            'header' => [
-                UploadedFile::fake()->image('liverpool.jpg'),
-                UploadedFile::fake()->image('chelsea.jpg'),
+            "header" => [
+                UploadedFile::fake()->image("liverpool.jpg"),
+                UploadedFile::fake()->image("chelsea.jpg"),
             ],
-            'media_content' => [
-                UploadedFile::fake()->image('barcelona.jpg'),
-                UploadedFile::fake()->image('juventus.jpg')
+            "media_content" => [
+                UploadedFile::fake()->image("barcelona.jpg"),
+                UploadedFile::fake()->image("juventus.jpg")
             ]
         ];
 
-        $res = $this->json('POST', '/api/games/text_answere', array_merge($body, $files));
+        $res = $this->json("POST", "/$this->api_base", array_merge($body, $files));
 
         // Then
         $res->assertStatus(201)
              ->assertJsonStructure([
-                'data' => [
-                        'title',
-                        'content_text',
-                        'correct_answere',
-                        'points_min',
-                        'points_max' ,
-                        'header' => [
-                            '*' => 
+                "data" => [
+                        "title",
+                        "content_text",
+                        "correct_answere",
+                        "points_min",
+                        "points_max" ,
+                        "header" => [
+                            "*" => 
                             [
-                                'def',
-                                'md',
-                                'sm',
-                                'thumb'
+                                "def",
+                                "md",
+                                "sm",
+                                "thumb"
                             ]
                         ],
-                        'media_content',
-                        'created_at'
+                        "media_content",
+                        "created_at"
                 ]
             ]);
 
         // assert if the game has been added to the database
-        $this->assertDatabaseHas('game_text_answeres', $body);
+        $this->assertDatabaseHas("game_text_answeres", $body);
 
         // assert if the files are uploaded to storage
         // Check if db file media data urls actually exist as files in storage
         if($stored_header_files_array = $this->spread_media_urls($res->getData()->data->header)){
-            \Storage::disk('test')->assertExists($stored_header_files_array);
+            \Storage::disk("test")->assertExists($stored_header_files_array);
         }
 
         if($stored_header_files_array = $this->spread_media_urls($res->getData()->data->media_content)){
-            \Storage::disk('test')->assertExists($stored_header_files_array);
+            \Storage::disk("test")->assertExists($stored_header_files_array);
         }
     }
 
@@ -433,33 +435,33 @@ trait Post
     public function can_create_a_text_answere_game_without_any_media()
     {
         $body = [
-            'title' => 'dsfsdvafs',
-            'content_text' => 'fas af afs asdasd as',
-            'correct_answere' => 'fsadfafa fas as dfasdfas asdfas dfasfa das',
-            'points_min' => 123423,
-            'points_max' => 123456
+            "title" => "dsfsdvafs",
+            "content_text" => "fas af afs asdasd as",
+            "correct_answere" => "fsadfafa fas as dfasdfas asdfas dfasfa das",
+            "points_min" => 123423,
+            "points_max" => 123456
         ];
 
-        $res = $this->json('POST', '/api/games/text_answere', $body);
+        $res = $this->json("POST", "/$this->api_base", $body);
 
         // Then
         $res->assertStatus(201)
              ->assertExactJson([
-                'data' => [
-                        'id' => $res->getData()->data->id,
-                        'title' => $body['title'],
-                        'content_text' => $body['content_text'],
-                        'correct_answere' => $body['correct_answere'],
-                        'points_min' => $body['points_min'],
-                        'points_max' => $body['points_max'],
-                        'header' => null,
-                        'media_content' => null,
-                        'created_at' => $res->getData()->data->created_at
+                "data" => [
+                        "id" => $res->getData()->data->id,
+                        "title" => $body["title"],
+                        "content_text" => $body["content_text"],
+                        "correct_answere" => $body["correct_answere"],
+                        "points_min" => $body["points_min"],
+                        "points_max" => $body["points_max"],
+                        "header" => null,
+                        "media_content" => null,
+                        "created_at" => $res->getData()->data->created_at
                 ]
             ]);
 
         // assert if the game has been added to the database
-        $this->assertDatabaseHas('game_text_answeres', $body);
+        $this->assertDatabaseHas("game_text_answeres", $body);
     }
 
     /**
@@ -467,17 +469,17 @@ trait Post
      */
     public function will_fail_with_a_422_if_request_body_failed_validation_because_of_wrong_data_types()
     {
-        // 'title' & 'points_min' are wrong data type
+        // "title" & "points_min" are wrong data type
         $body_1 = [
-            'title' => 1234,
-            'content_text' => 'dsaakmcs',
-            'correct_answere' => 'dsaakmcs',
-            'points_min' => 'dsaakmcs',
-            'points_max' => 12345
+            "title" => 1234,
+            "content_text" => "dsaakmcs",
+            "correct_answere" => "dsaakmcs",
+            "points_min" => "dsaakmcs",
+            "points_max" => 12345
         ];
-        $res = $this->json('POST', '/api/games/text_answere', $body_1);
+        $res = $this->json("POST", "/$this->api_base", $body_1);
         $res->assertStatus(422);
-        $this->assertDatabaseMissing('game_text_answeres', $body_1);
+        $this->assertDatabaseMissing("game_text_answeres", $body_1);
     }
 
     /**
@@ -485,16 +487,16 @@ trait Post
      */
     public function will_fail_with_a_422_if_request_body_failed_validation_because_data_was_missing()
     {
-        // 'points_min' is missing
+        // "points_min" is missing
         $body_2 = [
-            'title' => 'sadasdff',
-            'content_text' => 'dsaakmcs',
-            'correct_answere' => 'dsaakmcs',
-            'points_max' => 12345,
+            "title" => "sadasdff",
+            "content_text" => "dsaakmcs",
+            "correct_answere" => "dsaakmcs",
+            "points_max" => 12345,
         ];
-        $res = $this->json('POST', '/api/games/text_answere', $body_2);
+        $res = $this->json("POST", "/$this->api_base", $body_2);
         $res->assertStatus(422);
-        $this->assertDatabaseMissing('game_text_answeres', $body_2);
+        $this->assertDatabaseMissing("game_text_answeres", $body_2);
     }
 
     /**
@@ -503,29 +505,29 @@ trait Post
     public function will_fail_with_a_422_if_request_files_failed_validation_because_wrong_file_type()
     {
         $body = [
-            'title' => 'fdhshuifhs fsdhui',
-            'content_text' => 'dsj a uhdfg hfiughgifud hugfaidhiuagf ga',
-            'correct_answere' => 'kjdfgh kjhfds hjd os ie is djojks.',
-            'points_min' => 123456,
-            'points_max' => 123458
+            "title" => "fdhshuifhs fsdhui",
+            "content_text" => "dsj a uhdfg hfiughgifud hugfaidhiuagf ga",
+            "correct_answere" => "kjdfgh kjhfds hjd os ie is djojks.",
+            "points_min" => 123456,
+            "points_max" => 123458
         ];
         $files = [          
-            'header' => [
-                UploadedFile::fake()->image('liverpool.csv'),
-                UploadedFile::fake()->image('chelsea.csv'),
+            "header" => [
+                UploadedFile::fake()->image("liverpool.csv"),
+                UploadedFile::fake()->image("chelsea.csv"),
             ],
-            'media_content' => [
-                UploadedFile::fake()->image('barcelona.csv'),
-                UploadedFile::fake()->image('juventus.csv')
+            "media_content" => [
+                UploadedFile::fake()->image("barcelona.csv"),
+                UploadedFile::fake()->image("juventus.csv")
             ]
         ];
 
-        $res = $this->json('POST', '/api/games/text_answere', array_merge($body, $files));
+        $res = $this->json("POST", "/$this->api_base", array_merge($body, $files));
 
         // Then
         // Describes the outcome of Action according to conditions in Given
         $res->assertStatus(422);
-        $this->assertDatabaseMissing('game_text_answeres', $body);
+        $this->assertDatabaseMissing("game_text_answeres", $body);
     }
 
     /**
@@ -546,7 +548,7 @@ trait Put
      */
     public function will_fail_with_a_404_if_the_text_answere_game_we_want_to_update_is_not_found()
     {
-        $res = $this->json('PUT', 'api/games/text_answere/-1');
+        $res = $this->json("PUT", "$this->api_base/-1");
         $res->assertStatus(404);
     }
 
@@ -557,35 +559,35 @@ trait Put
     {
         // Given
         $old_values = [
-            'title' => 'dsfsdvafs',
-            'content_text' => 'fas af afs asdasd as',
-            'correct_answere' => 'fsadfafa fas as dfasdfas asdfas dfasfa das',
-            'points_min' => 123423,
-            'points_max' => 123456
+            "title" => "dsfsdvafs",
+            "content_text" => "fas af afs asdasd as",
+            "correct_answere" => "fsadfafa fas as dfasdfas asdfas dfasfa das",
+            "points_min" => 123423,
+            "points_max" => 123456
         ];
 
-        $old_game = $this->create('Games\GameTextAnswere', $old_values);
+        $old_game = $this->create("GameTextAnswere", $old_values);
 
         // attach media
-        $this->file_factory($old_game, 'header', ['header1', 'header2']);
+        $this->file_factory($old_game, "header", ["header1", "header2"]);
         
         $files = [
-            'header' => [
-                UploadedFile::fake()->image('header3.jpg'),
-                UploadedFile::fake()->image('header4.jpg'),
+            "header" => [
+                UploadedFile::fake()->image("header3.jpg"),
+                UploadedFile::fake()->image("header4.jpg"),
             ]
         ];
 
         // When
-        $res = $this->json('PUT','api/games/text_answere/'.$old_game->id, $files);
+        $res = $this->json("PUT","$this->api_base/".$old_game->id, $files);
 
         // Then
         $res->assertStatus(200)
-                    ->assertJsonCount(4, 'data.header'); // assert that 2 images have been added to header
+                    ->assertJsonCount(4, "data.header"); // assert that 2 images have been added to header
 
         // Check if db file media data urls actually exist as files in storage
         if($stored_header_files_array = $this->spread_media_urls($res->getData()->data->header)){
-            \Storage::disk('test')->assertExists($stored_header_files_array);
+            \Storage::disk("test")->assertExists($stored_header_files_array);
         }
     }
     
@@ -596,36 +598,36 @@ trait Put
     {
         // Given
         $old_values = [
-            'title' => 'dsfsdvafs',
-            'content_text' => 'fas af afs asdasd as',
-            'correct_answere' => 'fsadfafa fas as dfasdfas asdfas dfasfa das',
-            'points_min' => 123423,
-            'points_max' => 123456
+            "title" => "dsfsdvafs",
+            "content_text" => "fas af afs asdasd as",
+            "correct_answere" => "fsadfafa fas as dfasdfas asdfas dfasfa das",
+            "points_min" => 123423,
+            "points_max" => 123456
         ];
 
-        $old_game = $this->create('Games\GameTextAnswere', $old_values);
+        $old_game = $this->create("GameTextAnswere", $old_values);
 
         // attach media
-        $this->file_factory($old_game, 'media', ['media1', 'media2']);
+        $this->file_factory($old_game, "media", ["media1", "media2"]);
         
         $files = [
-            'media_content' => [
-                UploadedFile::fake()->image('media3.jpg'),
-                UploadedFile::fake()->image('media4.jpg'),
+            "media_content" => [
+                UploadedFile::fake()->image("media3.jpg"),
+                UploadedFile::fake()->image("media4.jpg"),
             ]
         ];
 
         // When
-        $res = $this->json('PUT','api/games/text_answere/'.$old_game->id, $files);
+        $res = $this->json("PUT","$this->api_base/".$old_game->id, $files);
 
 
         // Then
         $res->assertStatus(200)
-                    ->assertJsonCount(4, 'data.media_content'); // assert that 2 images have been added to header
+                    ->assertJsonCount(4, "data.media_content"); // assert that 2 images have been added to header
                     
         // Check if db file media data urls actually exist as files in storage
         if($stored_header_files_array = $this->spread_media_urls($res->getData()->data->media_content)){
-            \Storage::disk('test')->assertExists($stored_header_files_array);
+            \Storage::disk("test")->assertExists($stored_header_files_array);
         }
     }
 
@@ -637,33 +639,33 @@ trait Put
 
         // Given
         $old_values = [
-            'title' => 'dsfsdvafs',
-            'content_text' => 'fas af afs asdasd as',
-            'correct_answere' => 'fsadfafa fas as dfasdfas asdfas dfasfa das',
-            'points_min' => 123423,
-            'points_max' => 123456
+            "title" => "dsfsdvafs",
+            "content_text" => "fas af afs asdasd as",
+            "correct_answere" => "fsadfafa fas as dfasdfas asdfas dfasfa das",
+            "points_min" => 123423,
+            "points_max" => 123456
         ];
 
-        $old_game = $this->create('Games\GameTextAnswere', $old_values);
+        $old_game = $this->create("GameTextAnswere", $old_values);
 
         // update every attribute
         $new_values = [
-            'title' => 'aaaaaaa',
-            'content_text' => 'aaaa aaaaa aaaaa',
-            'correct_answere' => 'aaa aaaa aaaaa aaaaa',
-            'points_min' => 000001,
-            'points_max' => 000002
+            "title" => "aaaaaaa",
+            "content_text" => "aaaa aaaaa aaaaa",
+            "correct_answere" => "aaa aaaa aaaaa aaaaa",
+            "points_min" => 000001,
+            "points_max" => 000002
         ];
 
         // When
-        $response = $this->json('PUT','api/games/text_answere/'.$old_game->id, $new_values);
+        $response = $this->json("PUT","$this->api_base/".$old_game->id, $new_values);
 
         // Then
         $response->assertStatus(200)
                     ->assertJsonFragment($new_values);
                     
-        $this->assertDatabaseHas('game_text_answeres', $new_values);
-        $this->assertDatabaseMissing('game_text_answeres', $old_values);
+        $this->assertDatabaseHas("game_text_answeres", $new_values);
+        $this->assertDatabaseMissing("game_text_answeres", $old_values);
             
     }
    
@@ -675,34 +677,34 @@ trait Put
         
         // Given
         $old_values_to_be_updated = [
-            'title' => 'dsfsdvafs',
-            'content_text' => 'fas af afs asdasd as',
-            'correct_answere' => 'fsadfafa fas as dfasdfas asdfas dfasfa das',
+            "title" => "dsfsdvafs",
+            "content_text" => "fas af afs asdasd as",
+            "correct_answere" => "fsadfafa fas as dfasdfas asdfas dfasfa das",
         ];
 
         $old_values_to_remain_after_update = [
-            'points_min' => 123423,
-            'points_max' => 123456
+            "points_min" => 123423,
+            "points_max" => 123456
         ];
 
-        $old_game = $this->create('Games\GameTextAnswere', array_merge($old_values_to_be_updated, $old_values_to_remain_after_update));
+        $old_game = $this->create("GameTextAnswere", array_merge($old_values_to_be_updated, $old_values_to_remain_after_update));
 
         // update every attribute
         $new_values = [
-            'title' => 'aaaaaaa',
-            'content_text' => 'aaaaaaa',
-            'correct_answere' => 'aaaaaaaa',
+            "title" => "aaaaaaa",
+            "content_text" => "aaaaaaa",
+            "correct_answere" => "aaaaaaaa",
         ];
 
         // When
-        $response = $this->json('PUT','api/games/text_answere/'.$old_game->id, $new_values);
+        $response = $this->json("PUT","$this->api_base/".$old_game->id, $new_values);
 
         // Then
         $response->assertStatus(200)
                     ->assertJsonFragment(array_merge($new_values, $old_values_to_remain_after_update));
                     
-        $this->assertDatabaseHas('game_text_answeres', array_merge($new_values, $old_values_to_remain_after_update));
-        $this->assertDatabaseMissing('game_text_answeres', $old_values_to_be_updated);
+        $this->assertDatabaseHas("game_text_answeres", array_merge($new_values, $old_values_to_remain_after_update));
+        $this->assertDatabaseMissing("game_text_answeres", $old_values_to_be_updated);
 
     }
 
@@ -715,32 +717,32 @@ trait Put
     {
         // Given
         $old_values = [
-            'title' => 'dsfsdvafs',
-            'content_text' => 'fas af afs asdasd as',
-            'correct_answere' => 'fsadfafa fas as dfasdfas asdfas dfasfa das',
-            'points_min' => 123423,
-            'points_max' => 123456
+            "title" => "dsfsdvafs",
+            "content_text" => "fas af afs asdasd as",
+            "correct_answere" => "fsadfafa fas as dfasdfas asdfas dfasfa das",
+            "points_min" => 123423,
+            "points_max" => 123456
         ];
 
-        $old_game = $this->create('Games\GameTextAnswere', $old_values);
+        $old_game = $this->create("GameTextAnswere", $old_values);
 
-        // 'title' is of wrong type
+        // "title" is of wrong type
         $new_values = [
-            'title' => 1234567,
-            'content_text' => 'aaaa aaaaa aaaaa',
-            'correct_answere' => 'aaa aaaa aaaaa aaaaa',
-            'points_min' => 000001,
-            'points_max' => 000002
+            "title" => 1234567,
+            "content_text" => "aaaa aaaaa aaaaa",
+            "correct_answere" => "aaa aaaa aaaaa aaaaa",
+            "points_min" => 000001,
+            "points_max" => 000002
         ];
 
         // When
-        $response = $this->json('PUT','api/games/text_answere/'.$old_game->id, $new_values);
+        $response = $this->json("PUT","$this->api_base/".$old_game->id, $new_values);
 
         // Then
         $response->assertStatus(422);
 
-        $this->assertDatabaseHas('game_text_answeres', $old_values);          
-        $this->assertDatabaseMissing('game_text_answeres', $new_values);
+        $this->assertDatabaseHas("game_text_answeres", $old_values);          
+        $this->assertDatabaseMissing("game_text_answeres", $new_values);
 
     }
 }
@@ -752,7 +754,7 @@ trait Delete
      */
     public function will_fail_with_a_404_if_the_game_text_answere_we_want_to_delete_is_not_found()
     {
-        $res = $this->json('DELETE', 'api/games/text_answere/-1');
+        $res = $this->json("DELETE", "$this->api_base/-1");
         $res->assertStatus(404);
     }
 
@@ -763,28 +765,28 @@ trait Delete
     {
         // Given
         // first create a game in the database to delete
-        $game = $this->create('Games\GameTextAnswere');
+        $game = $this->create("GameTextAnswere");
 
         // attach media
-        $media = ['media1', 'media2'];
-        $this->file_factory($game, 'media', $media);
+        $media = ["media1", "media2"];
+        $this->file_factory($game, "media", $media);
         // attach media
-        $header = ['header1', 'header2'];
-        $this->file_factory($game, 'header', $header);
+        $header = ["header1", "header2"];
+        $this->file_factory($game, "header", $header);
 
         // When
         // call the delete api
-        $res = $this->json('DELETE', '/api/games/text_answere/'.$game->id);
+        $res = $this->json("DELETE", "/$this->api_base/".$game->id);
 
         // Then
         $res->assertStatus(204)
             ->assertSee(null);
 
         // check if $game is deleted from database
-        $this->assertDatabaseMissing('game_text_answeres', ['id' => $game->id]);
+        $this->assertDatabaseMissing("game_text_answeres", ["id" => $game->id]);
 
-        \Storage::disk('test')->assertMissing($media);
-        \Storage::disk('test')->assertMissing($header);
+        \Storage::disk("test")->assertMissing($media);
+        \Storage::disk("test")->assertMissing($header);
 
     }
 
@@ -796,24 +798,24 @@ trait Delete
     {
         // Given
         // first create a game in the database to delete
-        $game = $this->create('Games\GameTextAnswere');
+        $game = $this->create("GameTextAnswere");
 
         // holds the polymoprhic relationship type and key
-        $challenge = $this->create('Games\Challenge', [
-            'game_type' => 'text_answere',
-            'game_id' =>  $game->id
+        $challenge = $this->create("Challenge", [
+            "game_type" => "text_answere",
+            "game_id" =>  $game->id
         ]);
         
         // When
         // call the delete api
-        $res = $this->json('DELETE', '/api/games/text_answere/'.$game->id);
+        $res = $this->json("DELETE", "/$this->api_base/".$game->id);
 
         // Then
         $res->assertStatus(204)
             ->assertSee(null);
 
         // check if $game is deleted from database
-        $this->assertDatabaseMissing('game_text_answeres', ['id' => $game->id]);
+        $this->assertDatabaseMissing("game_text_answeres", ["id" => $game->id]);
 
 
         // refresh the poly relation from database

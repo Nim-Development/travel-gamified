@@ -5,7 +5,7 @@ use App\AnswereUnchecked;
 use Faker\Generator as Faker;
 use Illuminate\Support\Str;
 
-use App\Games\Challenge;
+use App\Challenge;
 use App\User;
 
 // $table->bigIncrements('id');

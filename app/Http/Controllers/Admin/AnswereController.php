@@ -4,7 +4,7 @@ namespace App\Http\Controllers\Admin;
 
 use App\User;
 use App\AnswereChecked;
-use App\Games\Challenge;
+use App\Challenge;
 
 use App\AnswereUnchecked;
 use Illuminate\Http\Request;
@@ -41,8 +41,6 @@ class AnswereController extends Controller
     // Single entry by id
     public function paginate($type, $qty)
     {
-        
-
         switch ($type) {
             case 'checked': # return paginated from AnswereChecked
                 $all = AnswereChecked::paginate($qty);
