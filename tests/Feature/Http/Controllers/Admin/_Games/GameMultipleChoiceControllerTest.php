@@ -27,14 +27,14 @@ class GameMultipleChoiceControllerTest extends TestCase
     /**
      * @test
      */
-    // public function non_authenticated_user_can_not_access_game_api_endpoints()
-    // {
-    //     $this->json("GET", "/api/games")->assertStatus(401);
-    //     $this->json("GET", "api/games/1")->assertStatus(401);
-    //     $this->json("PUT", "api/games/1")->assertStatus(401);
-    //     $this->json("DELETE", "api/games/1")->assertStatus(401);
-    //     $this->json("POST", "/api/games")->assertStatus(401);
-    // }
+    public function non_authenticated_user_can_not_access_game_api_endpoints()
+    {
+        $this->json("GET", "$this->api_base")->assertStatus(401);
+        $this->json("GET", "$this->api_base/paginate/10")->assertStatus(401);
+        $this->json("PUT", "$this->api_base/1")->assertStatus(401);
+        $this->json("DELETE", "$this->api_base/1")->assertStatus(401);
+        $this->json("POST", "$this->api_base")->assertStatus(401);
+    }
     
 }
 
@@ -45,6 +45,7 @@ trait Get
      */
     public function will_fail_with_a_404_if_game_of_type_multiple_choice_is_not_found()
     {
+$this->create_user('admin');
         $res = $this->json("GET", "$this->api_base/-1");
         $res->assertStatus(404);
     }
@@ -54,6 +55,7 @@ trait Get
      */
     public function will_fail_with_a_204_if_requesting_options_from_a_game_that_has_no_options()
     {
+$this->create_user('admin');
         $game = $this->create("GameMultipleChoice");
         $res = $this->json("GET", "$this->api_base/$game->id/options");
         $res->assertStatus(204);
@@ -64,6 +66,7 @@ trait Get
      */
     public function will_fail_with_a_204_if_requesting_paginated_options_from_database_but_there_are_no_options()
     {
+$this->create_user('admin');
         $res = $this->json("GET", "$this->api_base/options/paginate/1");
         $res->assertStatus(204);
     }
@@ -73,6 +76,7 @@ trait Get
      */
     public function will_fail_with_a_204_if_requesting_all_options_from_database_but_there_are_no_options()
     {
+$this->create_user('admin');
         $res = $this->json("GET", "$this->api_base/options");
         $res->assertStatus(204);
     }
@@ -82,6 +86,7 @@ trait Get
      */
     public function will_return_204_when_requesting_all_multiple_choice_whilst_no_entries_in_database()
     {
+$this->create_user('admin');
         // Skip any creates
         $res = $this->json("GET", "$this->api_base");
         $res->assertStatus(204);
@@ -92,6 +97,7 @@ trait Get
      */
     public function will_return_204_when_requesting_paginated_multiple_choice_whilst_no_entries_in_database()
     {
+$this->create_user('admin');
         // Skip any creates
         $res = $this->json("GET", "$this->api_base/paginate/3");
         $res->assertStatus(204);
@@ -104,6 +110,7 @@ trait Get
      */
     public function returns_a_null_value_on_options_relationship_and_media_if_they_are_not_available()
     {
+$this->create_user('admin');
         // create game without options
         $game = $this->create("GameMultipleChoice");
 
@@ -134,6 +141,7 @@ trait Get
      */
     public function can_get_all_GAMES_of_type_multiple_choice()
     {
+     $this->create_user('admin');
         // Given
         $games = $this->create_collection("GameMultipleChoice", [], false, $qty = 6);
 
@@ -194,6 +202,7 @@ trait Get
      */
     public function can_return_all_GAMES_of_type_multiple_choice_paginated()
     {
+     $this->create_user('admin');
         //Given
         $games = $this->create_collection("GameMultipleChoice", [], true, $qty = 6);
 
@@ -261,6 +270,7 @@ trait Get
      */
     public function can_get_a_single_GAME_of_type_multiple_choice()
     {
+     $this->create_user('admin');
         // Given
         $game = $this->create("GameMultipleChoice");
 
@@ -322,6 +332,7 @@ trait Get
      */
     public function can_return_all_multiple_choice_game_OPTIONS()
     {
+     $this->create_user('admin');
 
         // Given, multiple multiple choice options
         $this->create_collection("GameMultipleChoiceOption", [], true, $qty = 6);
@@ -343,6 +354,7 @@ trait Get
      */
     public function can_return_all_multiple_choice_game_OPTIONS_paginated()
     {
+     $this->create_user('admin');
         // Given, multiple multiple choice options
         $this->create_collection("GameMultipleChoiceOption", [], true, $qty = 6);
 
@@ -370,6 +382,7 @@ trait Get
      */
     public function get_OPTIONS_from_a_single_multiple_choice_game()
     {
+     $this->create_user('admin');
 
         // Given
         $game = $this->create("GameMultipleChoice");
@@ -401,6 +414,7 @@ trait Post
      */
     public function can_create_a_multiple_choice_game_with_a_valid_content_media()
     {
+     $this->create_user('admin');
         $body = [
             "title" => "dsfsdvafs",
             "content_text" => "fas af afs asdasd as",
@@ -501,6 +515,7 @@ trait Post
      */
     public function can_create_a_multiple_choice_game_without_media_of_type_header()
     {
+     $this->create_user('admin');
         $body = [
             "title" => "dsfsdvafs",
             "content_text" => "fas af afs asdasd as",
@@ -586,6 +601,7 @@ trait Post
      */
     public function can_create_a_multiple_choice_game_without_media_of_type_media()
     {
+     $this->create_user('admin');
         $body = [
             "title" => "dsfsdvafs",
             "content_text" => "fas af afs asdasd as",
@@ -673,6 +689,7 @@ trait Post
      */
     public function can_create_a_multiple_choice_game_without_any_media()
     {
+     $this->create_user('admin');
         $body = [
             "title" => "dsfsdvafs",
             "content_text" => "fas af afs asdasd as",
@@ -737,6 +754,7 @@ trait Post
      */
     public function can_create_a_multiple_choice_game_without_any_options()
     {
+     $this->create_user('admin');
         $body = [
             "title" => "dsfsdvafs",
             "content_text" => "fas af afs asdasd as",
@@ -777,6 +795,7 @@ trait Post
      */
     public function will_fail_with_a_422_if_request_body_failed_validation_because_of_wrong_data_types()
     {
+     $this->create_user('admin');
         // "title" & "points_min" are wrong data type
         $body = [
             "title" => 1234,
@@ -816,6 +835,7 @@ trait Post
      */
     public function will_fail_with_a_422_if_request_body_failed_validation_because_data_was_missing()
     {
+     $this->create_user('admin');
         // "points_min" is missing
         $body = [
             "title" => "sadasdff",
@@ -855,6 +875,7 @@ trait Post
      */
     public function will_fail_with_a_422_if_request_files_failed_validation_because_wrong_file_type()
     {
+     $this->create_user('admin');
         $body = [
             "title" => "fdhshuifhs fsdhui",
             "content_text" => "dsj a uhdfg hfiughgifud hugfaidhiuagf ga",
@@ -918,6 +939,7 @@ trait Put
      */
     public function will_fail_with_a_404_if_the_multiple_choice_game_we_want_to_update_is_not_found()
     {
+     $this->create_user('admin');
         $res = $this->json("PUT", "$this->api_base/-1");
         $res->assertStatus(404);
     }
@@ -927,6 +949,7 @@ trait Put
      */
     public function can_add_a_header_image_to_end_of_media_collection_from_game_multiple_choice()
     {
+     $this->create_user('admin');
         // Given
         $old_values = [
             "title" => "dsfsdvafs",
@@ -966,6 +989,7 @@ trait Put
      */
     public function can_add_a_media_image_to_end_of_media_collection_from_game_multiple_choice()
     {
+     $this->create_user('admin');
         // Given
         $old_values = [
             "title" => "dsfsdvafs",
@@ -1006,6 +1030,7 @@ trait Put
      */
     public function can_update_game_multiple_choice_fully_on_each_model_attribute()
     {
+     $this->create_user('admin');
 
         // Given
         $old_values = [
@@ -1044,6 +1069,7 @@ trait Put
      */
     public function can_update_game_multiple_choice_on_a_couple_of_model_attributes()
     {
+     $this->create_user('admin');
         
         // Given
         $old_values_to_be_updated = [
@@ -1084,6 +1110,7 @@ trait Put
      */
     public function can_add_options_to_the_end_of_relational_options()
     {
+     $this->create_user('admin');
         // Given
         $old_values = [
             "title" => "dsfsdvafs",
@@ -1127,6 +1154,7 @@ trait Put
      */
     public function will_fail_with_422_if_data_is_missing_from_options()
     {
+     $this->create_user('admin');
         // Given
         $old_values = [
             "title" => "dsfsdvafs",
@@ -1168,6 +1196,7 @@ trait Put
      */
     public function will_fail_with_error_422_when_body_data_is_of_wrong_type()
     {
+     $this->create_user('admin');
         // Given
         $old_values = [
             "title" => "dsfsdvafs",
@@ -1207,6 +1236,7 @@ trait Delete
      */
     public function will_fail_with_a_404_if_the_game_multiple_choice_we_want_to_delete_is_not_found()
     {
+     $this->create_user('admin');
         $res = $this->json("DELETE", "$this->api_base/-1");
         $res->assertStatus(404);
     }
@@ -1216,6 +1246,7 @@ trait Delete
      */
     public function can_delete_a_game_multiple_choice_including_its_files()
     {
+     $this->create_user('admin');
         // Given
         // first create a game in the database to delete
         $game = $this->create("GameMultipleChoice");
@@ -1249,6 +1280,7 @@ trait Delete
      */
     public function foreign_poly_relationship_is_set_to_null_after_delete()
     {
+     $this->create_user('admin');
         // Given
         // first create a game in the database to delete
         $game = $this->create("GameMultipleChoice");
@@ -1288,6 +1320,7 @@ trait Delete
      */
     public function relational_options_are_set_to_null_after_delete()
     {
+     $this->create_user('admin');
         // Given
         // first create a game in the database to delete
         $game = $this->create("GameMultipleChoice");

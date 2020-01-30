@@ -17,6 +17,6 @@
 
 Route::get('/test', function(){
 
-    Games::test();
+   dd(strtoupper(\Str::random(6)));
 
 });

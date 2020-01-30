@@ -24,14 +24,14 @@ class TransitControllerTest extends TestCase
     /**
      * @test
      */
-    // public function non_authenticated_user_can_not_access_transit_api_endpoints()
-    // {
-    //     $this->json("GET", "/$this->api_base")->assertStatus(401);
-    //     $this->json("GET", "$this->api_base/1")->assertStatus(401);
-    //     $this->json("PUT", "$this->api_base/1")->assertStatus(401);
-    //     $this->json("DELETE", "$this->api_base/1")->assertStatus(401);
-    //     $this->json("POST", "/$this->api_base")->assertStatus(401);
-    // }
+    public function non_authenticated_user_can_not_access_transit_api_endpoints()
+    {
+        $this->json("GET", "$this->api_base")->assertStatus(401);
+        $this->json("GET", "$this->api_base/paginate/10")->assertStatus(401);
+        $this->json("PUT", "$this->api_base/1")->assertStatus(401);
+        $this->json("DELETE", "$this->api_base/1")->assertStatus(401);
+        $this->json("POST", "$this->api_base")->assertStatus(401);
+    }
 
 }
 
@@ -43,6 +43,7 @@ trait Get
      */
     public function will_fail_with_a_404_if_transit_is_not_found()
     {
+        $this->create_user('admin');
         $res = $this->json("GET", "$this->api_base/-1");
         $res->assertStatus(404);
     }
@@ -52,6 +53,7 @@ trait Get
      */
     public function will_return_204_when_requesting_all_transits_whilst_no_entries_in_database()
     {
+        $this->create_user('admin');
         // Skip any creates
         $res = $this->json("GET", "$this->api_base");
         $res->assertStatus(204);
@@ -62,6 +64,7 @@ trait Get
      */
     public function will_return_204_when_requesting_paginated_transits_whilst_no_entries_in_database()
     {
+        $this->create_user('admin');
         // Skip any creates
         $res = $this->json("GET", "$this->api_base/paginate/3");
         $res->assertStatus(204);
@@ -73,6 +76,7 @@ trait Get
      */
     public function returns_a_null_value_on_relationships_if_there_are_no_relationships_available()
     {
+        $this->create_user('admin');
         // EXCEPT FOR CITY RELATIONSHIP (FROM & TO), THESE ARE ALWAYS REQUIRED
 
         $from = $this->create("City");
@@ -121,6 +125,7 @@ trait Get
      */
     public function can_return_a_transit()
     {
+        $this->create_user('admin');
 
         $from = $this->create("City");
         $to = $this->create("City");
@@ -252,7 +257,8 @@ trait Get
      * @test
      */
     public function can_return_a_collection_of_all_transits()
-    {   
+    {
+        $this->create_user('admin');   
         $from = $this->create("City");
         $to = $this->create("City");
 
@@ -329,6 +335,7 @@ trait Get
      */
     public function can_return_a_collection_of_paginated_transits()
     {
+        $this->create_user('admin');
         $from = $this->create("City");
         $to = $this->create("City");
 
@@ -414,6 +421,7 @@ trait Post
      */
     public function can_create_a_transit_with_routes()
     {
+        $this->create_user('admin');
         $body = [
             "name" => "sdad hx as hh dsuah ihas",
             "from_city_id" => $this->create("City")->id,
@@ -478,6 +486,7 @@ trait Post
      */
     public function can_create_a_transit_without_routes()
     {
+        $this->create_user('admin');
         $body = [
             "name" => "sdad hx as hh dsuah ihas",
             "from_city_id" => $this->create("City")->id,
@@ -522,6 +531,7 @@ trait Post
      */
     public function will_fail_with_a_422_if_relational_from_city_does_not_exist_in_database()
     {
+        $this->create_user('admin');
         // "name" is wrong data type
         $body = [
             "name" => "sadasasd",
@@ -543,6 +553,7 @@ trait Post
      */
     public function will_fail_with_a_422_if_relational_to_city_does_not_exist_in_database()
     {
+        $this->create_user('admin');
         // "name" is wrong data type
         $body = [
             "name" => "addasads",
@@ -564,6 +575,7 @@ trait Post
      */
     public function will_fail_with_a_422_if_request_body_failed_validation_because_of_wrong_data_types_in_body()
     {
+        $this->create_user('admin');
         // "name" is wrong data type
         $body = [
             "name" => 234,
@@ -585,6 +597,7 @@ trait Post
      */
     public function will_fail_with_a_422_if_request_body_failed_validation_because_data_was_missing_from_body()
     {
+        $this->create_user('admin');
         // "name" is missing
         $body = [
             "from_city_id" => $this->create("City")->id,
@@ -610,6 +623,7 @@ trait Put
      */
     public function will_fail_with_a_404_if_the_transit_we_want_to_update_is_not_found()
     {
+        $this->create_user('admin');
         $res = $this->json("PUT", "$this->api_base/-1");
         $res->assertStatus(404);
     }
@@ -619,6 +633,7 @@ trait Put
      */
     public function can_update_transit_fully_on_each_model_attribute()
     {
+        $this->create_user('admin');
         $old_values = [
             "name" => "sdad hx as hh dsuah ihas",
             "from_city_id" => $this->create("City")->id,
@@ -654,6 +669,7 @@ trait Put
      */
     public function can_update_game_text_answere_on_a_couple_of_model_attributes()
     {
+        $this->create_user('admin');
         
         $old_values = [
             "name" => "sdad hx as hh dsuah ihas",
@@ -687,6 +703,7 @@ trait Put
      */
     public function can_add_new_routes_to_transit()
     {
+        $this->create_user('admin');
         // Given
         $old_values = [
             "name" => "sdad hx as hh dsuah ihas",
@@ -731,6 +748,7 @@ trait Put
      */
     public function will_fail_with_error_422_if_relational_city_does_not_exist()
     {
+        $this->create_user('admin');
         $old_values = [
             "name" => "sdad hx as hh dsuah ihas",
             "from_city_id" => $this->create("City")->id,
@@ -763,6 +781,7 @@ trait Put
      */
     public function will_fail_with_error_422_if_relational_route_does_not_exist()
     {
+        $this->create_user('admin');
         $old_values = [
             "name" => "sdad hx as hh dsuah ihas",
             "from_city_id" => $this->create("City")->id,
@@ -801,6 +820,7 @@ trait Put
      */
     public function will_fail_with_error_422_when_body_data_is_of_wrong_type()
     {
+        $this->create_user('admin');
         // Given
         $old_values = [
             "name" => "sdad hx as hh dsuah ihas",
@@ -838,6 +858,7 @@ trait Delete
      */
     public function will_fail_with_a_404_if_the_transit_we_want_to_delete_is_not_found()
     {
+        $this->create_user('admin');
         $res = $this->json("DELETE", "$this->api_base/-1");
         $res->assertStatus(404);
     }
@@ -848,6 +869,7 @@ trait Delete
      */
     public function foreign_transit_poly_relationships_are_set_to_null_after_delete()
     {
+        $this->create_user('admin');
 
         /**
          * playfields:
@@ -912,6 +934,7 @@ trait Delete
      */
     public function foreign_transit_keys_in_relational_routes_are_set_to_null_after_city_delete()
     {
+        $this->create_user('admin');
 
         /**
          * relation city_ids

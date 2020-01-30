@@ -8,10 +8,11 @@ use Spatie\MediaLibrary\Models\Media;
 use Illuminate\Database\Eloquent\Model;
 use Spatie\MediaLibrary\HasMedia\HasMedia;
 use Spatie\MediaLibrary\HasMedia\HasMediaTrait;
+use App\_Traits\MediaHelpers;
 
 class City extends Model implements HasMedia
 {
-    use HasMediaTrait;
+    use HasMediaTrait, MediaHelpers;
     
     public function itineraries()
     {

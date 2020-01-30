@@ -22,19 +22,20 @@ class GameMediaUploadControllerTest extends TestCase
     use Put;
     use Delete;
 
-    protected $api_base = "/api/admin/games/media_upload";
+    protected $api_base = "api/admin/games/media_upload";
 
     /**
      * @test
      */
-    // public function non_authenticated_user_can_not_access_game_api_endpoints()
-    // {
-    //     $this->json("GET", "/api/games")->assertStatus(401);
-    //     $this->json("GET", "api/games/1")->assertStatus(401);
-    //     $this->json("PUT", "api/games/1")->assertStatus(401);
-    //     $this->json("DELETE", "api/games/1")->assertStatus(401);
-    //     $this->json("POST", "/api/games")->assertStatus(401);
-    // }
+    public function non_authenticated_user_can_not_access_game_media_upload_api_endpoints()
+    {
+        $this->json("GET", "$this->api_base/1")->assertStatus(401);
+        $this->json("GET", "$this->api_base")->assertStatus(401);
+        $this->json("GET", "$this->api_base/paginate/10")->assertStatus(401);
+        $this->json("PUT", "$this->api_base/1")->assertStatus(401);
+        $this->json("DELETE", "$this->api_base/1")->assertStatus(401);
+        $this->json("POST", "$this->api_base")->assertStatus(401);
+    }
 
 }
 
@@ -46,6 +47,7 @@ trait Get
      */
     public function will_fail_with_a_404_if_game_of_type_media_upload_is_not_found()
     {
+$this->create_user('admin');   
         $res = $this->json("GET", "$this->api_base/-1");
         $res->assertStatus(404);
     }
@@ -55,6 +57,7 @@ trait Get
      */
     public function will_return_204_when_requesting_all_media_upload_whilst_no_entries_in_database()
     {
+$this->create_user('admin');
         // Skip any creates
         $res = $this->json("GET", "$this->api_base");
         $res->assertStatus(204);
@@ -65,6 +68,7 @@ trait Get
      */
     public function will_return_204_when_requesting_paginated_media_upload_whilst_no_entries_in_database()
     {
+$this->create_user('admin');
         // Skip any creates
         $res = $this->json("GET", "$this->api_base/paginate/3");
         $res->assertStatus(204);
@@ -74,6 +78,7 @@ trait Get
      */
     public function can_return_all_games_of_type_media_upload()
     {
+$this->create_user('admin');
         //code...
         // Given, multiple multiple choice options
         $games = $this->create_collection("GameMediaUpload", [], false, $qty = 3);
@@ -127,6 +132,7 @@ trait Get
      */
     public function can_return_all_games_of_type_media_upload_paginated()
     {
+$this->create_user('admin');
         //Given
         $games = $this->create_collection("GameMediaUpload", [], false, $qty = 6);
 
@@ -186,6 +192,7 @@ trait Get
      */
     public function can_get_a_single_game_of_type_media_upload()
     {
+$this->create_user('admin');
         // Given
         $game = $this->create("GameMediaUpload");
 
@@ -246,6 +253,7 @@ trait Get
      */
     public function will_return_null_if_there_are_no_media_items_available()
     {
+$this->create_user('admin');
         // Given
         $game = $this->create("GameMediaUpload");
 
@@ -281,6 +289,7 @@ trait Post
      */
     public function can_create_a_media_upload_game_with_a_valid_content_media()
     {
+$this->create_user('admin');
         $body = [
             "title" => "dsfsdvafs",
             "content_text" => "fas af afs asdasd as",
@@ -354,6 +363,7 @@ trait Post
      */
     public function can_create_a_media_upload_game_without_media_of_type_header()
     {
+$this->create_user('admin');
         $body = [
             "title" => "dsfsdvafs",
             "content_text" => "fas af afs asdasd as",
@@ -412,6 +422,7 @@ trait Post
      */
     public function can_create_a_media_upload_game_without_media_of_type_media()
     {
+$this->create_user('admin');
         $body = [
             "title" => "dsfsdvafs",
             "content_text" => "fas af afs asdasd as",
@@ -476,6 +487,7 @@ trait Post
      */
     public function can_create_a_media_upload_game_without_any_media()
     {
+$this->create_user('admin');
         $body = [
             "title" => "dsfsdvafs",
             "content_text" => "fas af afs asdasd as",
@@ -513,6 +525,7 @@ trait Post
      */
     public function will_fail_with_a_422_if_request_body_failed_validation_because_of_wrong_data_types()
     {
+$this->create_user('admin');
         // "title" & "points_min" are wrong data type
         $body_1 = [
             "title" => 1234,
@@ -532,6 +545,7 @@ trait Post
      */
     public function will_fail_with_a_422_if_request_body_failed_validation_because_data_was_missing()
     {
+$this->create_user('admin');
         // "points_min" is missing
         $body_2 = [
             "title" => "sadasdff",
@@ -550,6 +564,7 @@ trait Post
      */
     public function will_fail_with_a_422_if_request_files_failed_validation_because_wrong_file_type()
     {
+$this->create_user('admin');
         $body = [
             "title" => "fdhshuifhs fsdhui",
             "content_text" => "dsj a uhdfg hfiughgifud hugfaidhiuagf ga",
@@ -594,6 +609,7 @@ trait Put
      */
     public function will_fail_with_a_404_if_the_media_upload_game_we_want_to_update_is_not_found()
     {
+$this->create_user('admin');
         $res = $this->json("PUT", "$this->api_base/-1");
         $res->assertStatus(404);
     }
@@ -603,6 +619,7 @@ trait Put
      */
     public function can_add_a_header_image_to_end_of_media_collection_from_game_media_upload()
     {
+$this->create_user('admin');
         // Given
         $old_values = [
             "title" => "dsfsdvafs",
@@ -643,6 +660,7 @@ trait Put
      */
     public function can_add_a_media_image_to_end_of_media_collection_from_game_media_upload()
     {
+$this->create_user('admin');
         // Given
         $old_values = [
             "title" => "dsfsdvafs",
@@ -684,6 +702,7 @@ trait Put
      */
     public function can_update_game_media_upload_fully_on_each_model_attribute()
     {
+$this->create_user('admin');
 
         // Given
         $old_values = [
@@ -724,6 +743,7 @@ trait Put
      */
     public function can_update_game_media_upload_on_a_couple_of_model_attributes()
     {
+$this->create_user('admin');
         
         // Given
         $old_values_to_be_updated = [
@@ -766,6 +786,7 @@ trait Put
      */
     public function will_fail_with_error_422_when_body_data_is_of_wrong_type()
     {
+$this->create_user('admin');
         // Given
         $old_values = [
             "title" => "dsfsdvafs",
@@ -809,6 +830,7 @@ trait Delete
      */
     public function will_fail_with_a_404_if_the_game_media_upload_we_want_to_delete_is_not_found()
     {
+$this->create_user('admin');
         $res = $this->json("DELETE", "$this->api_base/-1");
         $res->assertStatus(404);
     }
@@ -818,6 +840,7 @@ trait Delete
      */
     public function can_delete_a_game_media_upload_including_its_files()
     {
+$this->create_user('admin');
         // Given
         // first create a game in the database to delete
         $game = $this->create("GameMediaUpload");
@@ -851,6 +874,7 @@ trait Delete
      */
     public function foreign_poly_relationship_is_set_to_null_after_delete()
     {
+$this->create_user('admin');
         // Given
         // first create a game in the database to delete
         $game = $this->create("GameMediaUpload");

@@ -25,14 +25,14 @@ class TourControllerTest extends TestCase
     /**
      * @test
      */
-    // public function non_authenticated_user_can_not_access_tour_api_endpoints()
-    // {
-    //     $this->json("GET", "/$this->api_base")->assertStatus(401);
-    //     $this->json("GET", "$this->api_base/1")->assertStatus(401);
-    //     $this->json("PUT", "$this->api_base/1")->assertStatus(401);
-    //     $this->json("DELETE", "$this->api_base/1")->assertStatus(401);
-    //     $this->json("POST", "/$this->api_base")->assertStatus(401);
-    // }
+    public function non_authenticated_user_can_not_access_tour_api_endpoints()
+    {
+        $this->json("GET", "$this->api_base")->assertStatus(401);
+        $this->json("GET", "$this->api_base/paginate/10")->assertStatus(401);
+        $this->json("PUT", "$this->api_base/1")->assertStatus(401);
+        $this->json("DELETE", "$this->api_base/1")->assertStatus(401);
+        $this->json("POST", "$this->api_base")->assertStatus(401);
+    }
 
 }
 
@@ -44,6 +44,7 @@ trait Get
      */
     public function will_fail_with_a_404_if_tour_is_not_found()
     {
+        $this->create_user('admin');
         $res = $this->json("GET", "$this->api_base/-1");
         $res->assertStatus(404);
     }
@@ -53,6 +54,7 @@ trait Get
      */
     public function will_return_204_when_requesting_all_tours_whilst_no_entries_in_database()
     {
+        $this->create_user('admin');
         // Skip any creates
         $res = $this->json("GET", "$this->api_base");
         $res->assertStatus(204);
@@ -63,6 +65,7 @@ trait Get
      */
     public function will_return_204_when_requesting_paginated_tours_whilst_no_entries_in_database()
     {
+        $this->create_user('admin');
         // Skip any creates
         $res = $this->json("GET", "$this->api_base/paginate/3");
         $res->assertStatus(204);
@@ -73,6 +76,7 @@ trait Get
      */
     public function can_return_a_tour()
     {
+        $this->create_user('admin');
         // Given
         // inserting a model into the database (we know this will work because test can_create_a_tour() was asserted succesfully)
         $tour = $this->create("Tour");
@@ -98,6 +102,7 @@ trait Get
      */
     public function can_return_a_collection_of_all_tours()
     {
+        $this->create_user('admin');
 
         $this->create_collection("Tour", [], false, 6);
 
@@ -122,6 +127,7 @@ trait Get
      */
     public function can_return_a_collection_of_paginated_tours()
     {
+        $this->create_user('admin');
         $this->create_collection("Tour", [], false, 6);
 
         $response = $this->json("GET", "/$this->api_base/paginate/3");
@@ -155,6 +161,7 @@ trait Post
      */
     public function can_create_a_tour()
     {
+        $this->create_user('admin');
 
         $body = [
             "name" => "1234",
@@ -183,6 +190,7 @@ trait Post
      */
     public function will_fail_with_error_422_if_request_body_data_is_of_wrong_type()
     {
+        $this->create_user('admin');
         // "name" is of wrong type
         $body = [
             "name" => 111,
@@ -203,6 +211,7 @@ trait Post
      */
     public function will_fail_with_error_422_if_request_body_data_is_missing()
     {
+        $this->create_user('admin');
         // "name" is missing
         $body = [
             "duration" => 22.11
@@ -232,6 +241,7 @@ trait Put
      */
     public function will_fail_with_a_404_if_the_tour_we_want_to_update_is_not_found()
     {
+        $this->create_user('admin');
         $res = $this->json("PUT", "$this->api_base/-1");
         $res->assertStatus(404);
     }
@@ -243,6 +253,7 @@ trait Put
      */
     public function can_update_tour_fully_on_each_model_attribute()
     {
+        $this->create_user('admin');
 
         $old_values = [
             "name" => "1234",
@@ -274,6 +285,7 @@ trait Put
      */
     public function can_update_tours_on_a_couple_of_model_attributes()
     {
+        $this->create_user('admin');
         $old_values = [
             "name" => "1234"
         ];
@@ -306,6 +318,7 @@ trait Put
      */
     public function will_fail_with_error_422_when_body_data_is_of_wrong_type()
     {
+        $this->create_user('admin');
         $old_values = [
             "name" => "1234",
             "duration" => 22.11
@@ -338,6 +351,7 @@ trait Delete
      */
     public function will_fail_with_a_404_if_the_tour_we_want_to_delete_is_not_found()
     {
+        $this->create_user('admin');
         $res = $this->json("DELETE", "$this->api_base/-1");
         $res->assertStatus(404);
     }
@@ -347,6 +361,7 @@ trait Delete
      */
     public function can_delete_a_tour_and_unlink_all_relationships()
     {
+        $this->create_user('admin');
         // Given
         // first create a game in the database to delete
         $tour = $this->create("Tour");

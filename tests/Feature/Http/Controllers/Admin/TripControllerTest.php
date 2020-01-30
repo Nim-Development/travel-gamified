@@ -9,6 +9,7 @@ use Illuminate\Support\Str;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Foundation\Testing\WithFaker;
 use Tests\TestCase;
+use Carbon\Carbon;
 
 class TripControllerTest extends TestCase
 {
@@ -25,14 +26,14 @@ class TripControllerTest extends TestCase
     /**
      * @test
      */
-    // public function non_authenticated_user_can_not_access_trip_api_endpoints()
-    // {
-    //     $this->json("GET", "/$this->api_base")->assertStatus(401);
-    //     $this->json("GET", "$this->api_base/1")->assertStatus(401);
-    //     $this->json("PUT", "$this->api_base/1")->assertStatus(401);
-    //     $this->json("DELETE", "$this->api_base/1")->assertStatus(401);
-    //     $this->json("POST", "/$this->api_base")->assertStatus(401);
-    // }
+    public function non_authenticated_user_can_not_access_trip_api_endpoints()
+    {
+        $this->json("GET", "$this->api_base")->assertStatus(401);
+        $this->json("GET", "$this->api_base/paginate/10")->assertStatus(401);
+        $this->json("PUT", "$this->api_base/1")->assertStatus(401);
+        $this->json("DELETE", "$this->api_base/1")->assertStatus(401);
+        $this->json("POST", "$this->api_base")->assertStatus(401);
+    }
 }
 
 trait Get
@@ -42,6 +43,7 @@ trait Get
      */
     public function will_fail_with_a_404_if_trip_is_not_found()
     {
+        $this->create_user('admin');
         $res = $this->json("GET", "$this->api_base/-1");
         $res->assertStatus(404);
     }
@@ -51,6 +53,7 @@ trait Get
      */
     public function will_return_204_when_requesting_all_trips_whilst_no_entries_in_database()
     {
+        $this->create_user('admin');
         // Skip any creates
         $res = $this->json("GET", "$this->api_base");
         $res->assertStatus(204);
@@ -61,6 +64,7 @@ trait Get
      */
     public function will_return_204_when_requesting_paginated_trips_whilst_no_entries_in_database()
     {
+        $this->create_user('admin');
         // Skip any creates
         $res = $this->json("GET", "$this->api_base/paginate/3");
         $res->assertStatus(204);
@@ -71,6 +75,7 @@ trait Get
      */
     public function returns_a_null_value_on_relationships_if_there_are_no_relationships_available()
     {
+        $this->create_user('admin');
         // Given
         $trip = $this->create("Trip");
 
@@ -101,6 +106,7 @@ trait Get
      */
     public function can_return_a_trip()
     {
+        $this->create_user('admin');
         // Given
         $tour = $this->create("Tour");
         $trip = $this->create("Trip", ["tour_id" => $tour->id]);
@@ -185,6 +191,7 @@ trait Get
      */
     public function can_return_a_collection_of_all_trips()
     {
+        $this->create_user('admin');
 
         $trips = $this->create_collection("Trip", [], false, 6);
         
@@ -241,6 +248,7 @@ trait Get
      */
     public function can_return_a_collection_of_paginated_trips()
     {
+        $this->create_user('admin');
 
         $trips = $this->create_collection("Trip", [], false, 6);
         $this->insert_relations_into_trip_collection($trips);
@@ -332,6 +340,7 @@ trait Post
      */
     public function can_create_a_trip_with_relational_tour_id_and_relational_teams()
     {
+        $this->create_user('admin');
 
         $body = [
             "tour_id" => $this->create("Tour")->id,
@@ -339,7 +348,7 @@ trait Post
             "timezone" => "GMT+7"
         ];
         $date_time = [
-            "start_date_time" => now()
+            "start_date_time" => Carbon::now()->format('Y-m-d H:i:s')
         ];
         $teams = [
             "teams" => [
@@ -390,7 +399,8 @@ trait Post
      */
     public function can_create_a_trip_with_relational_tour_id_and_without_relational_teams()
     {
-        $now = now();
+        $this->create_user('admin');
+        $now = Carbon::now()->format('Y-m-d H:i:s');
 
         $body = [
             "tour_id" => $this->create("Tour")->id,
@@ -398,9 +408,9 @@ trait Post
             "timezone" => "GMT+7"
         ];
         $date_time = [
-            "start_date_time" => now()
+            "start_date_time" => Carbon::now()->format('Y-m-d H:i:s')
         ];
-
+        $this->create_user('admin');
 
         $res = $this->json("POST", "/$this->api_base", array_merge($body, $date_time));
 
@@ -435,12 +445,13 @@ trait Post
      */
     public function will_fail_with_error_422_if_relational_tour_id_does_not_exist_in_database()
     {
+        $this->create_user('admin');
 
         $body = [
             "tour_id" => -1,
             "name" => "aad ijasf ijsoadfjoiasd",
             "timezone" => "GMT+7",
-            "start_date_time" => now()
+            "start_date_time" => Carbon::now()->format('Y-m-d H:i:s')
         ];
 
         $res = $this->json("POST", "/$this->api_base", $body);
@@ -457,13 +468,14 @@ trait Post
      */
     public function will_fail_with_error_422_if_request_body_data_type_is_incorrect()
     {
+        $this->create_user('admin');
 
         // "name" is of wrong data type
         $body = [
             "tour_id" => $this->create("Tour")->id,
             "name" => 1234,
             "timezone" => "GMT+7",
-            "start_date_time" => now()
+            "start_date_time" => Carbon::now()->format('Y-m-d H:i:s')
         ];
 
         $res = $this->json("POST", "/$this->api_base", $body);
@@ -480,12 +492,13 @@ trait Post
      */
     public function will_fail_with_error_422_if_request_body_data_is_missing()
     {
+        $this->create_user('admin');
 
         // "name" is missing
         $body = [
             "tour_id" => $this->create("Tour")->id,
             "timezone" => "GMT+7",
-            "start_date_time" => now(),
+            "start_date_time" => Carbon::now()->format('Y-m-d H:i:s'),
         ];
 
         $res = $this->json("POST", "/$this->api_base", $body);
@@ -508,6 +521,7 @@ trait Put
      */
     public function will_fail_with_a_404_if_the_trip_we_want_to_update_is_not_found()
     {
+        $this->create_user('admin');
         $res = $this->json("PUT", "$this->api_base/-1");
         $res->assertStatus(404);
     }
@@ -518,13 +532,14 @@ trait Put
      */
     public function can_add_a_team_to_the_end_of_existing_teams()
     {
+        $this->create_user('admin');
         $old_values = [
             "tour_id" => $this->create("Tour")->id,
             "name" => "aad ijasf ijsoadfjoiasd",
             "timezone" => "GMT+7"
         ];
         $old_date_time = [
-            "start_date_time" => now()
+            "start_date_time" => Carbon::now()->format('Y-m-d H:i:s')
         ];
 
         $old_trip = $this->create("Trip", array_merge($old_values, $old_date_time));
@@ -557,6 +572,7 @@ trait Put
      */
     public function can_update_tour_fully_on_each_model_attribute()
     {
+        $this->create_user('admin');
         $old_values = [
             "name" => "aad ijasf ijsoadfjoiasd",
             "timezone" => "GMT+7"
@@ -565,7 +581,7 @@ trait Put
             "tour_id" => $this->create("Tour")->id
         ];
         $old_date_time = [
-            "start_date_time" => now()
+            "start_date_time" => Carbon::now()->format('Y-m-d H:i:s')
         ];
 
         $old_trip = $this->create("Trip", array_merge(array_merge($old_values, $old_tour_id), $old_date_time));
@@ -582,7 +598,7 @@ trait Put
             "tour_id" => $this->create("Tour")->id
         ];
         $new_date_time = [
-            "start_date_time" => now()
+            "start_date_time" => Carbon::now()->format('Y-m-d H:i:s')
         ];
 
         // When
@@ -603,6 +619,7 @@ trait Put
      */
     public function can_update_tours_on_a_couple_of_model_attributes()
     {
+        $this->create_user('admin');
         $old_values = [
             "name" => "aad ijasf ijsoadfjoiasd"
         ];
@@ -616,7 +633,7 @@ trait Put
         ];
 
         $old_date_time = [
-            "start_date_time" => now()
+            "start_date_time" => Carbon::now()->format('Y-m-d H:i:s')
         ];
 
         $old_trip = $this->create("Trip", array_merge(array_merge(array_merge($tour_id, $old_values), $old_values_remain_after_update), $old_date_time));
@@ -646,13 +663,14 @@ trait Put
      */
     public function will_fail_with_error_422_when_relational_tour_does_not_exist()
     {
+        $this->create_user('admin');
         $old_values = [
             "tour_id" => $this->create("Tour")->id,
             "name" => "aad ijasf ijsoadfjoiasd",
             "timezone" => "GMT+7"
         ];
         $old_date_time = [
-            "start_date_time" => now()
+            "start_date_time" => Carbon::now()->format('Y-m-d H:i:s')
         ];
 
         $old_trip = $this->create("Trip", array_merge($old_values, $old_date_time));
@@ -678,13 +696,14 @@ trait Put
      */
     public function will_fail_with_error_422_when_relational_team_does_not_exist()
     {
+        $this->create_user('admin');
         $old_values = [
             "tour_id" => $this->create("Tour")->id,
             "name" => "aad ijasf ijsoadfjoiasd",
             "timezone" => "GMT+7"
         ];
         $old_date_time = [
-            "start_date_time" => now()
+            "start_date_time" => Carbon::now()->format('Y-m-d H:i:s')
         ];
 
         $old_trip = $this->create("Trip", array_merge($old_values, $old_date_time));
@@ -726,6 +745,7 @@ trait Delete
      */
     public function will_fail_with_a_404_if_the_trip_we_want_to_delete_is_not_found()
     {
+        $this->create_user('admin');
         $res = $this->json("DELETE", "$this->api_base/-1");
         $res->assertStatus(404);
     }
@@ -735,6 +755,7 @@ trait Delete
      */
     public function can_delete_a_trip_and_unlink_all_relationships()
     {
+        $this->create_user('admin');
         // Given
         // first create a game in the database to delete
         $trip = $this->create("Trip");

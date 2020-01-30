@@ -25,14 +25,14 @@ class UserControllerTest extends TestCase
     /**
      * @test
      */
-    // public function non_authenticated_user_can_not_access_user_api_endpoints()
-    // {
-    //     $this->json("GET", "/$this->api_base")->assertStatus(401);
-    //     $this->json("GET", "$this->api_base/1")->assertStatus(401);
-    //     $this->json("PUT", "$this->api_base/1")->assertStatus(401);
-    //     $this->json("DELETE", "$this->api_base/1")->assertStatus(401);
-    //     $this->json("POST", "/$this->api_base")->assertStatus(401);
-    // }
+    public function non_authenticated_user_can_not_access_user_api_endpoints()
+    {
+        $this->json("GET", "$this->api_base")->assertStatus(401);
+        $this->json("GET", "$this->api_base/paginate/10")->assertStatus(401);
+        // $this->json("PUT", "$this->api_base/1")->assertStatus(401);
+        // $this->json("DELETE", "$this->api_base/1")->assertStatus(401);
+        // $this->json("POST", "$this->api_base")->assertStatus(401);
+    }
 
 }
 
@@ -43,35 +43,39 @@ trait Get
      */
     public function will_fail_with_a_404_if_user_is_not_found()
     {
+        $this->create_user('admin');
         $res = $this->json("GET", "$this->api_base/-1");
         $res->assertStatus(404);
     }
 
-    /**
-     * @test
-     */
-    public function will_return_204_when_requesting_all_users_whilst_no_entries_in_database()
-    {
-        // Skip any creates
-        $res = $this->json("GET", "$this->api_base");
-        $res->assertStatus(204);
-    }
+    // /**
+    //  * @test
+    //  */
+    // public function will_return_204_when_requesting_all_users_whilst_no_entries_in_database()
+    // {
+    //     $this->create_user('admin');
+    //     // Skip any creates
+    //     $res = $this->json("GET", "$this->api_base");
+    //     $res->assertStatus(204);
+    // }
 
-    /**
-     * @test
-     */
-    public function will_return_204_when_requesting_paginated_users_whilst_no_entries_in_database()
-    {
-        // Skip any creates
-        $res = $this->json("GET", "$this->api_base/paginate/3");
-        $res->assertStatus(204);
-    }
+    // /**
+    //  * @test
+    //  */
+    // public function will_return_204_when_requesting_paginated_users_whilst_no_entries_in_database()
+    // {
+    //     $this->create_user('admin');
+    //     // Skip any creates
+    //     $res = $this->json("GET", "$this->api_base/paginate/3");
+    //     $res->assertStatus(204);
+    // }
 
         /**
      * @test
      */
     public function returns_a_null_value_on_relationships_if_there_are_no_relationships_available()
     {
+        $this->create_user('admin');
         // Given
         $user = $this->create("User");
 
@@ -105,6 +109,7 @@ trait Get
      */
     public function can_return_a_user()
     {
+        $this->create_user('admin');
         // Given
         // inserting a model into the database (we know this will work because test can_create_a_user() was asserted succesfully)
         $team = $this->create("Team");
@@ -162,20 +167,22 @@ trait Get
      */
     public function can_return_a_collection_of_all_users()
     {
-
         $team = $this->create("Team");
         $trip = $this->create("Trip");
 
         $users = $this->create_collection("User", ["team_id" => $team->id, "trip_id" => $trip->id], false, 6);
 
+        // for auth purposes
+        $auth_usr = $this->create_user('admin', ["team_id" => $team->id, "trip_id" => $trip->id]);
+        $this->file_factory($auth_usr, "avatar", ["liverpool"]);
+        
         foreach($users as $user){
             $this->file_factory($user, "avatar", ["liverpool"]);
         }
         
         $response = $this->json("GET", "/$this->api_base");
-
         $response->assertStatus(200)
-                ->assertJsonCount(6, "data")
+                ->assertJsonCount(7, "data")
                 ->assertJsonStructure([
                     "data" => [
                         "*" => [ //* to say we checking keys of multiple collections
@@ -225,6 +232,9 @@ trait Get
         $trip = $this->create("Trip");
 
         $users = $this->create_collection("User", ["team_id" => $team->id, "trip_id" => $trip->id], false, 6);
+
+        // for auth purposes
+        $this->create_user('admin', ["team_id" => $team->id, "trip_id" => $trip->id]);
 
         foreach($users as $user){
             $this->file_factory($user, "avatar", ["liverpool"]);

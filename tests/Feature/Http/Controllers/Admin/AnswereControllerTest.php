@@ -26,14 +26,14 @@ class AnswereControllerTest extends TestCase
     // /**
     //  * @test
     //  */
-    // public function non_authenticated_user_can_not_access_answere_api_endpoints()
-    // {
-    //     $this->json("GET", "/$this->api_base")->assertStatus(401);
-    //     $this->json("GET", "$this->api_base/1")->assertStatus(401);
-    //     $this->json("PUT", "$this->api_base/1")->assertStatus(401);
-    //     $this->json("DELETE", "$this->api_base/1")->assertStatus(401);
-    //     $this->json("POST", "/$this->api_base")->assertStatus(401);
-    // }
+    public function non_authenticated_user_can_not_access_answere_api_endpoints()
+    {
+        $this->json("GET", "$this->api_base")->assertStatus(401);
+        $this->json("GET", "$this->api_base/paginate/10")->assertStatus(401);
+        $this->json("PUT", "$this->api_base/1")->assertStatus(401);
+        $this->json("DELETE", "$this->api_base/1")->assertStatus(401);
+        $this->json("POST", "$this->api_base")->assertStatus(401);
+    }
 }
 
 
@@ -44,6 +44,7 @@ trait Get
      */
     public function will_fail_with_a_404_if_answere_is_not_found()
     {
+        $this->create_user('admin');
         $res = $this->json("GET", "/$this->api_base/checked/-1");
         $res->assertStatus(404);
     }
@@ -53,6 +54,7 @@ trait Get
      */
     public function will_return_204_when_requesting_all_checked_answeres_whilst_no_entries_in_database()
     {
+        $this->create_user('admin');
         // Skip any creates
         $res = $this->json("GET", "$this->api_base/checked");
         $res->assertStatus(204);
@@ -63,6 +65,7 @@ trait Get
      */
     public function will_return_204_when_requesting_all_unchecked_answeres_whilst_no_entries_in_database()
     {
+        $this->create_user('admin');
         // Skip any creates
         $res = $this->json("GET", "$this->api_base/unchecked");
         $res->assertStatus(204);
@@ -73,6 +76,7 @@ trait Get
      */
     public function will_return_204_when_requesting_paginated_checked_answeres_whilst_no_entries_in_database()
     {
+        $this->create_user('admin');
         // Skip any creates
         $res = $this->json("GET", "$this->api_base/checked/paginate/3");
         $res->assertStatus(204);
@@ -83,6 +87,7 @@ trait Get
      */
     public function will_return_204_when_requesting_paginated_unchecked_answeres_whilst_no_entries_in_database()
     {
+        $this->create_user('admin');
         // Skip any creates
         $res = $this->json("GET", "$this->api_base/unchecked/paginate/3");
         $res->assertStatus(204);
@@ -93,6 +98,7 @@ trait Get
      */
     public function will_fail_with_a_400_if_we_try_to_return_a_single_answere_of_an_invalid_type()
     {
+        $this->create_user('admin');
         $res = $this->json("GET", "/$this->api_base/xxxx/1");
         $res->assertStatus(400);
     }
@@ -102,6 +108,7 @@ trait Get
      */
     public function will_fail_with_a_400_if_we_try_to_return_all_answeres_of_an_invalid_type()
     {
+        $this->create_user('admin');
         $res = $this->json("GET", "/$this->api_base/xxxx");
         $res->assertStatus(400);
     }
@@ -111,6 +118,7 @@ trait Get
      */
     public function will_fail_with_a_400_if_we_try_to_return_paginated_answeres_of_an_invalid_type()
     {
+        $this->create_user('admin');
         $res = $this->json("GET", "/$this->api_base/xxxx/paginate/3");
         $res->assertStatus(400);
     }
@@ -120,6 +128,7 @@ trait Get
      */
     public function can_get_all_unchecked_answeres()
     {
+        $this->create_user('admin');
         // Create 3 Checked
         $this->collection_of_answeres("AnswereChecked", 3);
 
@@ -192,6 +201,7 @@ trait Get
      */
     public function can_get_all_unchecked_answeres_paginated()
     {
+        $this->create_user('admin');
         // Create 3 Checked
         $this->collection_of_answeres("AnswereChecked", 3);
 
@@ -268,6 +278,7 @@ trait Get
      */
     public function can_get_all_checked_answeres()
     {
+        $this->create_user('admin');
         // Create 3 Checked
         $answeres_checkeds = $this->collection_of_answeres("AnswereChecked", 3);
 
@@ -339,6 +350,7 @@ trait Get
      */
     public function can_get_all_checked_answeres_paginated()
     {
+        $this->create_user('admin');
         // Create 3 Checked
         $answeres_checkeds = $this->collection_of_answeres("AnswereChecked", 3);
 
@@ -416,6 +428,7 @@ trait Get
      */
     public function gives_null_values_for_relationships_if_there_is_no_relational_data_CHECKED()
     {
+        $this->create_user('admin');
         $answere = $this->create("AnswereChecked");
 
         $response = $this->json("GET", "/$this->api_base/checked/$answere->id");
@@ -440,6 +453,7 @@ trait Get
      */
     public function gives_null_values_for_nested_gamen_and_playfield_relationships_in_challenge_relationship_if_there_is_no_relational_data_CHECKED()
     {
+        $this->create_user('admin');
 
         $challenge = $this->create("Challenge");
 
@@ -484,6 +498,7 @@ trait Get
      */
     public function gives_null_values_for_relationships_if_there_is_no_relational_data_UNCHECKED()
     {
+        $this->create_user('admin');
         $answere = $this->create("AnswereUnchecked");
 
         $response = $this->json("GET", "/$this->api_base/unchecked/$answere->id");
@@ -508,6 +523,7 @@ trait Get
      */
     public function gives_null_values_for_nested_gamen_and_playfield_relationships_in_challenge_relationship_if_there_is_no_relational_data_UNCHECKED()
     {
+        $this->create_user('admin');
 
         $challenge = $this->create("Challenge");
 
@@ -553,6 +569,7 @@ trait Get
      */
     public function can_get_a_single_checked_answere_by_id()
     {
+        $this->create_user('admin');
 
         $challenge = $this->create("Challenge",
             [
@@ -631,6 +648,7 @@ trait Get
      */
     public function can_get_a_single_unchecked_answere_by_id()
     {
+        $this->create_user('admin');
         $challenge = $this->create("Challenge",
             [
                 "game_type" => "text_answere",
@@ -715,6 +733,7 @@ trait Post
      */
     public function can_create_a_checked_answere_with_valid_submission_media()
     {
+        $this->create_user('admin');
         $challenge = $this->create("Challenge", [
             "game_type" => "text_answere",
             "game_id" => $this->create("GameTextAnswere")->id,
@@ -805,6 +824,7 @@ trait Post
      */
     public function can_create_a_unchecked_answere_with_valid_submission_media()
     {
+        $this->create_user('admin');
         $challenge = $this->create("Challenge", [
             "game_type" => "text_answere",
             "game_id" => $this->create("GameTextAnswere")->id,
@@ -894,6 +914,7 @@ trait Post
      */
     public function can_create_a_checked_answere_without_submission_media()
     {
+        $this->create_user('admin');
         $challenge = $this->create("Challenge", [
             "game_type" => "text_answere",
             "game_id" => $this->create("GameTextAnswere")->id,
@@ -966,6 +987,7 @@ trait Post
      */
     public function can_create_a_unchecked_answere_without_submission_media()
     {
+        $this->create_user('admin');
         $challenge = $this->create("Challenge", [
             "game_type" => "text_answere",
             "game_id" => $this->create("GameTextAnswere")->id,
@@ -1037,6 +1059,7 @@ trait Post
      */
     public function respond_with_422_if_creating_a_checked_answere_with_non_existant_challenge_id()
     {
+        $this->create_user('admin');
 
         $body = [
             "challenge_id" => -1,
@@ -1059,6 +1082,7 @@ trait Post
      */
     public function respond_with_422_if_creating_a_checked_answere_with_non_existant_user_id()
     {
+        $this->create_user('admin');
         $challenge = $this->create("Challenge", [
             "game_type" => "text_answere",
             "game_id" => $this->create("GameTextAnswere")->id,
@@ -1087,6 +1111,7 @@ trait Post
      */
     public function respond_with_422_if_creating_a_unchecked_answere_with_non_existant_challenge_id()
     {
+        $this->create_user('admin');
 
         $body = [
             "challenge_id" => -1,
@@ -1109,6 +1134,7 @@ trait Post
      */
     public function respond_with_422_if_creating_a_unchecked_answere_with_non_existant_user_id()
     {
+        $this->create_user('admin');
         $challenge = $this->create("Challenge", [
             "game_type" => "text_answere",
             "game_id" => $this->create("GameTextAnswere")->id,
@@ -1137,6 +1163,7 @@ trait Post
      */
     public function create_checked_answere_will_respond_with_422_if_request_body_data_type_is_incorrect()
     {
+        $this->create_user('admin');
         $challenge = $this->create("Challenge", [
             "game_type" => "text_answere",
             "game_id" => $this->create("GameTextAnswere")->id,
@@ -1166,6 +1193,7 @@ trait Post
      */
     public function create_unchecked_answere_will_respond_with_422_if_request_body_data_type_is_incorrect()
     {
+        $this->create_user('admin');
         $challenge = $this->create("Challenge", [
             "game_type" => "text_answere",
             "game_id" => $this->create("GameTextAnswere")->id,
@@ -1195,6 +1223,7 @@ trait Post
      */
     public function create_checked_answere_will_respond_with_422_if_request_body_data_is_missing()
     {
+        $this->create_user('admin');
         $challenge = $this->create("Challenge", [
             "game_type" => "text_answere",
             "game_id" => $this->create("GameTextAnswere")->id,
@@ -1224,6 +1253,7 @@ trait Post
      */
     public function create_unchecked_answere_will_respond_with_422_if_request_body_data_is_missing()
     {
+        $this->create_user('admin');
         $challenge = $this->create("Challenge", [
             "game_type" => "text_answere",
             "game_id" => $this->create("GameTextAnswere")->id,
@@ -1252,6 +1282,7 @@ trait Post
      */
     public function create_checked_answere_will_respond_with_422_if_request_file_is_of_wrong_type()
     {
+        $this->create_user('admin');
         $challenge = $this->create("Challenge", [
             "game_type" => "text_answere",
             "game_id" => $this->create("GameTextAnswere")->id,
@@ -1287,6 +1318,7 @@ trait Post
      */
     public function create_unchecked_answere_will_respond_with_422_if_request_file_is_of_wrong_type()
     {
+        $this->create_user('admin');
         $challenge = $this->create("Challenge", [
             "game_type" => "text_answere",
             "game_id" => $this->create("GameTextAnswere")->id,
@@ -1332,6 +1364,7 @@ trait Put
      */
     public function will_fail_with_a_404_if_the_checked_answere_we_want_to_update_is_not_found()
     {
+        $this->create_user('admin');
         $res = $this->json("PUT", "$this->api_base/checked/-1");
         $res->assertStatus(404);
     }
@@ -1341,6 +1374,7 @@ trait Put
      */
     public function will_fail_with_a_404_if_the_unchecked_answere_we_want_to_update_is_not_found()
     {
+        $this->create_user('admin');
         $res = $this->json("PUT", "$this->api_base/unchecked/-1");
         $res->assertStatus(404);
     }
@@ -1367,6 +1401,7 @@ trait Put
      */
     public function can_add_a_submission_media_image_to_end_of_submission_collection_of_checked_answere()
     {
+        $this->create_user('admin');
 
         // "answere" is missing
         $old_values = [
@@ -1409,6 +1444,7 @@ trait Put
      */
     public function can_add_a_submission_media_image_to_end_of_submission_collection_of_UNchecked_answere()
     {
+        $this->create_user('admin');
 
         // "answere" is missing
         $old_values = [
@@ -1451,6 +1487,8 @@ trait Put
      */
     public function can_update_unchecked_answere_fully_on_each_model_attribute()
     {
+        $this->create_user('admin');
+
         // Given
         $old_values = [
             "answere" => "sadffasfaf adsf afds.",
@@ -1471,8 +1509,8 @@ trait Put
 
         // update every attribute
         $new_values = [
-            "answere" => "sadffasfaf adsf afds.",
-            "score" => null
+            "answere" => "sadffasfaf xxx xxxx.",
+            "score" => 30
         ];
 
         $new_relations = [
@@ -1493,7 +1531,7 @@ trait Put
                     ->assertJsonFragment($new_values);
                     
         $this->assertDatabaseHas("answere_uncheckeds", $new_values);
-        $this->assertDatabaseMissing("cities", $old_values);
+        $this->assertDatabaseMissing("answere_uncheckeds", $old_values);
             
     }
 
@@ -1502,6 +1540,7 @@ trait Put
      */
     public function can_update_checked_answere_fully_on_each_model_attribute()
     {
+        $this->create_user('admin');
         // Given
         $old_values = [
             "answere" => "sadffasfaf adsf afds.",
@@ -1553,6 +1592,7 @@ trait Put
      */
     public function can_update_answere_unchecked_on_a_couple_of_model_attributes()
     {
+        $this->create_user('admin');
         // Given
         $old_values = [
             "challenge_id" => $this->create("Challenge", [
@@ -1600,6 +1640,7 @@ trait Put
      */
     public function will_fail_with_422_when_relational_challenge_does_not_exist_CHECKED_ANSWERE()
     {
+        $this->create_user('admin');
                 // Given
                 $old_values = [
                     "challenge_id" => $this->create("Challenge", [
@@ -1635,6 +1676,7 @@ trait Put
      */
     public function will_fail_with_422_when_relational_challenge_does_not_exist_UNCHECKED_ANSWERE()
     {
+        $this->create_user('admin');
                 // Given
                 $old_values = [
                     "challenge_id" => $this->create("Challenge", [
@@ -1671,6 +1713,7 @@ trait Put
      */
     public function will_fail_with_422_when_relational_user_does_not_exist_CHECKED_ANSWERE()
     {
+        $this->create_user('admin');
                 // Given
                 $old_values = [
                     "challenge_id" => $this->create("Challenge", [
@@ -1707,6 +1750,7 @@ trait Put
      */
     public function will_fail_with_422_when_relational_user_does_not_exist_UNCHECKED_ANSWERE()
     {
+        $this->create_user('admin');
                 // Given
                 $old_values = [
                     "challenge_id" => $this->create("Challenge", [
@@ -1743,6 +1787,7 @@ trait Put
      */
     public function will_fail_with_error_422_when_body_data_is_of_wrong_type_ANSWERE_CHECKED()
     {
+        $this->create_user('admin');
         // Given
         $old_values = [
             "challenge_id" => $this->create("Challenge", [
@@ -1788,6 +1833,7 @@ trait Put
      */
     public function will_fail_with_error_422_when_body_data_is_of_wrong_type_ANSWERE_UNCHECKED()
     {
+        $this->create_user('admin');
         // Given
         $old_values = [
             "challenge_id" => $this->create("Challenge", [
@@ -1837,6 +1883,7 @@ trait Delete
      */
     public function will_fail_with_a_404_if_the_answere_checked_we_want_to_delete_is_not_found()
     {
+        $this->create_user('admin');
         $res = $this->json("DELETE", "$this->api_base/checked/-1");
         $res->assertStatus(404);
     }
@@ -1846,6 +1893,7 @@ trait Delete
      */
     public function will_fail_with_a_404_if_the_answere_unchecked_we_want_to_delete_is_not_found()
     {
+        $this->create_user('admin');
         $res = $this->json("DELETE", "$this->api_base/unchecked/-1");
         $res->assertStatus(404);
     }
@@ -1855,6 +1903,7 @@ trait Delete
      */
     public function can_delete_a_answere_checked_including_its_files()
     {
+        $this->create_user('admin');
         // Given
         // first create a game in the database to delete
         $answere = $this->create("AnswereChecked");
@@ -1885,6 +1934,7 @@ trait Delete
      */
     public function can_delete_a_answere_unchecked_including_its_files()
     {
+        $this->create_user('admin');
         // Given
         // first create a game in the database to delete
         $answere = $this->create("AnswereUnchecked");

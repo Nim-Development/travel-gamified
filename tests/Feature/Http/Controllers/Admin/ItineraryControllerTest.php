@@ -25,14 +25,14 @@ class ItineraryControllerTest extends TestCase
     /**
      * @test
      */
-    // public function non_authenticated_user_can_not_access_itinerary_api_endpoints()
-    // {
-    //     $this->json("GET", "/$this->api_base")->assertStatus(401);
-    //     $this->json("GET", "$this->api_base/1")->assertStatus(401);
-    //     $this->json("PUT", "$this->api_base/1")->assertStatus(401);
-    //     $this->json("DELETE", "$this->api_base/1")->assertStatus(401);
-    //     $this->json("POST", "/$this->api_base")->assertStatus(401);
-    // }
+    public function non_authenticated_user_can_not_access_itinerary_api_endpoints()
+    {
+        $this->json("GET", "$this->api_base")->assertStatus(401);
+        $this->json("GET", "$this->api_base/paginate/10")->assertStatus(401);
+        $this->json("PUT", "$this->api_base/1")->assertStatus(401);
+        $this->json("DELETE", "$this->api_base/1")->assertStatus(401);
+        $this->json("POST", "$this->api_base")->assertStatus(401);
+    }
 }
 
 
@@ -43,6 +43,7 @@ trait Get
      */
     public function will_fail_with_a_404_if_itinerary_is_not_found()
     {
+        $this->create_user('admin');
         $res = $this->json("GET", "$this->api_base/-1");
         $res->assertStatus(404);
     }
@@ -52,6 +53,7 @@ trait Get
      */
     public function will_return_204_when_requesting_all_itineraries_whilst_no_entries_in_database()
     {
+        $this->create_user('admin');
         // Skip any creates
         $res = $this->json("GET", "$this->api_base");
         $res->assertStatus(204);
@@ -62,6 +64,7 @@ trait Get
      */
     public function will_return_204_when_requesting_paginated_itineraries_whilst_no_entries_in_database()
     {
+        $this->create_user('admin');
         // Skip any creates
         $res = $this->json("GET", "$this->api_base/paginate/3");
         $res->assertStatus(204);
@@ -72,6 +75,7 @@ trait Get
      */
     public function returns_a_null_value_on_relationships_if_there_are_no_relationships_available()
     {
+        $this->create_user('admin');
         // Given
 
         $itinerary = $this->create("Itinerary");
@@ -101,6 +105,7 @@ trait Get
      */
     public function can_return_a_itinerary_with_playfield_type_OFF_city()
     {
+        $this->create_user('admin');
         // Given
         // Create playfield
         $playfield = $this->create("City", [], false);
@@ -147,6 +152,7 @@ trait Get
      */
     public function can_return_a_itinerary_with_playfield_type_OFF_route()
     {
+        $this->create_user('admin');
         // Given
         // Create playfield
         $playfield = $this->create("Route", [], false);
@@ -199,6 +205,7 @@ trait Get
      */
     public function can_return_a_itinerary_with_playfield_type_OFF_transit()
     {
+        $this->create_user('admin');
         // Given
         $from = $this->create("City");
         $to = $this->create("City");
@@ -267,6 +274,7 @@ trait Get
      */
     public function can_return_a_collection_of_all_itineraries()
     {
+        $this->create_user('admin');
 
         $city = $this->create("City");
         $tour = $this->create("Tour");
@@ -306,6 +314,7 @@ trait Get
      */
     public function can_return_a_collection_of_all_itineraries_paginated()
     {
+        $this->create_user('admin');
 
         $city = $this->create("City");
         $tour = $this->create("Tour");
@@ -351,6 +360,7 @@ trait Get
      */
     public function can_return_a_collection_of_all_itineraries_with_playfield_OFF_city()
     {
+        $this->create_user('admin');
         $city = $this->create("City");
         $tour = $this->create("Tour");
 
@@ -395,6 +405,7 @@ trait Get
      */
     public function can_return_a_collection_of_paginated_itineraries_with_playfield_OFF_city()
     {
+        $this->create_user('admin');
         $city = $this->create("City");
         $tour = $this->create("Tour");
 
@@ -444,6 +455,7 @@ trait Get
      */
     public function can_return_a_collection_of_all_itineraries_with_playfield_OFF_route()
     {
+        $this->create_user('admin');
         $route = $this->create("Route");
         $tour = $this->create("Tour");
 
@@ -494,6 +506,7 @@ trait Get
      */
     public function can_return_a_collection_of_paginated_itineraries_with_playfield_OFF_route()
     {
+        $this->create_user('admin');
         $route = $this->create("Route");
         $tour = $this->create("Tour");
 
@@ -548,6 +561,7 @@ trait Get
      */
     public function can_return_a_collection_of_all_itineraries_with_playfield_OFF_transit()
     {
+        $this->create_user('admin');
         $transit = $this->create("Transit", [
             "from_city_id" => $this->create("City")->id,
             "to_city_id" => $this->create("City")->id
@@ -596,6 +610,7 @@ trait Get
      */
     public function can_return_a_collection_of_paginated_itineraries_with_playfield_OFF_transit()
     {
+        $this->create_user('admin');
         $transit = $this->create("Transit", [
             "from_city_id" => $this->create("City")->id,
             "to_city_id" => $this->create("City")->id
@@ -670,6 +685,7 @@ trait Post
      */
     public function can_create_a_itinerary_with_playfield_type_of_city()
     {
+        $this->create_user('admin');
 
         $body = [
             "tour_id" => $this->create("Tour")->id,
@@ -714,6 +730,7 @@ trait Post
      */
     public function can_create_a_itinerary_with_playfield_type_of_route()
     {
+        $this->create_user('admin');
 
         $body = [
             "tour_id" => $this->create("Tour")->id,
@@ -764,6 +781,7 @@ trait Post
      */
     public function can_create_a_itinerary_with_playfield_type_of_transit()
     {
+        $this->create_user('admin');
 
         $body = [
             "tour_id" => $this->create("Tour")->id,
@@ -824,6 +842,7 @@ trait Post
      */
     public function can_create_a_itinerary_without_a_playfield()
     {
+        $this->create_user('admin');
         // "step" is of wrong data type
         $body = [
             "tour_id" => $this->create("Tour")->id,
@@ -860,6 +879,7 @@ trait Post
      */
     public function can_create_a_itinerary_without_a_tour()
     {
+        $this->create_user('admin');
         // "step" is of wrong data type
         $body = [
             "step" => 2,
@@ -898,6 +918,7 @@ trait Post
      */
     public function can_create_a_itinerary_without_a_tour_and_without_a_playfield()
     {
+        $this->create_user('admin');
         // "step" is of wrong data type
         $body = [
             "step" => 2,
@@ -928,6 +949,7 @@ trait Post
      */
     public function returns_a_error_422_if_request_body_data_is_of_incorrect_type()
     {
+        $this->create_user('admin');
         // "step" is of wrong data type
         $body = [
             "tour_id" => $this->create("Tour")->id,
@@ -951,6 +973,7 @@ trait Post
      */
     public function returns_a_error_422_if_request_body_data_is_missing()
     {
+        $this->create_user('admin');
         // "step" is is missing
         $body = [
             "tour_id" => $this->create("Tour")->id,
@@ -973,6 +996,7 @@ trait Post
      */
     public function returns_a_error_422_if_relational_playfield_of_type_city_doesnt_exist()
     {
+        $this->create_user('admin');
 
         $body = [
             "tour_id" => $this->create("Tour")->id,
@@ -996,6 +1020,7 @@ trait Post
      */
     public function returns_a_error_422_if_relational_playfield_of_type_route_doesnt_exist()
     {
+        $this->create_user('admin');
 
         $body = [
             "tour_id" => $this->create("Tour")->id,
@@ -1019,6 +1044,7 @@ trait Post
      */
     public function returns_a_error_422_if_relational_playfield_of_type_transit_doesnt_exist()
     {
+        $this->create_user('admin');
 
         $body = [
             "tour_id" => $this->create("Tour")->id,
@@ -1042,6 +1068,7 @@ trait Post
      */
     public function returns_a_error_422_if_relational_tour_doesnt_exist()
     {
+        $this->create_user('admin');
 
         $body = [
             "tour_id" => -1,
@@ -1077,6 +1104,7 @@ trait Put
      */
     public function will_fail_with_a_404_if_the_itinerary_we_want_to_update_is_not_found()
     {
+        $this->create_user('admin');
         $res = $this->json("PUT", "$this->api_base/-1");
         $res->assertStatus(404);
     }
@@ -1086,6 +1114,7 @@ trait Put
      */
     public function can_update_itinerary_fully_on_each_model_attribute()
     {
+        $this->create_user('admin');
 
         $old_values = [
             "tour_id" => $this->create("Tour")->id,
@@ -1127,6 +1156,7 @@ trait Put
      */
     public function can_update_itinerary_on_a_couple_of_model_attributes()
     {
+        $this->create_user('admin');
         $old_values = [
             "step" => 1,
             "duration" => 12.34,
@@ -1163,6 +1193,7 @@ trait Put
      */
     public function will_fail_with_error_422_when_body_data_is_of_wrong_type()
     {
+        $this->create_user('admin');
         $old_values = [
             "tour_id" => $this->create("Tour")->id,
             "step" => 1,
@@ -1201,6 +1232,7 @@ trait Put
      */
     public function will_fail_with_error_422_relational_tour_does_not_exist()
     {
+        $this->create_user('admin');
         $old_values = [
             "tour_id" => $this->create("Tour")->id,
             "step" => 1,
@@ -1239,6 +1271,7 @@ trait Put
      */
     public function will_fail_with_error_422_relational_playfield_does_not_exist()
     {
+        $this->create_user('admin');
         $old_values = [
             "tour_id" => $this->create("Tour")->id,
             "step" => 1,
@@ -1282,6 +1315,7 @@ trait Delete
      */
     public function will_fail_with_a_404_if_the_itinerary_we_want_to_delete_is_not_found()
     {
+        $this->create_user('admin');
         $res = $this->json("DELETE", "$this->api_base/-1");
         $res->assertStatus(404);
     }
@@ -1291,6 +1325,7 @@ trait Delete
      */
     public function can_delete_a_itinerary()
     {
+        $this->create_user('admin');
         // Given
         // first create a game in the database to delete
         $itinerary = $this->create("Itinerary");

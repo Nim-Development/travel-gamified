@@ -27,14 +27,14 @@ class TeamControllerTest extends TestCase
     /**
      * @test
      */
-    // public function non_authenticated_user_can_not_access_team_api_endpoints()
-    // {
-    //     $this->json('GET', '/api/teams')->assertStatus(401);
-    //     $this->json('GET', 'api/teams/1')->assertStatus(401);
-    //     $this->json('PUT', 'api/teams/1')->assertStatus(401);
-    //     $this->json('DELETE', 'api/teams/1')->assertStatus(401);
-    //     $this->json('POST', '/api/teams')->assertStatus(401);
-    // }
+    public function non_authenticated_user_can_not_access_team_api_endpoints()
+    {
+        $this->json("GET", "$this->api_base")->assertStatus(401);
+        $this->json("GET", "$this->api_base/paginate/10")->assertStatus(401);
+        $this->json("PUT", "$this->api_base/1")->assertStatus(401);
+        $this->json("DELETE", "$this->api_base/1")->assertStatus(401);
+        $this->json("POST", "$this->api_base")->assertStatus(401);
+    }
 }
 
 
@@ -45,6 +45,7 @@ trait Get
      */
     public function will_fail_with_a_404_if_team_is_not_found()
     {
+        $this->create_user('admin');
         
 
         $res = $this->json('GET', "$this->api_base/-1");
@@ -56,6 +57,7 @@ trait Get
      */
     public function will_return_204_when_requesting_all_teams_whilst_no_entries_in_database()
     {
+        $this->create_user('admin');
         // Skip any creates
         $res = $this->json('GET', $this->api_base);
         $res->assertStatus(204);
@@ -66,6 +68,7 @@ trait Get
      */
     public function will_return_204_when_requesting_paginated_teams_whilst_no_entries_in_database()
     {
+        $this->create_user('admin');
         // Skip any creates
         $res = $this->json('GET', "$this->api_base/paginate/3");
         $res->assertStatus(204);
@@ -76,6 +79,7 @@ trait Get
      */
     public function returns_a_null_value_on_relationships_if_there_are_no_relationships_available()
     {
+        $this->create_user('admin');
         // Given
         $team = $this->create('Team');
 
@@ -104,6 +108,7 @@ trait Get
      */
     public function can_return_a_team()
     {
+        $this->create_user('admin');
         // Given
         $trip = $this->create('Trip', [], false);
         $team = $this->create('Team', ['trip_id' => $trip->id], false);
@@ -176,6 +181,7 @@ trait Get
      */
     public function can_return_a_collection_of_all_teams()
     {
+        $this->create_user('admin');
         $trip = $this->create('Trip', [], false);
         $teams = $this->create_collection('Team', ['trip_id' => $trip->id], false, 6);
 
@@ -240,6 +246,7 @@ trait Get
      */
     public function can_return_a_collection_of_paginated_teams()
     {
+        $this->create_user('admin');
         $trip = $this->create('Trip');
 
         $teams = $this->create_collection('Team', ['trip_id' => $trip->id], false, 6);
@@ -314,6 +321,7 @@ trait Post
      */
     public function can_create_a_team_with_valid_badge_media_with_relational_trip_and_with_relational_users()
     {
+        $this->create_user('admin');
 
         $body = [
             'trip_id' => $this->create('Trip')->id,
@@ -393,6 +401,7 @@ trait Post
      */
     public function can_create_a_team_with_valid_media_without_a_relational_trip_and_without_relational_users()
     {
+        $this->create_user('admin');
 
         $body = [
             'name' => 'sda fads',
@@ -445,6 +454,7 @@ trait Post
      */
     public function can_create_a_team_with_valid_badge_media_without_a_relational_trip_and_with_relational_users()
     {
+        $this->create_user('admin');
         $body = [
             'name' => 'sda fads',
             'color' => 'sdafas',
@@ -517,6 +527,7 @@ trait Post
      */
     public function can_create_a_team_with_valid_badge_media_with_relational_trip_and_without_relational_users()
     {
+        $this->create_user('admin');
 
         $body = [
             'trip_id' => $this->create('Trip')->id,
@@ -579,6 +590,7 @@ trait Post
      */
     public function can_create_a_team_without_badge_media()
     {
+        $this->create_user('admin');
 
         $body = [
             'trip_id' => $this->create('Trip')->id,
@@ -645,6 +657,7 @@ trait Post
      */
     public function will_return_error_422_if_request_body_has_a_relational_trip_id_that_doesnt_exist_in_database()
     {
+        $this->create_user('admin');
 
         $body = [
             'trip_id' => -1,
@@ -667,6 +680,7 @@ trait Post
      */
     public function will_return_error_422_if_request_body_has_data_of_the_wrong_type()
     {
+        $this->create_user('admin');
         // 'name' is of the wrong data type
         $body = [
             'trip_id' => $this->create('Trip')->id,
@@ -689,6 +703,7 @@ trait Post
      */
     public function will_return_error_422_if_request_body_has_missing_data()
     {
+        $this->create_user('admin');
         // 'name' is missing
         $body = [
             'trip_id' => $this->create('Trip')->id,
@@ -710,6 +725,7 @@ trait Post
      */
     public function will_return_error_422_if_uploaded_file_is_of_the_wrong_type()
     {
+        $this->create_user('admin');
         $body = [
             'trip_id' => $this->create('Trip')->id,
             'name' => 'sda fads',
@@ -762,6 +778,7 @@ trait Put
      */
     public function will_fail_with_a_404_if_the_team_we_want_to_update_is_not_found()
     {
+        $this->create_user('admin');
         $res = $this->json('PUT', "$this->api_base/-1");
         $res->assertStatus(404);
     }
@@ -771,6 +788,7 @@ trait Put
      */
     public function can_add_media_of_badge_collection_to_end_of_collection()
     {
+        $this->create_user('admin');
         $old_values = [
             'trip_id' => $this->create('Trip')->id,
             'name' => 'sda fads',
@@ -818,6 +836,7 @@ trait Put
      */
     public function can_add_user_to_the_end_of_relational_users_array()
     {
+        $this->create_user('admin');
         $old_values = [
             'trip_id' => $this->create('Trip')->id,
             'name' => 'sda fads',
@@ -857,6 +876,7 @@ trait Put
      */
     public function can_update_team_fully_on_each_model_attribute()
     {
+        $this->create_user('admin');
         $old_values = [
             'name' => 'sda fads',
             'color' => 'sdafas',
@@ -894,6 +914,7 @@ trait Put
      */
     public function can_update_team_on_a_couple_of_model_attributes()
     {
+        $this->create_user('admin');
         $old_values = [
             'name' => 'sda fads',
             'color' => 'sdafas',
@@ -930,6 +951,7 @@ trait Put
      */
     public function will_fail_with_error_422_when_body_data_is_of_wrong_type()
     {
+        $this->create_user('admin');
         $old_values = [
             'name' => 'sda fads',
             'color' => 'sdafas',
@@ -963,6 +985,7 @@ trait Put
      */
     public function will_fail_with_error_422_relational_trip_does_not_exist()
     {
+        $this->create_user('admin');
         $old_values = [
             'name' => 'sda fads',
             'color' => 'sdafas',
@@ -998,6 +1021,7 @@ trait Put
      */
     public function will_fail_with_error_422_if_relational_user_does_not_exist()
     {
+        $this->create_user('admin');
         $old_values = [
             'trip_id' => $this->create('Trip')->id,
             'name' => 'sda fads',
@@ -1042,6 +1066,7 @@ trait Delete
      */
     public function will_fail_with_a_404_if_the_team_we_want_to_delete_is_not_found()
     {
+        $this->create_user('admin');
         $res = $this->json('DELETE', "$this->api_base/-1");
         $res->assertStatus(404);
     }
@@ -1051,6 +1076,7 @@ trait Delete
      */
     public function can_delete_a_team_including_its_files()
     {
+        $this->create_user('admin');
         // Given
         // first create a game in the database to delete
         $team = $this->create('Team');
@@ -1080,6 +1106,7 @@ trait Delete
      */
     public function can_delete_a_team_and_unlink_all_relationships()
     {
+        $this->create_user('admin');
         // Given
         // first create a game in the database to delete
         $team = $this->create('Team');

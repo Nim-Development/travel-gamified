@@ -8,10 +8,12 @@ use Spatie\MediaLibrary\HasMedia\HasMedia;
 use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Spatie\MediaLibrary\HasMedia\HasMediaTrait;
 use Illuminate\Foundation\Auth\User as Authenticatable;
+use Laravel\Passport\HasApiTokens;
+use App\_Traits\MediaHelpers;
 
 class User extends Authenticatable implements HasMedia
 {
-    use Notifiable, HasMediaTrait;
+    use Notifiable, HasMediaTrait, MediaHelpers, HasApiTokens;
 
     public function team()
     {
@@ -45,6 +47,10 @@ class User extends Authenticatable implements HasMedia
             });
     }
 
+    public function isAdmin()
+    {
+        return $this->is_admin;
+    }
 
     /**
      * The attributes that are mass assignable.
@@ -52,7 +58,15 @@ class User extends Authenticatable implements HasMedia
      * @var array
      */
     protected $fillable = [
-        'name', 'email', 'password',
+        'first_name', 
+        'family_name', 
+        'age',
+        'gender',
+        'email',
+        'phone',
+        'password', 
+        'is_admin',
+        'score'
     ];
 
     /**

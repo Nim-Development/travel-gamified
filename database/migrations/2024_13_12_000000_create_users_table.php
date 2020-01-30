@@ -16,6 +16,8 @@ class CreateUsersTable extends Migration
         Schema::create('users', function (Blueprint $table) {
             $table->bigIncrements('id');
 
+            $table->boolean('is_admin')->default(false);
+
             $table->unsignedBigInteger('team_id')->nullable();
             $table->foreign('team_id')->references('id')->on('teams')->onDelete('set null');
 
@@ -23,7 +25,7 @@ class CreateUsersTable extends Migration
             $table->foreign('trip_id')->references('id')->on('trips')->onDelete('set null');
 
             $table->string('email')->unique();
-            $table->string('phone');
+            $table->string('phone')->nullable();
             $table->timestamp('email_verified_at')->nullable();
             $table->string('password');
 
@@ -31,7 +33,7 @@ class CreateUsersTable extends Migration
             $table->string('family_name');
             $table->integer('age');
             $table->string('gender');
-            $table->bigInteger('score');
+            $table->bigInteger('score')->default(0);
             
             $table->rememberToken();
             $table->timestamps();

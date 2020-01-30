@@ -6,6 +6,7 @@ use Illuminate\Http\Request;
 use App\GameMediaUpload;
 use App\Http\Controllers\Controller;
 use App\Http\Resources\GameMediaUpload as GameMediaUploadResource;
+use App\Http\Requests\GameMediaUploadUpdate;
 
 class GameMediaUploadController extends Controller
 {
@@ -111,7 +112,7 @@ class GameMediaUploadController extends Controller
         // perform update ( ::nk handle exception )
         $game->update($request->except(['header', 'media_content']));
 
-        if($request->header){
+        if($request->header){    
             \MediaHelper::model_insert(
                 $game, // model
                 $request->header, // media (single or array)
@@ -132,6 +133,27 @@ class GameMediaUploadController extends Controller
             ->response()
             ->setStatusCode(200);
     }
+
+    // // Could be refactored like this:
+    // public function update(GameMediaUploadUpdate $request, GameMediaUpload $game)
+    // {
+
+    //     $game->update($request->except(['header', 'media_content']));
+
+    //::nk REFACTOR LIKE THIS!
+    /**
+     * Make attach media a standard function / trait than can be shared by all models
+     */
+    //     $game->attach_media([
+    //         $request->header => 'header',
+    //         $request->media_content => 'media'
+    //     ]);
+        
+    //     // Return as resource
+    //     return (new GameMediaUploadResource($game))
+    //         ->response()
+    //         ->setStatusCode(200);
+    // }
 
     public function destroy($id)
     {

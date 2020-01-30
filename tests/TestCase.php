@@ -5,6 +5,7 @@ namespace Tests;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Filesystem\Filesystem;
 use Illuminate\Foundation\Testing\TestCase as BaseTestCase;
+use Laravel\Passport\Passport;
 
 abstract class TestCase extends BaseTestCase
 {
@@ -283,6 +284,54 @@ abstract class TestCase extends BaseTestCase
     {
         $file = new Filesystem;
         $res = $file->cleanDirectory(storage_path('app/test'));
+    }
+
+
+    public function header_with_access_token($user, $additional_headers = null)
+    {
+        $headers = [
+            'Bearer' => $user->createToken('access_token')->accessToken,
+            'Accept' => 'application/json'
+        ];
+        if($additional_headers){
+            return array_merge(
+                $headers,
+                $header_array
+            );
+        }
+        return array_merge(
+            $headers,
+            $header_array
+        );
+    }
+
+    public function create_user($type, $data = null)
+    {
+        switch ($type) {
+            case 'user':
+                $values = ['is_admin' => false];
+                if($data){
+                    $values = array_merge($values, $data);
+                }
+                $user = $this->create('User', $values, false);
+                Passport::actingAs($user);
+                return $user;
+                break;
+            
+            case 'admin':
+                $values = ['is_admin' => true];
+                if($data){
+                    $values = array_merge($values, $data);
+                }
+                $user = $this->create('User', $values, false);
+                Passport::actingAs($user);
+                return $user;
+                break;
+            
+            default:
+                return false;
+                break;
+        }
     }
 
 

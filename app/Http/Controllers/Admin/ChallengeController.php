@@ -28,7 +28,6 @@ class ChallengeController extends Controller
     // Collection of all entries
     public function all($type = null)
     {
-
         $all = Challenge::all();
         
         if($all->isEmpty()){
