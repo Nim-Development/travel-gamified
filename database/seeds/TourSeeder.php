@@ -10,8 +10,16 @@ class TourSeeder extends Seeder
      */
     public function run()
     {
-        //4
-        factory(App\Tour::class, 3)->create();
+        $playfield_types = ['city', 'transit', 'city', 'route', 'city'];
 
+        factory(App\Tour::class, 5)->create()->each(function ($tour) use ($playfield_types) {
+            foreach($playfield_types as $step => $type){
+                $tour->itineraries()->save(factory(App\Itinerary::class)->create([
+                    'step' => $step,
+                    'playfield_type' => $type,
+                    'playfield_id' => $step+3
+                ]));
+            }
+        });
     }
 }

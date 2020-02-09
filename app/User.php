@@ -9,11 +9,11 @@ use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Spatie\MediaLibrary\HasMedia\HasMediaTrait;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Laravel\Passport\HasApiTokens;
-use App\_Traits\MediaHelpers;
+use App\_Traits\Helpers;
 
 class User extends Authenticatable implements HasMedia
 {
-    use Notifiable, HasMediaTrait, MediaHelpers, HasApiTokens;
+    use Notifiable, HasMediaTrait, Helpers, HasApiTokens;
 
     public function team()
     {

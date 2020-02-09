@@ -7,6 +7,7 @@ use Illuminate\Http\Request;
 
 use App\Http\Resources\City as CityResource;
 use App\City;
+use App\Http\Requests\City as CityRequest;
 
 class CityController extends Controller
 {
@@ -39,96 +40,37 @@ class CityController extends Controller
         return new CityResource($data);
     }
 
-    public function store(Request $request)
+    public function store(CityRequest $request)
     {
-        $request->validate([
-            'short_code' => 'required|string',
-            'name' => 'required|string'
-        ]);
-
-        // validate header file
-        if($request->has('header')){
-            // must be of type .jpg or .png
-            $res = $request->validate([
-                "header.*"  => "image",
-            ]);
-        }
-
-        // validate media file
-        if($request->has('media')){
-            // must be of type .jpg or .png
-            $res = $request->validate([
-                "media.*"  => "image",
-            ]);
-        }
-
         //Create City
-        $city = City::create([
-            'short_code' => $request->short_code,
-            'name' => $request->name
+        $city = City::create($request->validated());
+  
+        $city->attach_media([
+            'header' => $request->header,
+            'media' => $request->media
         ]);
-
-        // validate header file
-        if($request->has('header')){
-            // insert the media file.
-            \MediaHelper::model_insert(
-                $city, // model
-                $request->header, // media (single or array)
-                'header' // collection name
-            );
-        }
-
-        // validate header file
-        if($request->has('media')){
-            // insert the media file.
-            \MediaHelper::model_insert(
-                $city, // model
-                $request->media, // media (single or array)
-                'media' // collection name
-            );
-        }
 
         // Return resource
-        return (new CityResource($city))
-                                ->response()
-                                ->setStatusCode(201);
+        return (new CityResource($city))->response()->setStatusCode(201);
     }
 
 
-    public function update(Request $request, $id)
+    public function update(CityRequest $request, $id)
     {
-        // Nothing required, just data types
-        $request->validate([
-            'short_code' => 'string',
-            'name' => 'string'
-        ]);
         
         // find or fail with 422
         $city = City::findOrFail($id);
 
         // perform update ( ::nk handle exception )
-        $city->update($request->except(['header', 'media']));
+        $city->update($request->validated());
 
-        if($request->header){
-            \MediaHelper::model_insert(
-                $city, // model
-                $request->header, // media (single or array)
-                'header' // collection name
-            );
-        }
-
-        if($request->media){
-            \MediaHelper::model_insert(
-                $city,
-                $request->media,
-                'media'
-            );
-        }
+        $city->attach_media([
+            'header' => $request->header,
+            'media' => $request->media
+        ]);
 
         // Return as resource
-        return (new CityResource($city))
-            ->response()
-            ->setStatusCode(200);
+        return (new CityResource($city))->response()->setStatusCode(200);
     }
 
 

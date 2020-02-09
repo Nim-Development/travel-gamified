@@ -171,7 +171,7 @@ trait Get
 
         foreach($cities as $city){
             $this->file_factory($city, "header", ["chelsea", "liverpool"]); // add 2 header media files
-            $this->file_factory($city, "media", ["chelsea", "liverpool"]); // add 2 media_content media files    
+            $this->file_factory($city, "media", ["chelsea", "liverpool"]); // add 2 media media files    
         }
 
         $response = $this->json("GET", "/$this->api_base");
@@ -215,7 +215,7 @@ trait Get
 
         foreach($cities as $city){
             $this->file_factory($city, "header", ["chelsea", "liverpool"]); // add 2 header media files
-            $this->file_factory($city, "media", ["chelsea", "liverpool"]); // add 2 media_content media files    
+            $this->file_factory($city, "media", ["chelsea", "liverpool"]); // add 2 media media files    
         }
 
         $response = $this->json("GET", "/$this->api_base/paginate/3");

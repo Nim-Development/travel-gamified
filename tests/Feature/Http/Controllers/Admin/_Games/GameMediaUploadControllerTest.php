@@ -47,7 +47,7 @@ trait Get
      */
     public function will_fail_with_a_404_if_game_of_type_media_upload_is_not_found()
     {
-$this->create_user('admin');   
+        $this->create_user('admin');   
         $res = $this->json("GET", "$this->api_base/-1");
         $res->assertStatus(404);
     }
@@ -57,7 +57,7 @@ $this->create_user('admin');
      */
     public function will_return_204_when_requesting_all_media_upload_whilst_no_entries_in_database()
     {
-$this->create_user('admin');
+        $this->create_user('admin');
         // Skip any creates
         $res = $this->json("GET", "$this->api_base");
         $res->assertStatus(204);
@@ -68,7 +68,7 @@ $this->create_user('admin');
      */
     public function will_return_204_when_requesting_paginated_media_upload_whilst_no_entries_in_database()
     {
-$this->create_user('admin');
+        $this->create_user('admin');
         // Skip any creates
         $res = $this->json("GET", "$this->api_base/paginate/3");
         $res->assertStatus(204);
@@ -78,15 +78,15 @@ $this->create_user('admin');
      */
     public function can_return_all_games_of_type_media_upload()
     {
-$this->create_user('admin');
+        $this->create_user('admin');
         //code...
         // Given, multiple multiple choice options
         $games = $this->create_collection("GameMediaUpload", [], false, $qty = 3);
         
-        // add 2x media_content and 2x header to each game
+        // add 2x media and 2x header to each game
         foreach($games as $game){
            $this->file_factory($game, "header", ["chelsea", "liverpool"]); // add 2 header media files
-           $this->file_factory($game, "media", ["chelsea", "liverpool"]); // add 2 media_content media files
+           $this->file_factory($game, "media", ["chelsea", "liverpool"]); // add 2 media media files
         }
         
         // When
@@ -113,7 +113,7 @@ $this->create_user('admin');
                                 "thumb"
                             ]
                         ],
-                        "media_content" => [
+                        "media" => [
                             "*" => [
                                 "def",
                                 "md",
@@ -136,10 +136,10 @@ $this->create_user('admin');
         //Given
         $games = $this->create_collection("GameMediaUpload", [], false, $qty = 6);
 
-        // add 2x media_content and 2x header to each game
+        // add 2x media and 2x header to each game
         foreach($games as $game){
             $this->file_factory($game, "header", ["chelsea", "liverpool"]); // add 2 header media files
-            $this->file_factory($game, "media", ["chelsea", "liverpool"]); // add 2 media_content media files    
+            $this->file_factory($game, "media", ["chelsea", "liverpool"]); // add 2 media media files    
         }
         
         // When
@@ -166,7 +166,7 @@ $this->create_user('admin');
                                 "thumb"
                             ]
                         ],
-                        "media_content" => [
+                        "media" => [
                             "*" => [
                                 "def",
                                 "md",
@@ -192,7 +192,9 @@ $this->create_user('admin');
      */
     public function can_get_a_single_game_of_type_media_upload()
     {
-$this->create_user('admin');
+        
+        $this->create_user('admin');
+
         // Given
         $game = $this->create("GameMediaUpload");
 
@@ -228,7 +230,7 @@ $this->create_user('admin');
                             "thumb" => $game->getMedia("header")[1]->getUrl("thumb"),
                         ]
                     ],
-                    "media_content" => [
+                    "media" => [
                         [
                             "def" => $game->getMedia("media")[0]->getUrl(),
                             "md" => $game->getMedia("media")[0]->getUrl("md"),
@@ -253,7 +255,9 @@ $this->create_user('admin');
      */
     public function will_return_null_if_there_are_no_media_items_available()
     {
-$this->create_user('admin');
+
+        $this->create_user('admin');
+
         // Given
         $game = $this->create("GameMediaUpload");
 
@@ -274,7 +278,7 @@ $this->create_user('admin');
                     "points_min" => $game->points_min,
                     "points_max" => $game->points_max,
                     "header" => null,
-                    "media_content" => null,
+                    "media" => null,
                     "created_at" => (string)$game->created_at
                 ]
             ]);
@@ -289,7 +293,8 @@ trait Post
      */
     public function can_create_a_media_upload_game_with_a_valid_content_media()
     {
-$this->create_user('admin');
+        $this->create_user('admin');
+
         $body = [
             "title" => "dsfsdvafs",
             "content_text" => "fas af afs asdasd as",
@@ -303,7 +308,7 @@ $this->create_user('admin');
                 UploadedFile::fake()->image("liverpool.jpg"),
                 UploadedFile::fake()->image("chelsea.jpg"),
             ],
-            "media_content" => [
+            "media" => [
                 UploadedFile::fake()->image("barcelona.jpg"),
                 UploadedFile::fake()->image("juventus.jpg")
             ]
@@ -330,7 +335,7 @@ $this->create_user('admin');
                                 "thumb"
                             ]
                         ],
-                        "media_content" => [
+                        "media" => [
                             "*" => 
                             [
                                 "def",
@@ -352,7 +357,7 @@ $this->create_user('admin');
             \Storage::disk("test")->assertExists($stored_header_files_array);
         }
 
-        if($stored_header_files_array = $this->spread_media_urls($res->getData()->data->media_content)){
+        if($stored_header_files_array = $this->spread_media_urls($res->getData()->data->media)){
             \Storage::disk("test")->assertExists($stored_header_files_array);
         }
     }
@@ -373,7 +378,7 @@ $this->create_user('admin');
             "points_max" => 123456
         ];
         $files = [          
-            "media_content" => [
+            "media" => [
                 UploadedFile::fake()->image("barcelona.jpg"),
                 UploadedFile::fake()->image("juventus.jpg")
             ]
@@ -392,7 +397,7 @@ $this->create_user('admin');
                         "points_min",
                         "points_max" ,
                         "header",
-                        "media_content" => [
+                        "media" => [
                             "*" => 
                             [
                                 "def",
@@ -412,7 +417,7 @@ $this->create_user('admin');
             \Storage::disk("test")->assertExists($stored_header_files_array);
         }
         // assert if the files are uploaded to storage
-        if($stored_header_files_array = $this->spread_media_urls($res->getData()->data->media_content)){
+        if($stored_header_files_array = $this->spread_media_urls($res->getData()->data->media)){
             \Storage::disk("test")->assertExists($stored_header_files_array);
         }
     }
@@ -436,7 +441,7 @@ $this->create_user('admin');
                 UploadedFile::fake()->image("liverpool.jpg"),
                 UploadedFile::fake()->image("chelsea.jpg"),
             ],
-            "media_content" => [
+            "media" => [
                 UploadedFile::fake()->image("barcelona.jpg"),
                 UploadedFile::fake()->image("juventus.jpg")
             ]
@@ -463,7 +468,7 @@ $this->create_user('admin');
                                 "thumb"
                             ]
                         ],
-                        "media_content",
+                        "media",
                         "created_at"
                 ]
             ]);
@@ -477,7 +482,7 @@ $this->create_user('admin');
             \Storage::disk("test")->assertExists($stored_header_files_array);
         }
 
-        if($stored_header_files_array = $this->spread_media_urls($res->getData()->data->media_content)){
+        if($stored_header_files_array = $this->spread_media_urls($res->getData()->data->media)){
             \Storage::disk("test")->assertExists($stored_header_files_array);
         }
     }
@@ -511,7 +516,7 @@ $this->create_user('admin');
                         "points_min" => $body["points_min"],
                         "points_max" => $body["points_max"],
                         "header" => null,
-                        "media_content" => null,
+                        "media" => null,
                         "created_at" => $res->getData()->data->created_at
                 ]
             ]);
@@ -578,7 +583,7 @@ $this->create_user('admin');
                 UploadedFile::fake()->image("liverpool.csv"),
                 UploadedFile::fake()->image("chelsea.csv"),
             ],
-            "media_content" => [
+            "media" => [
                 UploadedFile::fake()->image("barcelona.csv"),
                 UploadedFile::fake()->image("juventus.csv")
             ]
@@ -609,7 +614,7 @@ trait Put
      */
     public function will_fail_with_a_404_if_the_media_upload_game_we_want_to_update_is_not_found()
     {
-$this->create_user('admin');
+        $this->create_user('admin');
         $res = $this->json("PUT", "$this->api_base/-1");
         $res->assertStatus(404);
     }
@@ -619,7 +624,9 @@ $this->create_user('admin');
      */
     public function can_add_a_header_image_to_end_of_media_collection_from_game_media_upload()
     {
-$this->create_user('admin');
+
+        $this->create_user('admin');
+
         // Given
         $old_values = [
             "title" => "dsfsdvafs",
@@ -677,7 +684,7 @@ $this->create_user('admin');
         $this->file_factory($old_game, "media", ["media1", "media2"]);
         
         $files = [
-            "media_content" => [
+            "media" => [
                 UploadedFile::fake()->image("media3.jpg"),
                 UploadedFile::fake()->image("media4.jpg"),
             ]
@@ -689,10 +696,10 @@ $this->create_user('admin');
 
         // Then
         $res->assertStatus(200)
-                    ->assertJsonCount(4, "data.media_content"); // assert that 2 images have been added to header
+                    ->assertJsonCount(4, "data.media"); // assert that 2 images have been added to header
                     
         // Check if db file media data urls actually exist as files in storage
-        if($stored_header_files_array = $this->spread_media_urls($res->getData()->data->media_content)){
+        if($stored_header_files_array = $this->spread_media_urls($res->getData()->data->media)){
             \Storage::disk("test")->assertExists($stored_header_files_array);
         }
     }

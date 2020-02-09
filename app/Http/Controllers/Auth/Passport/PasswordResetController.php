@@ -9,45 +9,10 @@ use App\User;
 use App\PasswordReset;
 use App\Http\Resources\PasswordReset as PasswordResetResource;
 use App\Http\Resources\User as UserResource;
+use App\Http\Requests\PasswordReset as PasswordResetValidator;
 
 class PasswordResetController extends Controller
 {
-
-    /**
-     * Create token password reset
-     *
-     * @param  [string] email
-     * @return [string] message
-     */
-    public function request_reset_token(Request $request)
-    {
-        $request->validate([
-            'email' => 'required|string|email'
-        ]);
-        $user = User::where('email', $request->email)->first();
-
-        if (!$user)
-            return response()->json([
-                'message' => "We can't find a user with that e-mail address."
-            ], 404);
-        
-        // make a password reset token
-        $password_reset = PasswordReset::updateOrCreate(
-            ['email' => $user->email],
-            ['email' => $user->email, 'token' => strtoupper(\Str::random(6))]
-        );
-
-        if ($user && $password_reset){
-            $user->notify(
-                new PasswordResetRequest(
-                    $password_reset->token
-                )
-            );
-            return response()->json(['message' => 'We have e-mailed your password reset link!'], 200);
-        }else{
-            return response()->json(['message' => 'We could not process your request.'], 404);
-        }
-    }
 
     /**
      * Find token password reset
@@ -74,6 +39,39 @@ class PasswordResetController extends Controller
 
     }
 
+    /**
+     * Create token password reset
+     *
+     * @param  [string] email
+     * @return [string] message
+     */
+    public function request_reset_token(PasswordResetValidator $request)
+    {
+        $user = User::where('email', $request->email)->first();
+
+        if (!$user)
+            return response()->json([
+                'message' => "We can't find a user with that e-mail address."
+            ], 404);
+        
+        // make a password reset token
+        $password_reset = PasswordReset::updateOrCreate(
+            ['email' => $user->email],
+            ['email' => $user->email, 'token' => strtoupper(\Str::random(6))]
+        );
+
+        if ($user && $password_reset){
+            $user->notify(
+                new PasswordResetRequest(
+                    $password_reset->token
+                )
+            );
+            return response()->json(['message' => 'We have e-mailed your password reset link!'], 200);
+        }else{
+            return response()->json(['message' => 'We could not process your request.'], 404);
+        }
+    }
+
      /**
      * Reset password
      *
@@ -84,13 +82,8 @@ class PasswordResetController extends Controller
      * @return [string] message
      * @return [json] user object
      */
-    public function update_password(Request $request)
+    public function update_password(PasswordResetValidator $request)
     {
-        $request->validate([
-            'email' => 'required|string|email',
-            'password' => 'required|string',
-            'token' => 'required|string'
-        ]);
         $password_reset = PasswordReset::where([
             ['token', $request->token],
             ['email', $request->email]

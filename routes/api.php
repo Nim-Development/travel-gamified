@@ -1,41 +1,41 @@
 <?php
 
-//////////////
-// NO TOKEN //
-//////////////
+////////////////////
+// AUTH: NO TOKEN //
+////////////////////
 Route::group(['namespace' => 'Auth\Passport'], function () {
-    Route::post('user/login', 'AuthController@login');
-    Route::post('user/register', 'AuthController@register');
+    Route::post('auth/login', 'AuthController@login');
+    Route::post('auth/register', 'AuthController@register');
 
     Route::group(['prefix' => 'password/reset'], function () {
-        Route::post('request/token', 'PasswordResetController@request_reset_token');
         Route::get('find/{token}', 'PasswordResetController@find_reset_token');
+        Route::post('request/token', 'PasswordResetController@request_reset_token');
         Route::post('', 'PasswordResetController@update_password');
     });
 });
 
-
-////////////////////
-// TOKEN REQUIRED //
-////////////////////
+//////////////////////////
+// AUTH: TOKEN REQUIRED //
+//////////////////////////
 Route::group(['middleware' => 'auth:api'], function () {  
 
     // Auth related routes
     Route::group(['namespace' => 'Auth\Passport'], function () {
     
         // user related
-        Route::get('user/details', 'AuthController@details');
-        Route::get('user/logout', 'AuthController@logout');
-        Route::post('user/update/password', 'AuthController@update_password');
-        Route::delete('user/delete', 'AuthController@destroy');
+        Route::get('auth/details', 'AuthController@details');
+        Route::get('auth/logout', 'AuthController@logout');
+        Route::post('auth/update/password', 'AuthController@update_password');
+        Route::delete('auth/delete', 'AuthController@destroy');
        
     });
+});
 
-    //...
+////////////////////////////
+// PERMISSION LEVEL ADMIN //
+////////////////////////////
+Route::group(['middleware' => 'auth:api'], function () {  
 
-    ////////////////////////////
-    // PERMISSION LEVEL ADMIN //
-    ////////////////////////////
     Route::group([
         'middleware' => ['admin'], 
         'prefix' => 'admin',
@@ -180,19 +180,5 @@ Route::group(['middleware' => 'auth:api'], function () {
     //         return response()->json(['Can access customer route!, admin could also do this.'], 200);
     //     });
     // });
-
-});
-
-
-
-
-
-
-
-
-
-Route::prefix('admin')->namespace('Admin')->group(function () {
-
-    
 
 });

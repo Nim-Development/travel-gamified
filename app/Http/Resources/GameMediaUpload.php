@@ -25,7 +25,7 @@ class GameMediaUpload extends JsonResource
             'points_min' => (integer)$this->points_min,
             'points_max' => (integer)$this->points_max,
             'header' => $this->insert_media_conversions($this->getMedia('header')),
-            'media_content' => $this->insert_media_conversions($this->getMedia('media')),
+            'media' => $this->insert_media_conversions($this->getMedia('media')),
             'created_at' => (string)$this->created_at
         ];
     }

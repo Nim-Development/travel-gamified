@@ -285,7 +285,7 @@ trait Post
      */
     public function can_create_a_route_with_a_valid_transit_relationship()
     {
-$this->create_user('admin');
+        $this->create_user('admin');
         $transit = $this->create("Transit", [
             "from_city_id" => $this->create("City")->id,
             "to_city_id" => $this->create("City")->id,
@@ -344,13 +344,12 @@ $this->create_user('admin');
         $this->assertDatabaseHas("routes", $body);
     }
 
-    // Media are not uploaded directly with a game creation, instead they will be plucked from a local library (Media model)
     /**
      * @test
      */
     public function will_fail_with_a_422_because_relational_transit_is_not_given()
     {
-$this->create_user('admin');
+        $this->create_user('admin');
         $body = [
             "name" => "asadsff",
             "maps_url" => "https://asadssadadsff.sad/sadmkas/asdasd",

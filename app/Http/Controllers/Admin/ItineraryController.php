@@ -11,6 +11,7 @@ use App\Transit;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use App\Http\Resources\Itinerary as ItineraryResource;
+use App\Http\Requests\Itinerary as ItineraryRequest;
 
 
 class ItineraryController extends Controller
@@ -63,15 +64,8 @@ class ItineraryController extends Controller
         return ItineraryResource::collection($all);
     }
 
-    public function store(Request $request)
+    public function store(ItineraryRequest $request)
     {
-        $request->validate([
-            'tour_id' => 'integer',
-            'step' => 'required|integer',
-            'duration' => 'required|numeric',
-            'playfield_type' => 'string',
-            'playfield_id' => 'integer'
-        ]);
 
         if($request->playfield_type && $request->playfield_id){
 
@@ -88,22 +82,10 @@ class ItineraryController extends Controller
                 }
 
                 // Create Itinerary with playfield and tour
-                $itinerary = Itinerary::create([
-                    'tour_id' => $request->tour_id,
-                    'step' => $request->step,
-                    'duration' => $request->duration,
-                    'playfield_type' => $request->playfield_type,
-                    'playfield_id' => $request->playfield_id
-                ]);
+                $itinerary = Itinerary::create($request->validated());
             }else{
                 // Create Itinerary with playfield and without a tour
-                $itinerary = Itinerary::create([
-                    'tour_id' => null,
-                    'step' => $request->step,
-                    'duration' => $request->duration,
-                    'playfield_type' => $request->playfield_type,
-                    'playfield_id' => $request->playfield_id
-                ]);
+                $itinerary = Itinerary::create($request->validated());
             }
         }else{
             if($request->tour_id){
@@ -114,50 +96,21 @@ class ItineraryController extends Controller
                 }
 
                 // create Itinerary without playfield with tour
-                $itinerary = Itinerary::create([
-                    'tour_id' => $request->tour_id,
-                    'step' => $request->step,
-                    'duration' => $request->duration,
-                    'playfield_type' => null,
-                    'playfield_id' => null
-                ]);
+                $itinerary = Itinerary::create($request->validated());
             }else{
                 // create Itinerary without playfield and without tour
-                $itinerary = Itinerary::create([
-                    'tour_id' => null,
-                    'step' => $request->step,
-                    'duration' => $request->duration,
-                    'playfield_type' => null,
-                    'playfield_id' => null
-                ]);
+                $itinerary = Itinerary::create($request->validated());
             }
         }
 
         // Return as resource
-        return (new ItineraryResource($itinerary))
-        ->response()
-        ->setStatusCode(201);
+        return (new ItineraryResource($itinerary))->response()->setStatusCode(201);
         
     }
 
 
-    public function update(Request $request, $id)
+    public function update(ItineraryRequest $request, $id)
     {
-        // Nothing required, just data types
-        $request->validate([
-            'tour_id' => 'integer',
-            'step' => 'integer',
-            'duration' => 'numeric',
-            'playfield_type' => 'string',
-            'playfield_id' => 'integer'
-        ]);
-
-        if($request->tour_id){
-            if(!Tour::find($request->tour_id)){
-                return response()->json(['error' => 'Can not create Itinerary for non existing Tour'], 422); 
-            }
-        }
-        
         if($request->playfield_type && $request->playfield_id){
             // check if relational playfield row actually exists in database
             $playfield = \Playfields::find_morph_or_fail($request->playfield_type, $request->playfield_id);
@@ -167,13 +120,10 @@ class ItineraryController extends Controller
         }
 
         $itinerary = Itinerary::findOrFail($id);
-
-        $itinerary->update($request->all());
+        $itinerary->update($request->validated());
 
         // Return as resource
-        return (new ItineraryResource($itinerary))
-            ->response()
-            ->setStatusCode(200);
+        return (new ItineraryResource($itinerary))->response()->setStatusCode(200);
     }
 
 

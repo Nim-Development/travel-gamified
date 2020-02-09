@@ -92,6 +92,7 @@ trait Get
                         "id" => $tour->id,
                         "name" => $tour->name,
                         "duration" => $tour->duration,
+                        "itineraries" => null,
                         "created_at" => (string)$tour->created_at
                      ]
                 ]);
@@ -116,6 +117,7 @@ trait Get
                             "id", 
                             "name", 
                             "duration", 
+                            "itineraries",
                             "created_at"
                         ]
                     ],
@@ -138,7 +140,121 @@ trait Get
                         "*" => [
                             "id", 
                             "name", 
+                            "duration",
+                            "itineraries",
+                            "created_at"
+                        ]
+                    ],
+                    // Check if it is paginated
+                    "links" => ["first", "last", "prev", "next"],
+                    "meta" => [
+                        "current_page", "last_page", "from", "to",
+                        "path", "per_page", "total"
+                    ]
+                ]);
+    }
+
+            /**
+     * @test
+     */
+    public function can_return_a_tour_with_a_relational_itineraries()
+    {
+        $this->create_user('admin');
+        // Given
+        // inserting a model into the database (we know this will work because test can_create_a_tour() was asserted succesfully)
+        $tour = $this->create("Tour");
+
+        // create 3 relational itineraries ordered by step
+        $it_3 = $this->create('Itinerary', ['step' => 3, 'tour_id' => $tour->id, 'playfield_type' => 'city']);
+        $it_2 = $this->create('Itinerary', ['step' => 2, 'tour_id' => $tour->id, 'playfield_type' => 'transit']);
+        $it_1 =  $this->create('Itinerary', ['step' => 1, 'tour_id' => $tour->id, 'playfield_type' => 'city']);
+
+        // When
+        $response = $this->json("GET", "/$this->api_base/".$tour->id);
+
+        // Then
+        // assert status code
+        $response->assertStatus(200)
+                 ->assertExactJson([
+                     "data" => [
+                        "id" => $tour->id,
+                        "name" => $tour->name,
+                        "duration" => $tour->duration,
+                        'itineraries' => [
+                            [
+                                'id' => $it_1->id,
+                                'step' => $it_1->step,
+                                'duration' => $it_1->duration,
+                                'playfield_type' => $it_1->playfield_type,
+                                'playfield_id' => $it_1->playfield_id,
+                                'created_at' => (string)$it_1->created_at
+                            ],
+                            [
+                                'id' => $it_2->id,
+                                'step' => $it_2->step,
+                                'duration' => $it_2->duration,
+                                'playfield_type' => $it_2->playfield_type,
+                                'playfield_id' => $it_2->playfield_id,
+                                'created_at' => (string)$it_2->created_at
+                            ],
+                            [
+                                'id' => $it_3->id,
+                                'step' => $it_3->step,
+                                'duration' => $it_3->duration,
+                                'playfield_type' => $it_3->playfield_type,
+                                'playfield_id' => $it_3->playfield_id,
+                                'created_at' => (string)$it_3->created_at
+                            ]
+                        ],
+                        "created_at" => (string)$tour->created_at
+                     ]
+                ]);
+    }
+
+    /**
+     * @test
+     */
+    public function can_return_a_collection_of_all_tours_with_a_relational_itineraries()
+    {
+        $this->create_user('admin');
+
+        $this->create_collection("Tour", [], false, 6);
+
+        $response = $this->json("GET", "/$this->api_base");
+
+        $response->assertStatus(200)
+                ->assertJsonCount(6, "data")
+                ->assertJsonStructure([
+                    "data" => [
+                        "*" => [
+                            "id", 
+                            "name", 
                             "duration", 
+                            'itineraries',
+                            "created_at"
+                        ]
+                    ],
+                ]);
+    }
+
+    /**
+     * @test
+     */
+    public function can_return_a_collection_of_paginated_tours_with_a_relational_itineraries()
+    {
+        $this->create_user('admin');
+        $this->create_collection("Tour", [], false, 6);
+
+        $response = $this->json("GET", "/$this->api_base/paginate/3");
+        $response->assertStatus(200)
+                ->assertJsonCount(3, "data")
+                ->assertJsonStructure([
+                    "data" => [
+                        "*" => [
+                            "id", 
+                            "name", 
+                            "duration", 
+                            'itineraries',
                             "created_at"
                         ]
                     ],
@@ -177,6 +293,7 @@ trait Post
                     "id",
                     "name",
                     "duration",
+                    "itineraries",
                     "created_at"
                 ]
         ]);

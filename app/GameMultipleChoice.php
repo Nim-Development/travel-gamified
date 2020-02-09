@@ -7,11 +7,11 @@ use Spatie\MediaLibrary\Models\Media;
 use Illuminate\Database\Eloquent\Model;
 use Spatie\MediaLibrary\HasMedia\HasMedia;
 use Spatie\MediaLibrary\HasMedia\HasMediaTrait;
-use App\_Traits\MediaHelpers;
+use App\_Traits\Helpers;
 
 class GameMultipleChoice extends Model implements HasMedia
 {
-    use HasMediaTrait, MediaHelpers;
+    use HasMediaTrait, Helpers;
 
     public function challenge()
     {
@@ -61,5 +61,19 @@ class GameMultipleChoice extends Model implements HasMedia
             // set foreign polymorphic data relational to this instance to NULL
             event(new UnlinkPoly($game->challenge, 'game_type', 'game_id'));
         }); 
+    }
+
+    public function attach_options($options)
+    {
+        if($options){
+            foreach($options as $option){
+                $this->options()->create([
+                    'sort_order' => $option['sort_order'],
+                    'text' => $option['text']
+                ]);
+            }
+            return true;
+        }
+        return false;
     }
 }

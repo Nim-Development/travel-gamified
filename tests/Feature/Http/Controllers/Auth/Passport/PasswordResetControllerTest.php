@@ -150,14 +150,14 @@ trait Post
         $res->assertStatus(200);
 
         // assert that can NOT login with old password
-        $res1 = $this->json("POST", "api/user/login", [
+        $res1 = $this->json("POST", "api/auth/login", [
             'email' => $email,
             'password' => $password
         ]);
         $res1->assertStatus(401);
 
         // assert that CAN login with new password
-        $res2 = $this->json("POST", "api/user/login", [
+        $res2 = $this->json("POST", "api/auth/login", [
             'email' => $email,
             'password' => $password_new
         ]);

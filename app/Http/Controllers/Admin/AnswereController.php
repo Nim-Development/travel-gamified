@@ -11,6 +11,7 @@ use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use App\Http\Resources\AnswereChecked as AnswereCheckedResource;
 use App\Http\Resources\AnswereUnchecked as AnswereUncheckedResource;
+use App\Http\Requests\Answere as AnswereRequest;
 
 class AnswereController extends Controller
 {
@@ -79,81 +80,21 @@ class AnswereController extends Controller
     }
 
 
-    public function store(Request $request, $type)
+    public function store(AnswereRequest $request, $type)
     {
-        $request->validate([
-            'challenge_id' => 'required|integer',
-            'user_id' => 'required|integer',
-            'answere' => 'required|string',
-            'score' => 'integer|nullable'
-        ]);
-
-        // validate header file
-        if($request->submission){
-            // must be of type .jpg or .png
-            $res = $request->validate([
-                "submission.*"  => "required|image",
-            ]);
-        }
-
-        // check if relational data actually exists
-        if(!Challenge::find($request->challenge_id)){
-            // Error: can't create answere for non existent challenge!
-            return response()->json(['error' => 'Can not create answere for non existing Challenge'], 422);
-        }
-
-        // check if relational data actually exists
-        if(!User::find($request->user_id)){
-            // Error: can't create answere for non existent challenge!
-            return response()->json(['error' => 'Can not create answere for non existing User'], 422);
-        }
 
         // Preform the insertion
         switch ($type) {
             case 'checked':
-                $answere = AnswereChecked::create([
-                    'challenge_id' => $request->challenge_id,
-                    'user_id' => $request->user_id,
-                    'answere' => $request->answere,
-                    'score' => $request->score
-                ]);
+                $answere = AnswereChecked::create($request->validated());
+                $answere->attach_media([ 'submission' => $request->submission ]);
+                return (new AnswereCheckedResource($answere))->response()->setStatusCode(201);
                 break;
 
             case 'unchecked':
-                $answere = AnswereUnchecked::create([
-                    'challenge_id' => $request->challenge_id,
-                    'user_id' => $request->user_id,
-                    'answere' => $request->answere,
-                    'score' => null
-                ]);
-                break;
-            
-            default:
-                return response()->json(['error' => 'Answere of type: '.$type.' does not exist.'], 400);
-                break;
-        }
-
-        if($request->has('submission')){
-            // insert the media file.
-            \MediaHelper::model_insert(
-                $answere, // model
-                $request->submission, // media (single or array)
-                'submission' // collection name
-            );
-        }
-
-        // Preform the insertion
-        switch ($type) {
-            case 'checked':
-                return (new AnswereCheckedResource($answere))
-                    ->response()
-                    ->setStatusCode(201);
-                break;
-
-            case 'unchecked':
-                return (new AnswereUncheckedResource($answere))
-                    ->response()
-                    ->setStatusCode(201);
+                $answere = AnswereUnchecked::create($request->validated());
+                $answere->attach_media([ 'submission' => $request->submission ]);
+                return (new AnswereUncheckedResource($answere))->response()->setStatusCode(201);
                 break;
             
             default:
@@ -162,69 +103,20 @@ class AnswereController extends Controller
         }
     }
 
-    public function update(Request $request, $type, $id)
+    public function update(AnswereRequest $request, $type, $id)
     {
-        $request->validate([
-            'challenge_id' => 'integer',
-            'user_id' => 'integer',
-            'answere' => 'string',
-            'score' => 'nullable'
-        ]);
-
-        // validate submission file
-        if($request->submission){
-            // must be of type .jpg or .png
-            $res = $request->validate([
-                "submission.*"  => "required|image",
-            ]);
-        }
-
-        // check if relational data actually exists
-        if($request->challenge_id){
-            if(!Challenge::find($request->challenge_id)){
-                // Error: can't create answere for non existent challenge!
-                return response()->json(['error' => 'Can not create answere for non existing Challenge'], 422);
-            }
-        }
-
-        // check if relational data actually exists
-        if($request->user_id){
-            if(!User::find($request->user_id)){
-                // Error: can't create answere for non existent challenge!
-                return response()->json(['error' => 'Can not create answere for non existing User'], 422);
-            }
-        }
-
         switch ($type) {
             case 'checked':
                 $answere = AnswereChecked::findOrFail($id);
-                $answere->update($request->except(['submission']));
-
-                if($request->submission){
-                    // insert the media file.
-                    \MediaHelper::model_insert(
-                        $answere, // model
-                        $request->submission, // media (single or array)
-                        'submission' // collection name
-                    );
-                }
-
+                $answere->update($request->validated());
+                $answere->attach_media([ 'submission' => $request->submission ]);
                 return new AnswereCheckedResource($answere);
                 break;
 
             case 'unchecked':
                 $answere = AnswereUnchecked::findOrFail($id);
-                $answere->update($request->except(['submission']));
-
-                if($request->submission){
-                    // insert the media file.
-                    \MediaHelper::model_insert(
-                        $answere, // model
-                        $request->submission, // media (single or array)
-                        'submission' // collection name
-                    );
-                }
-
+                $answere->update($request->validated());
+                $answere->attach_media([ 'submission' => $request->submission ]);
                 return new AnswereUncheckedResource($answere);
                 break;                
 

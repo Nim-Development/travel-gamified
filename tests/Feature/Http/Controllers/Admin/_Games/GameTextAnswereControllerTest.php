@@ -84,7 +84,7 @@ trait Get
 
         foreach($games as $game){
             $this->file_factory($game, "header", ["chelsea", "liverpool"]); // add 2 header media files
-            $this->file_factory($game, "media", ["chelsea", "liverpool"]); // add 2 media_content media files    
+            $this->file_factory($game, "media", ["chelsea", "liverpool"]); // add 2 media media files    
         }
 
         // When
@@ -110,7 +110,7 @@ trait Get
                                 "thumb"
                             ]
                         ],
-                        "media_content" => [
+                        "media" => [
                             "*" => [
                                 "def",
                                 "md",
@@ -135,7 +135,7 @@ trait Get
 
         foreach($games as $game){
             $this->file_factory($game, "header", ["chelsea", "liverpool"]); // add 2 header media files
-            $this->file_factory($game, "media", ["chelsea", "liverpool"]); // add 2 media_content media files    
+            $this->file_factory($game, "media", ["chelsea", "liverpool"]); // add 2 media media files    
         }
 
         // When
@@ -161,7 +161,7 @@ trait Get
                                 "thumb"
                             ]
                         ],
-                        "media_content" => [
+                        "media" => [
                             "*" => [
                                 "def",
                                 "md",
@@ -223,7 +223,7 @@ trait Get
                             "thumb" => $game->getMedia("header")[1]->getUrl("thumb"),
                         ]
                     ],
-                    "media_content" => [
+                    "media" => [
                         [
                             "def" => $game->getMedia("media")[0]->getUrl(),
                             "md" => $game->getMedia("media")[0]->getUrl("md"),
@@ -265,7 +265,7 @@ trait Post
                 UploadedFile::fake()->image("liverpool.jpg"),
                 UploadedFile::fake()->image("chelsea.jpg"),
             ],
-            "media_content" => [
+            "media" => [
                 UploadedFile::fake()->image("barcelona.jpg"),
                 UploadedFile::fake()->image("juventus.jpg")
             ]
@@ -291,7 +291,7 @@ trait Post
                                 "thumb"
                             ]
                         ],
-                        "media_content" => [
+                        "media" => [
                             "*" => 
                             [
                                 "def",
@@ -313,7 +313,7 @@ trait Post
             \Storage::disk("test")->assertExists($stored_header_files_array);
         }
 
-        if($stored_header_files_array = $this->spread_media_urls($res->getData()->data->media_content)){
+        if($stored_header_files_array = $this->spread_media_urls($res->getData()->data->media)){
             \Storage::disk("test")->assertExists($stored_header_files_array);
         }
     }
@@ -333,7 +333,7 @@ trait Post
             "points_max" => 123456
         ];
         $files = [          
-            "media_content" => [
+            "media" => [
                 UploadedFile::fake()->image("barcelona.jpg"),
                 UploadedFile::fake()->image("juventus.jpg")
             ]
@@ -351,7 +351,7 @@ trait Post
                         "points_min",
                         "points_max" ,
                         "header",
-                        "media_content" => [
+                        "media" => [
                             "*" => 
                             [
                                 "def",
@@ -371,7 +371,7 @@ trait Post
             \Storage::disk("test")->assertExists($stored_header_files_array);
         }
         // assert if the files are uploaded to storage
-        if($stored_header_files_array = $this->spread_media_urls($res->getData()->data->media_content)){
+        if($stored_header_files_array = $this->spread_media_urls($res->getData()->data->media)){
             \Storage::disk("test")->assertExists($stored_header_files_array);
         }
     }
@@ -394,7 +394,7 @@ trait Post
                 UploadedFile::fake()->image("liverpool.jpg"),
                 UploadedFile::fake()->image("chelsea.jpg"),
             ],
-            "media_content" => [
+            "media" => [
                 UploadedFile::fake()->image("barcelona.jpg"),
                 UploadedFile::fake()->image("juventus.jpg")
             ]
@@ -420,7 +420,7 @@ trait Post
                                 "thumb"
                             ]
                         ],
-                        "media_content",
+                        "media",
                         "created_at"
                 ]
             ]);
@@ -434,7 +434,7 @@ trait Post
             \Storage::disk("test")->assertExists($stored_header_files_array);
         }
 
-        if($stored_header_files_array = $this->spread_media_urls($res->getData()->data->media_content)){
+        if($stored_header_files_array = $this->spread_media_urls($res->getData()->data->media)){
             \Storage::disk("test")->assertExists($stored_header_files_array);
         }
     }
@@ -466,7 +466,7 @@ trait Post
                         "points_min" => $body["points_min"],
                         "points_max" => $body["points_max"],
                         "header" => null,
-                        "media_content" => null,
+                        "media" => null,
                         "created_at" => $res->getData()->data->created_at
                 ]
             ]);
@@ -530,7 +530,7 @@ trait Post
                 UploadedFile::fake()->image("liverpool.csv"),
                 UploadedFile::fake()->image("chelsea.csv"),
             ],
-            "media_content" => [
+            "media" => [
                 UploadedFile::fake()->image("barcelona.csv"),
                 UploadedFile::fake()->image("juventus.csv")
             ]
@@ -628,7 +628,7 @@ trait Put
         $this->file_factory($old_game, "media", ["media1", "media2"]);
         
         $files = [
-            "media_content" => [
+            "media" => [
                 UploadedFile::fake()->image("media3.jpg"),
                 UploadedFile::fake()->image("media4.jpg"),
             ]
@@ -640,10 +640,10 @@ trait Put
 
         // Then
         $res->assertStatus(200)
-                    ->assertJsonCount(4, "data.media_content"); // assert that 2 images have been added to header
+                    ->assertJsonCount(4, "data.media"); // assert that 2 images have been added to header
                     
         // Check if db file media data urls actually exist as files in storage
-        if($stored_header_files_array = $this->spread_media_urls($res->getData()->data->media_content)){
+        if($stored_header_files_array = $this->spread_media_urls($res->getData()->data->media)){
             \Storage::disk("test")->assertExists($stored_header_files_array);
         }
     }

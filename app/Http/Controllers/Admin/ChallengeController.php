@@ -18,6 +18,7 @@ use App\Http\Controllers\Controller;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Validator;
 use App\Http\Resources\Challenge as ChallengeResource;
+use App\Http\Requests\Challenge as ChallengeRequest;
 
 class ChallengeController extends Controller
 {
@@ -101,35 +102,22 @@ class ChallengeController extends Controller
     /**
      * POST
      */
-    public function store(Request $request)
+    public function store(ChallengeRequest $request)
     {
-        $request->validate([
-            'sort_order' => 'integer',
-            'playfield_type' => 'required|string',
-            'playfield_id' => 'required|integer',
-            'game_type' => 'required|string',
-            'game_id' => 'required|integer'
-        ]);
 
         // Check if playfield_type / playfield_id exist in database
         $playfield = \Playfields::find_morph_or_fail($request->playfield_type, $request->playfield_id);
-            if(is_array($playfield)){
-                return response()->json($playfield['message'], $playfield['status']);
-            }
+        if(is_array($playfield)){
+            return response()->json($playfield['message'], $playfield['status']);
+        }
 
         $game = \Games::find_morph_or_fail($request->game_type, $request->game_id);
-            if(is_array($game)){
-                return response()->json($game['message'], $game['status']);
-            }
+        if(is_array($game)){
+            return response()->json($game['message'], $game['status']);
+        }
 
         // Preform creation
-        $challenge = Challenge::create([
-            'sort_order' => $request->sort_order,
-            'playfield_type' => $request->playfield_type,
-            'playfield_id' => $request->playfield_id,
-            'game_type' => $request->game_type,
-            'game_id' => $request->game_id
-        ]);
+        $challenge = Challenge::create($request->validated());
 
         // Return as resource
         return (new ChallengeResource($challenge))
@@ -138,16 +126,8 @@ class ChallengeController extends Controller
         
     }
 
-    public function update(Request $request, $id)
+    public function update(ChallengeRequest $request, $id)
     {
-        // Nothing required, just data types
-        $request->validate([
-            'playfield_type' => 'string',
-            'playfield_id' => 'integer',
-            'game_type' => 'string',
-            'game_id' => 'integer'
-        ]);
-
         // check if given relational playfield actually exists in database
         if($request->has('playfield_type') && $request->has('playfield_id')){
             $playfield = \Playfields::find_morph_or_fail($request->playfield_type, $request->playfield_id);
@@ -167,7 +147,7 @@ class ChallengeController extends Controller
         $challenge = Challenge::findOrFail($id);
 
         // perform update ( ::nk handle exception )
-        $challenge->update( $request->all() );
+        $challenge->update($request->validated());
 
         // Return as resource
         return (new ChallengeResource($challenge))

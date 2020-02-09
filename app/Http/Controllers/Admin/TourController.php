@@ -7,6 +7,7 @@ use App\Http\Resources\Tour as TourResource;
 
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
+use App\Http\Requests\Tour as TourRequest;
 
 class TourController extends Controller
 {
@@ -39,41 +40,20 @@ class TourController extends Controller
         return TourResource::collection($all);
     }
 
-    public function store(Request $request)
+    public function store(TourRequest $request)
     {
-        $request->validate([
-            'name' => 'required|string',
-            'duration' => 'required|numeric'
-        ]);
-        
-        // create the tour
-        $tour = Tour::create([
-            'name' => $request->name,
-            'duration' => $request->duration
-        ]);
-
-        // return Resource
-        return (new TourResource($tour))
-                                ->response()
-                                ->setStatusCode(201);
+        $tour = Tour::create($request->validated());
+        return (new TourResource($tour))->response()->setStatusCode(201);
 
     }
     
-    public function update(Request $request, $id)
+    public function update(TourRequest $request, $id)
     {
-        $request->validate([
-            'name' => 'string',
-            'duration' => 'numeric'
-        ]);
-        
         $tour = Tour::findOrFail($id);
-
-        $tour->update($request->all());
+        $tour->update($request->validated());
 
         // return Resource
-        return (new TourResource($tour))
-                                ->response()
-                                ->setStatusCode(200);
+        return (new TourResource($tour))->response()->setStatusCode(200);
     }
 
     public function destroy($id)

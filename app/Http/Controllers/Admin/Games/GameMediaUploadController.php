@@ -7,6 +7,7 @@ use App\GameMediaUpload;
 use App\Http\Controllers\Controller;
 use App\Http\Resources\GameMediaUpload as GameMediaUploadResource;
 use App\Http\Requests\GameMediaUploadUpdate;
+use App\Http\Requests\GameMediaUpload as GameMediaUploadRequest;
 
 class GameMediaUploadController extends Controller
 {
@@ -14,11 +15,9 @@ class GameMediaUploadController extends Controller
     public function all()
     {
         $all = GameMediaUpload::all();
-
         if($all->isEmpty()){
             return response()->json(['message' => 'No entries found in database'], 204);
         }
-
         return GameMediaUploadResource::collection($all);
     }
 
@@ -30,7 +29,6 @@ class GameMediaUploadController extends Controller
     public function paginate($qty)
     {
         $all = GameMediaUpload::paginate($qty);
-
         if($all->isEmpty()){
             return response()->json(['message' => 'No entries found in database'], 204);
         }
@@ -38,127 +36,39 @@ class GameMediaUploadController extends Controller
         return GameMediaUploadResource::collection($all);
     }
 
-    public function store(Request $request)
+    public function store(GameMediaUploadRequest $request)
     {
-        $request->validate([
-            'title' => 'required|string',
-            'content_text' => 'required|string',
-            'correct_answere' => 'required|string',
-            'media_type' => 'required|string',
-            'points_min' => 'required|integer',
-            'points_max' => 'required|integer'
+
+        $game = GameMediaUpload::create($request->validated());
+        // only attaches if media exists, else it just skips.
+        $game->attach_media([ 
+            'header' => $request->header,
+            'media' => $request->media
         ]);
 
-        // validate header file
-        if($request->header){
-            // must be of type .jpg or .png
-            $res = $request->validate([
-                "header.*"  => "required|image",
-            ]);
-        }
-
-        // validate header file
-        if($request->media){
-            // must be of type .jpg or .png
-            $request->validate([
-                "media_content.*"  => "required|image",
-            ]);
-        }
-
-        // CREATE GAME
-        $game = GameMediaUpload::create([
-            'title' => $request->title,
-            'content_text' => $request->content_text,
-            'correct_answere' => $request->correct_answere,
-            'media_type' => $request->media_type,
-            'points_min' => $request->points_min,
-            'points_max' => $request->points_max
-        ]);
-        
-        \MediaHelper::model_insert(
-            $game, // model
-            $request->header, // media (single or array)
-            'header' // collection name
-        );
-
-        \MediaHelper::model_insert(
-            $game,
-            $request->media_content,
-            'media'
-        );
-
-        return (new GameMediaUploadResource($game))
-                                        ->response()
-                                        ->setStatusCode(201);
-        
+        return (new GameMediaUploadResource($game))->response()->setStatusCode(201);
     }
 
 
-    public function update(Request $request, $id)
+    public function update(GameMediaUploadRequest $request, $id)
     {
-        // Nothing required, just data types
-        $request->validate([
-            'title' => 'string',
-            'content_text' => 'string',
-            'correct_answere' => 'string',
-            'media_type' => 'string',
-            'points_min' => 'numeric',
-            'points_max' => 'numeric'
-        ]);
 
-        // find or fail with 422
         $game = GameMediaUpload::findOrFail($id);
+        $game->update($request->validated());
 
-        // perform update ( ::nk handle exception )
-        $game->update($request->except(['header', 'media_content']));
-
-        if($request->header){    
-            \MediaHelper::model_insert(
-                $game, // model
-                $request->header, // media (single or array)
-                'header' // collection name
-            );
-        }
-
-        if($request->media_content){
-            \MediaHelper::model_insert(
-                $game,
-                $request->media_content,
-                'media'
-            );
-        }
+        // only attaches if media exists, else it just skips.
+        $game->attach_media([ 
+            'header' => $request->header,
+            'media' => $request->media 
+        ]);
 
         // Return as resource
-        return (new GameMediaUploadResource($game))
-            ->response()
-            ->setStatusCode(200);
+        return (new GameMediaUploadResource($game))->response()->setStatusCode(200);
     }
-
-    // // Could be refactored like this:
-    // public function update(GameMediaUploadUpdate $request, GameMediaUpload $game)
-    // {
-
-    //     $game->update($request->except(['header', 'media_content']));
-
-    //::nk REFACTOR LIKE THIS!
-    /**
-     * Make attach media a standard function / trait than can be shared by all models
-     */
-    //     $game->attach_media([
-    //         $request->header => 'header',
-    //         $request->media_content => 'media'
-    //     ]);
-        
-    //     // Return as resource
-    //     return (new GameMediaUploadResource($game))
-    //         ->response()
-    //         ->setStatusCode(200);
-    // }
 
     public function destroy($id)
     {
         $game = GameMediaUpload::findOrFail($id);
-
         try {
             // forceDelete makes sure the media will be deleted to.
             $game->forceDelete();

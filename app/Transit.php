@@ -4,10 +4,12 @@ namespace App;
 
 use App\Events\UnlinkPoly;
 use Illuminate\Database\Eloquent\Model;
+use App\_Traits\Helpers;
 
 class Transit extends Model
 {
-
+    use Helpers;
+    
     public function routes()
     {
         return $this->hasMany('App\Route');

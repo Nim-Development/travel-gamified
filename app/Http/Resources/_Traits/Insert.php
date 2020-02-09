@@ -128,6 +128,29 @@ trait Insert {
         return $options_array;
     }
 
+    public function insert_itineraries($itineraries)
+    {
+
+        // return null if options collection is empty.
+        if(count($itineraries) == 0){ return null; } 
+
+        // function to loop trough options relation and return it as 2d array for insert.
+        $itineraries_array = [];
+        foreach ($itineraries as $itinerary) {
+            array_push($itineraries_array,
+                [
+                    'id' => $itinerary->id,
+                    'step' => (int)$itinerary->step,
+                    'duration' => (double)$itinerary->duration,
+                    'playfield_type' => $itinerary->playfield_type,
+                    'playfield_id' => $itinerary->playfield_id,
+                    'created_at' => (string)$itinerary->created_at
+                ]
+            );
+        }
+        return $itineraries_array;
+    }
+
     public function insert_users_into_team($users)
     {
         if(count($users) == 0){ return null; } 

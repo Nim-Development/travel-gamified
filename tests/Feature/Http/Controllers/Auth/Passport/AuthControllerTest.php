@@ -19,7 +19,7 @@ class AuthControllerTest extends TestCase
     use Put;
     use Delete;
 
-    protected $api_base = "/api/user";
+    protected $api_base = "/api/auth";
 
     /**
      * @test

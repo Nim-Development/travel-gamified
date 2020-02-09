@@ -9,6 +9,7 @@ use App\Trip;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use App\Http\Resources\Trip as TripResource;
+use App\Http\Requests\Trip as TripRequest;
 
 class TripController extends Controller
 {
@@ -41,107 +42,26 @@ class TripController extends Controller
         return TripResource::collection($all);
     }
 
-    public function store(Request $request)
+    public function store(TripRequest $request)
     {
-        $request->validate([
-            'tour_id' => 'required|integer',
-            'name' => 'required|string',
-            'timezone' => 'required|string',
-            'start_date_time' => 'required|date',
-            'teams.*' => 'numeric'
-        ]);
-
-        // check if relational data actually exists
-        if($request->tour_id){
-            if(!Tour::find($request->tour_id)){
-                // Error: can't create answere for non existent challenge!
-                return response()->json(['error' => 'Can not add Trip to non existing Tour (id: '.$request->tour_id.')'], 422);
-            }
-        }
-
-        // LOOP!
-        // check if relational teams actually exists first!
-        if($request->teams){
-            foreach ($request->teams as $team_id) {
-                if(!Team::find($team_id)){
-                    // Error: can't create answere for non existent challenge!
-                    return response()->json(['error' => 'Can not add non existing Team relationship (id: '.$user_id.') to Trip.'], 422);
-                }
-            }
-        }
         
         // create the 
-        $trip = Trip::create([
-            'tour_id' => $request->tour_id, 
-            'name' => $request->name, 
-            'timezone' => $request->timezone, 
-            'start_date_time' => $request->start_date_time
-        ]);
-
-        // LOOP OVER TEAMS AND ADJUST THEIR TRIP_ID
-        if($request->teams){
-            foreach ($request->teams as $team_id) {
-                // save relational team to the trip
-                $trip->teams()->save(
-                    Team::find($team_id)
-                );
-            }
-        }
+        $trip = Trip::create($request->validated());
+        $trip->attach_teams($request->teams);
 
         // return Resource
-        return (new TripResource($trip))
-                                ->response()
-                                ->setStatusCode(201);
+        return (new TripResource($trip))->response()->setStatusCode(201);
     }
 
-    public function update(Request $request, $id)
-    {
-        $request->validate([
-            'tour_id' => 'integer',
-            'name' => 'string',
-            'timezone' => 'string',
-            'start_date_time' => 'date',
-            'teams.*' => 'numeric'
-        ]);
-
-        // check if relational data actually exists
-        if($request->tour_id){
-            if(!Tour::find($request->tour_id)){
-                // Error: can't create answere for non existent challenge!
-                return response()->json(['error' => 'Can not add Trip to non existing Tour (id: '.$request->tour_id.')'], 422);
-            }
-        }
-
-        // LOOP!
-        // check if relational teams actually exists first!
-        if($request->teams){
-            foreach ($request->teams as $team_id) {
-                if(!Team::find($team_id)){
-                    // Error: can't create answere for non existent challenge!
-                    return response()->json(['error' => 'Can not add non existing Team relationship (id: '.$team_id.') to Trip.'], 422);
-                }
-            }
-        }
-        
+    public function update(TripRequest $request, $id)
+    {   
         // create the 
         $trip = Trip::findOrFail($id);
-
-        $trip->update($request->except(['teams']));
-
-        // LOOP OVER TEAMS AND ADJUST THEIR TRIP_ID
-        if($request->teams){
-            foreach ($request->teams as $team_id) {
-                // save relational team to the trip
-                $trip->teams()->save(
-                    Team::find($team_id)
-                );
-            }
-        }
+        $trip->update($request->validated());
+        $trip->attach_teams($request->teams);
 
         // return Resource
-        return (new TripResource($trip))
-                                ->response()
-                                ->setStatusCode(200);
+        return (new TripResource($trip))->response()->setStatusCode(200);
     }
 
     public function destroy($id)

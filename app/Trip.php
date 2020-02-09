@@ -4,9 +4,12 @@ namespace App;
 
 use App\Events\UnlinkRelations;
 use Illuminate\Database\Eloquent\Model;
+use App\_Traits\Helpers;
 
 class Trip extends Model
 {
+    use Helpers;
+
     public function tour()
     {
         return $this->belongsTo('App\Tour', 'tour_id', 'id');

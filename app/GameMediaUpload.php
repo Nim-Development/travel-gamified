@@ -7,11 +7,11 @@ use Spatie\MediaLibrary\Models\Media;
 use Illuminate\Database\Eloquent\Model;
 use Spatie\MediaLibrary\HasMedia\HasMedia;
 use Spatie\MediaLibrary\HasMedia\HasMediaTrait;
-use App\_Traits\MediaHelpers;
+use App\_Traits\Helpers;
 
 class GameMediaUpload extends Model implements HasMedia
 {
-    use HasMediaTrait, MediaHelpers;
+    use HasMediaTrait, Helpers;
 
     public function challenge()
     {

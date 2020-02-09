@@ -6,6 +6,8 @@ use Illuminate\Http\Resources\Json\JsonResource;
 
 class Tour extends JsonResource
 {
+    use \App\Http\Resources\_Traits\Insert;
+
     /**
      * Transform the resource into an array.
      *
@@ -14,10 +16,13 @@ class Tour extends JsonResource
      */
     public function toArray($request)
     {
+        $itineraries = $this->itineraries;
+
         return [
             'id' => $this->id,
             'name' => $this->name,
             'duration' => (double)$this->duration,
+            'itineraries' => (!$itineraries) ? null : $this->insert_itineraries($itineraries),
             'created_at' => (string)$this->created_at,
         ];
     }

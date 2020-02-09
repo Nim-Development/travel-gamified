@@ -29,7 +29,7 @@ class GameMultipleChoice extends JsonResource
             'points_max' => (integer)$this->points_max,
             'options' => (!$options) ? null : $this->insert_options($this->options),
             'header' => $this->insert_media_conversions($this->getMedia('header')),
-            'media_content' => $this->insert_media_conversions($this->getMedia('media')),
+            'media' => $this->insert_media_conversions($this->getMedia('media')),
             'created_at' => (string)$this->created_at
         ];
     }

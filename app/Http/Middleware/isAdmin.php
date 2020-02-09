@@ -19,6 +19,7 @@ class isAdmin
         if(Auth::guard('api')->user()->isAdmin()){
             return $next($request);
         }
+
         return response()->json(['error'=>'Unauthorised'], 401);
     }
 }

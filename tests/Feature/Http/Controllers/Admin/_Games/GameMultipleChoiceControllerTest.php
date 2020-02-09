@@ -129,7 +129,7 @@ $this->create_user('admin');
                     "points_max" => $game->points_max,
                     "options" => null,
                     "header" => null,
-                    "media_content" => null,
+                    "media" => null,
                     "created_at" => (string)$game->created_at
                 ]
             ]);
@@ -150,7 +150,7 @@ $this->create_user('admin');
 
         foreach($games as $game){
             $this->file_factory($game, "header", ["chelsea", "liverpool"]); // add 2 header media files
-            $this->file_factory($game, "media", ["chelsea", "liverpool"]); // add 2 media_content media files    
+            $this->file_factory($game, "media", ["chelsea", "liverpool"]); // add 2 media media files    
         }
         // When
         $result = $this->json("GET", "/$this->api_base");
@@ -183,7 +183,7 @@ $this->create_user('admin');
                                 "thumb"
                             ]
                         ],
-                        "media_content" => [
+                        "media" => [
                             "*" => [
                                 "def",
                                 "md",
@@ -211,7 +211,7 @@ $this->create_user('admin');
 
         foreach($games as $game){
             $this->file_factory($game, "header", ["chelsea", "liverpool"]); // add 2 header media files
-            $this->file_factory($game, "media", ["chelsea", "liverpool"]); // add 2 media_content media files    
+            $this->file_factory($game, "media", ["chelsea", "liverpool"]); // add 2 media media files    
         }
 
         // When
@@ -245,7 +245,7 @@ $this->create_user('admin');
                                 "thumb"
                             ]
                         ],
-                        "media_content" => [
+                        "media" => [
                             "*" => [
                                 "def",
                                 "md",
@@ -313,7 +313,7 @@ $this->create_user('admin');
                             "thumb"
                         ]
                     ],
-                    "media_content" => [
+                    "media" => [
                         "*" => 
                         [
                             "def",
@@ -443,7 +443,7 @@ trait Post
                 UploadedFile::fake()->image("liverpool.jpg"),
                 UploadedFile::fake()->image("chelsea.jpg"),
             ],
-            "media_content" => [
+            "media" => [
                 UploadedFile::fake()->image("barcelona.jpg"),
                 UploadedFile::fake()->image("juventus.jpg")
             ]
@@ -477,7 +477,7 @@ trait Post
                                 "thumb"
                             ]
                         ],
-                        "media_content" => [
+                        "media" => [
                             "*" => 
                             [
                                 "def",
@@ -504,7 +504,7 @@ trait Post
             \Storage::disk("test")->assertExists($stored_header_files_array);
         }
 
-        if($stored_header_files_array = $this->spread_media_urls($res->getData()->data->media_content)){
+        if($stored_header_files_array = $this->spread_media_urls($res->getData()->data->media)){
             \Storage::disk("test")->assertExists($stored_header_files_array);
         }
     }
@@ -540,7 +540,7 @@ trait Post
             ]
         ];
         $files = [          
-            "media_content" => [
+            "media" => [
                 UploadedFile::fake()->image("barcelona.jpg"),
                 UploadedFile::fake()->image("juventus.jpg")
             ]
@@ -566,7 +566,7 @@ trait Post
                             ]
                         ],
                         "header",
-                        "media_content" => [
+                        "media" => [
                             "*" => 
                             [
                                 "def",
@@ -591,7 +591,7 @@ trait Post
             \Storage::disk("test")->assertExists($stored_header_files_array);
         }
         // assert if the files are uploaded to storage
-        if($stored_header_files_array = $this->spread_media_urls($res->getData()->data->media_content)){
+        if($stored_header_files_array = $this->spread_media_urls($res->getData()->data->media)){
             \Storage::disk("test")->assertExists($stored_header_files_array);
         }
     }
@@ -660,7 +660,7 @@ trait Post
                                 "thumb"
                             ]
                         ],
-                        "media_content",
+                        "media",
                         "created_at"
                 ]
             ]);
@@ -679,7 +679,7 @@ trait Post
             \Storage::disk("test")->assertExists($stored_header_files_array);
         }
 
-        if($stored_header_files_array = $this->spread_media_urls($res->getData()->data->media_content)){
+        if($stored_header_files_array = $this->spread_media_urls($res->getData()->data->media)){
             \Storage::disk("test")->assertExists($stored_header_files_array);
         }
     }
@@ -735,7 +735,7 @@ trait Post
                         ]
                     ],
                     "header", //null
-                    "media_content", //null
+                    "media", //null
                     "created_at"
                 ]
             ]);
@@ -781,7 +781,7 @@ trait Post
                         "points_max" => $body["points_max"],
                         "options" => null,
                         "header" => null,
-                        "media_content" => null,
+                        "media" => null,
                         "created_at" => $res->getData()->data->created_at
                 ]
             ]);
@@ -875,7 +875,9 @@ trait Post
      */
     public function will_fail_with_a_422_if_request_files_failed_validation_because_wrong_file_type()
     {
-     $this->create_user('admin');
+        
+        $this->create_user('admin');
+        
         $body = [
             "title" => "fdhshuifhs fsdhui",
             "content_text" => "dsj a uhdfg hfiughgifud hugfaidhiuagf ga",
@@ -904,7 +906,7 @@ trait Post
                 UploadedFile::fake()->image("liverpool.csv"),
                 UploadedFile::fake()->image("chelsea.csv"),
             ],
-            "media_content" => [
+            "media" => [
                 UploadedFile::fake()->image("barcelona.csv"),
                 UploadedFile::fake()->image("juventus.csv")
             ]
@@ -1005,7 +1007,7 @@ trait Put
         $this->file_factory($old_game, "media", ["media1", "media2"]);
         
         $files = [
-            "media_content" => [
+            "media" => [
                 UploadedFile::fake()->image("media3.jpg"),
                 UploadedFile::fake()->image("media4.jpg"),
             ]
@@ -1017,10 +1019,10 @@ trait Put
 
         // Then
         $res->assertStatus(200)
-                    ->assertJsonCount(4, "data.media_content"); // assert that 2 images have been added to header
+                    ->assertJsonCount(4, "data.media"); // assert that 2 images have been added to header
                     
         // Check if db file media data urls actually exist as files in storage
-        if($stored_header_files_array = $this->spread_media_urls($res->getData()->data->media_content)){
+        if($stored_header_files_array = $this->spread_media_urls($res->getData()->data->media)){
             \Storage::disk("test")->assertExists($stored_header_files_array);
         }
     }
@@ -1169,7 +1171,6 @@ trait Put
         // create 3 options and link them to $game
         $this->create_collection("GameMultipleChoiceOption", ["game_id" => $old_game->id], false, 2);
         
-
         // "sort_order" is missing
         $options = [
             "options" => [

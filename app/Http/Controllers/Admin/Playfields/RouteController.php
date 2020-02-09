@@ -8,6 +8,7 @@ use App\Transit;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use App\Http\Resources\Route as RouteResource;
+use App\Http\Requests\Route as RouteRequest;
 
 class RouteController extends Controller
 {
@@ -40,35 +41,10 @@ class RouteController extends Controller
     }
 
 
-    public function store(Request $request)
+    public function store(RouteRequest $request)
     {
-        $request->validate([
-            'transit_id' => 'required|numeric',
-            'name' => 'required|string',
-            'maps_url' => 'required|string',
-            'kilometers' => 'required|numeric',
-            'hours' => 'required|numeric',
-            'difficulty' => 'required|numeric',
-            'nature' => 'required|numeric',
-            'highway' => 'required|numeric'
-        ]);
-
-        // Check if relational transit_id actually exists in database
-        if(!Transit::find($request->transit_id)){
-            return response()->json(['error' => 'Can not add a non existing Transit (id: '.$request->transit_id.') as relationship to Route.'] ,422);
-        }
-
         //Create City
-        $route = Route::create([
-            'transit_id' => $request->transit_id,
-            'name' => $request->name,
-            'maps_url' => $request->maps_url,
-            'kilometers' => $request->kilometers,
-            'hours' => $request->hours,
-            'difficulty' => $request->difficulty,
-            'nature' => $request->nature,
-            'highway' => $request->highway
-        ]);
+        $route = Route::create($request->validated());
 
         // Return resource
         return (new RouteResource($route))
@@ -76,32 +52,12 @@ class RouteController extends Controller
                                 ->setStatusCode(201);
     }
     
-    public function update(Request $request, $id)
+    public function update(RouteRequest $request, $id)
     {
-        // Nothing required, just data types
-        $request->validate([
-            'transit_id' => 'numeric',
-            'name' => 'string',
-            'maps_url' => 'string',
-            'kilometers' => 'numeric',
-            'hours' => 'numeric',
-            'difficulty' => 'numeric',
-            'nature' => 'numeric',
-            'highway' => 'integer'
-        ]);
-        
         // find or fail with 422
         $route = Route::findOrFail($id);
-
-        // Check if relational transit_id actually exists in database
-        if($request->transit_id){
-            if(!Transit::find($request->transit_id)){
-                return response()->json(['error' => 'Can not add a non existing Transit (id: '.$request->transit_id.') as relationship to Route.'] ,422);
-            }
-        }
-
         // perform update ( ::nk handle exception )
-        $route->update($request->all());
+        $route->update($request->validated());
 
         // Return as resource
         return (new RouteResource($route))
