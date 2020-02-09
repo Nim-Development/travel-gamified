@@ -11,12 +11,18 @@
 |
 */
 
-// Route::get('/', function () {
-// //
-// });
-
-Route::get('/test', function(){
-
-   dd(strtoupper(\Str::random(6)));
-
+Route::get('/', function () {
+   return redirect(route('sales'));
 });
+
+Route::get('/sales', function(){
+
+   return view('admin.cockpit.sales');
+
+})->name('sales');
+
+Route::get('/tours', function(){
+
+   return view('admin.game-development.tours');
+
+})->name('tours');
