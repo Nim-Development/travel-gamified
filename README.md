@@ -1,3 +1,1 @@
-Laravel backend which will evantually fascillitate an travel App.
-
-Status: early stages.
+Headless test driven laravel backend, for travel app.
