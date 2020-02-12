@@ -9,6 +9,8 @@ use App\_Traits\Helpers;
 class Transit extends Model
 {
     use Helpers;
+
+    protected $fillable = ['name', 'from_city_id', 'to_city_id', 'duration'];
     
     public function routes()
     {
@@ -36,8 +38,6 @@ class Transit extends Model
     {
         return $this->hasOne('App\City', 'id', 'to_city_id');
     }
-
-    protected $fillable = ['name', 'from_city_id', 'to_city_id'];
 
     // clean up relationships at deletion of this model. 
     public static function boot() {         

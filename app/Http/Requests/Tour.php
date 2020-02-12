@@ -40,8 +40,7 @@ class Tour extends FormRequest
     {
         if($this->is($this->api_base)){
             return [
-                'name' => 'required|string',
-                'duration' => 'required|numeric'
+                'name' => 'required|string'
             ];
         }
     }
@@ -53,8 +52,7 @@ class Tour extends FormRequest
     {
         if($this->is("$this->api_base/*")){
             return [
-                'name' => 'string',
-                'duration' => 'numeric'
+                'name' => 'string'
             ];
         }
     }

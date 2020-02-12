@@ -32,7 +32,7 @@ $factory->define(Itinerary::class, function (Faker $faker) {
     return [
         'tour_id' => NULL,
         'step' => 1,
-        'duration' => $faker->randomFloat($nbMaxDecimals = 2, $min = 24, $max = 72),
+        'duration' => $faker->numberBetween($nbMaxDecimals = 2, $min = 10000, $max = 43200),
         'playfield_type' => 'city',
         'playfield_id' => NULL
     ];

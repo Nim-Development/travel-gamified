@@ -45,7 +45,7 @@ class Route extends FormRequest
                 'name' => 'required|string',
                 'maps_url' => 'required|string',
                 'kilometers' => 'required|numeric',
-                'hours' => 'required|numeric',
+                'duration' => 'required|numeric',
                 'difficulty' => 'required|numeric',
                 'nature' => 'required|numeric',
                 'highway' => 'required|numeric'
@@ -64,7 +64,7 @@ class Route extends FormRequest
                 'name' => 'string',
                 'maps_url' => 'string',
                 'kilometers' => 'numeric',
-                'hours' => 'numeric',
+                'duration' => 'numeric',
                 'difficulty' => 'numeric',
                 'nature' => 'numeric',
                 'highway' => 'integer'

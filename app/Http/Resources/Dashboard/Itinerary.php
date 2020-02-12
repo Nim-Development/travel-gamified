@@ -24,7 +24,7 @@ class Itinerary extends JsonResource
             'title' => (!$this->playfield) ? null : $this->playfield->name, // used in ReactJS: <SortableTree />
             'id' => $this->id,
             'step' => (integer)$this->step,
-            'duration' => (double)$this->duration,
+            'duration' => (integer)$this->duration,
             'playfield' => (!$playfield) ? null : $this->insert_playfield($this->playfield_type, $playfield),
             'created_at' => (string)$this->created_at,
         ];

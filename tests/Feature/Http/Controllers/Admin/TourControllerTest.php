@@ -91,7 +91,6 @@ trait Get
                      "data" => [
                         "id" => $tour->id,
                         "name" => $tour->name,
-                        "duration" => $tour->duration,
                         "itineraries" => null,
                         "created_at" => (string)$tour->created_at
                      ]
@@ -116,7 +115,6 @@ trait Get
                         "*" => [
                             "id", 
                             "name", 
-                            "duration", 
                             "itineraries",
                             "created_at"
                         ]
@@ -140,7 +138,6 @@ trait Get
                         "*" => [
                             "id", 
                             "name", 
-                            "duration",
                             "itineraries",
                             "created_at"
                         ]
@@ -179,7 +176,6 @@ trait Get
                      "data" => [
                         "id" => $tour->id,
                         "name" => $tour->name,
-                        "duration" => $tour->duration,
                         'itineraries' => [
                             [
                                 'id' => $it_1->id,
@@ -229,7 +225,6 @@ trait Get
                         "*" => [
                             "id", 
                             "name", 
-                            "duration", 
                             'itineraries',
                             "created_at"
                         ]
@@ -253,7 +248,6 @@ trait Get
                         "*" => [
                             "id", 
                             "name", 
-                            "duration", 
                             'itineraries',
                             "created_at"
                         ]
@@ -281,7 +275,6 @@ trait Post
 
         $body = [
             "name" => "1234",
-            "duration" => 22.11
         ];
 
         $res = $this->json("POST", "/$this->api_base", $body);
@@ -292,7 +285,6 @@ trait Post
                 "data" => [
                     "id",
                     "name",
-                    "duration",
                     "itineraries",
                     "created_at"
                 ]
@@ -311,7 +303,6 @@ trait Post
         // "name" is of wrong type
         $body = [
             "name" => 111,
-            "duration" => 22.11
         ];
 
         $res = $this->json("POST", "/$this->api_base", $body);
@@ -331,7 +322,6 @@ trait Post
         $this->create_user('admin');
         // "name" is missing
         $body = [
-            "duration" => 22.11
         ];
 
         $res = $this->json("POST", "/$this->api_base", $body);
@@ -349,7 +339,6 @@ trait Put
 {
     // $body = [
     //     "name" => "1234",
-    //     "duration" => 22.11
     // ];
 
 
@@ -374,7 +363,6 @@ trait Put
 
         $old_values = [
             "name" => "1234",
-            "duration" => 22.11
         ];
 
         $old_tour = $this->create("Tour", $old_values);
@@ -382,7 +370,6 @@ trait Put
         // update every attribute
         $new_values = [
             "name" => "aaaaaaaa",
-            "duration" => 00.01
         ];
 
         // When
@@ -397,38 +384,38 @@ trait Put
             
     }
    
-    /**
-     * @test
-     */
-    public function can_update_tours_on_a_couple_of_model_attributes()
-    {
-        $this->create_user('admin');
-        $old_values = [
-            "name" => "1234"
-        ];
+    // /**
+    //  * @test
+    //  */
+    // public function can_update_tours_on_a_couple_of_model_attributes()
+    // {
+    //     $this->create_user('admin');
+    //     $old_values = [
+    //         "name" => "1234"
+    //     ];
 
-        $values_to_remain_after_update = [
-            "duration" => 22.11
-        ];
+    //     $values_to_remain_after_update = [
+    //         "duration" => 22.11
+    //     ];
 
-        $old_tour = $this->create("Tour", array_merge($old_values, $values_to_remain_after_update));
+    //     $old_tour = $this->create("Tour", array_merge($old_values, $values_to_remain_after_update));
 
-        // update every attribute
-        $new_values = [
-            "name" => "aaaaaaaa",
-        ];
+    //     // update every attribute
+    //     $new_values = [
+    //         "name" => "aaaaaaaa",
+    //     ];
 
-        // When
-        $response = $this->json("PUT","$this->api_base/".$old_tour->id, $new_values);
+    //     // When
+    //     $response = $this->json("PUT","$this->api_base/".$old_tour->id, $new_values);
 
-        // Then
-        $response->assertStatus(200)
-                    ->assertJsonFragment(array_merge($new_values, $values_to_remain_after_update));
+    //     // Then
+    //     $response->assertStatus(200)
+    //                 ->assertJsonFragment(array_merge($new_values, $values_to_remain_after_update));
                     
-        $this->assertDatabaseHas("tours", array_merge($new_values, $values_to_remain_after_update));
-        $this->assertDatabaseMissing("tours", $old_values);
+    //     $this->assertDatabaseHas("tours", array_merge($new_values, $values_to_remain_after_update));
+    //     $this->assertDatabaseMissing("tours", $old_values);
             
-    }
+    // }
 
     /**
      * @test
@@ -437,8 +424,7 @@ trait Put
     {
         $this->create_user('admin');
         $old_values = [
-            "name" => "1234",
-            "duration" => 22.11
+            "name" => "1234"
         ];
 
         $old_tour = $this->create("Tour", $old_values);

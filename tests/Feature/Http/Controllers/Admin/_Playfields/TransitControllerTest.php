@@ -99,6 +99,7 @@ trait Get
                     "data" => [
                         "id" => $transit->id,
                         "name" => $transit->name,
+                        "duration" => $transit->duration,
                         "from" => [
                             "id" => $from->id,
                             "type" => "city",
@@ -167,7 +168,7 @@ trait Get
             
         // When
         $response = $this->json("GET", "/$this->api_base/".$transit->id);
-            
+
         // Then
         // assert status code
         $response->assertStatus(200)
@@ -177,6 +178,7 @@ trait Get
                     "data" => [
                         "id" => $transit->id,
                         "name" => $transit->name,
+                        "duration" => $transit->duration,
                         "from" => [
                             "id" => $from->id,
                             "type" => "city",
@@ -195,9 +197,9 @@ trait Get
                             [
                                 "id" => (integer)$route_1->id,
                                 "name" => $route_1->name,
+                                "duration" => (integer)$route_1->duration,
                                 "maps_url" => $route_1->maps_url,
                                 "kilometers" => (double)$route_1->kilometers,
-                                "hours" => (double)$route_1->hours,
                                 "difficulty" => (integer)$route_1->difficulty,
                                 "nature" => (integer)$route_1->nature,
                                 "highway" => (integer)$route_1->highway,
@@ -206,9 +208,9 @@ trait Get
                             [
                                 "id" => (integer)$route_2->id,
                                 "name" => $route_2->name,
+                                "duration" => (integer)$route_2->duration,
                                 "maps_url" => $route_2->maps_url,
                                 "kilometers" => (double)$route_2->kilometers,
-                                "hours" => (double)$route_2->hours,
                                 "difficulty" => (integer)$route_2->difficulty,
                                 "nature" => (integer)$route_2->nature,
                                 "highway" => (integer)$route_2->highway,
@@ -278,6 +280,7 @@ trait Get
                         "*" => [
                             "id",
                             "name",
+                            "duration",
                             "from" => [
                                 "id",
                                 "type",
@@ -297,9 +300,9 @@ trait Get
                                     [
                                         "id",
                                         "name",
+                                        "duration",
                                         "maps_url",
                                         "kilometers",
-                                        "hours",
                                         "difficulty",
                                         "nature",
                                         "highway",
@@ -355,6 +358,7 @@ trait Get
                         "*" => [
                             "id",
                             "name",
+                            "duration",
                             "from" => [
                                 "id",
                                 "type",
@@ -374,9 +378,10 @@ trait Get
                                     [
                                         "id",
                                         "name",
+                                        "duration",
+                                        "duration",
                                         "maps_url",
                                         "kilometers",
-                                        "hours",
                                         "difficulty",
                                         "nature",
                                         "highway",
@@ -444,6 +449,7 @@ trait Post
                 "data" => [
                     "id",
                     "name",
+                    "duration",
                     "from" => [
                         "id",
                         "type",
@@ -464,7 +470,7 @@ trait Post
                             "name",
                             "maps_url",
                             "kilometers",
-                            "hours",
+                            "duration",
                             "difficulty",
                             "nature",
                             "highway",
@@ -502,6 +508,7 @@ trait Post
                 "data" => [
                     "id",
                     "name",
+                    "duration",
                     "from" => [
                         "id",
                         "type",

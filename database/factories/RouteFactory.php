@@ -37,7 +37,7 @@ $factory->define(Route::class, function (Faker $faker) {
         'name' => $faker->name,
         'maps_url' => $faker->url,
         'kilometers' => $faker->randomFloat($nbMaxDecimals = 2, $min = 1, $max = 300),
-        'hours' => $faker->randomFloat($nbMaxDecimals = 2, $min = 0, $max = 13),
+        'duration' => $faker->numberBetween($nbMaxDecimals = 2, $min = 10000, $max = 43200),
         'difficulty' => $faker->numberBetween($min = 0, $max = 100),
         'nature' => $faker->numberBetween($min = 0, $max = 100),
         'highway' => $faker->numberBetween($min = 0, $max = 100)

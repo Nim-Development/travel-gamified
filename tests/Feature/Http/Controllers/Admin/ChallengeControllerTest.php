@@ -417,7 +417,7 @@ trait Get
                                 'name',
                                 'maps_url',
                                 'kilometers',
-                                'hours',
+                                'duration',
                                 'difficulty',
                                 'nature',
                                 'highway',
@@ -468,7 +468,7 @@ trait Get
                                 'name',
                                 'maps_url',
                                 'kilometers',
-                                'hours',
+                                'duration',
                                 'difficulty',
                                 'nature',
                                 'highway',
@@ -1285,7 +1285,7 @@ trait Put
                         'name' => $playfield->name,
                         'maps_url' => $playfield->maps_url,
                         'kilometers' => (double)$playfield->kilometers,
-                        'hours' => (double)$playfield->hours,
+                        'duration' => (double)$playfield->duration,
                         'difficulty' => (integer)$playfield->difficulty,
                         'nature' => (integer)$playfield->nature,
                         'highway' => (integer)$playfield->highway,
@@ -1303,11 +1303,6 @@ trait Put
                      ]
                  ]);
 
-
-
-                //  [{"playfield":{"created_at":"2020-01-17 18:17:55","difficulty":61,"highway":23,"hours":11.55,"id":1,"kilometers":135.77,"maps_url":"http:\/\/www.jacobson.com\/optio-doloribus-est-ea-sequi","name":"Dwight Skiles","nature":83,"transit_id":0,"type":"route"}}]
-                //  [ "playfield":{"created_at":"2020-01-17 18:19:25","difficulty":31,"highway":78,"hours":7.24,"id":1,"kilometers":146.84,"maps_url":"http:\/\/www.roberts.info\/voluptates-incidunt-quo-vero-iusto-eligendi.html","name":"Rebeka Borer","nature":57,"transit_id":null,"type":"route"},"sort_order":1}}]
-        
         
         
                  $this->assertDatabaseHas('challenges', $body);

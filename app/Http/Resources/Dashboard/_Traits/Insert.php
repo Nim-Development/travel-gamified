@@ -23,7 +23,7 @@ trait Insert {
                 [
                     'id' => $itinerary->id,
                     'step' => (int)$itinerary->step,
-                    'duration' => (double)$itinerary->duration,
+                    'duration' => (integer)$itinerary->duration,
                     'playfield' => (!$playfield) ? null : $this->insert_playfield($itinerary->playfield_type, $playfield),
                     'created_at' => (string)$itinerary->created_at
                 ]
@@ -53,7 +53,7 @@ trait Insert {
                     'name' => $playfield->name,
                     'maps_url' => $playfield->maps_url,
                     'kilometers' => (double)$playfield->kilometers,
-                    'hours' => (double)$playfield->hours,
+                    'duration' => (integer)$playfield->duration,
                     'difficulty' => (integer)$playfield->difficulty,
                     'nature' => (integer)$playfield->nature,
                     'highway' => (integer)$playfield->highway,
@@ -65,6 +65,7 @@ trait Insert {
                 return [
                     'id' => $playfield->id,
                     'type' => $playfield_type,
+                    'duration' => (integer)$playfield->duration,
                     'name' => $playfield->name,
                     'from' => (!$playfield->from) ? null : [
                         'id' => $playfield->from->id,
@@ -99,7 +100,7 @@ trait Insert {
                     'name' => $route->name,
                     'maps_url' => $route->maps_url,
                     'kilometers' => (double)$route->kilometers,
-                    'hours' => (double)$route->hours,
+                    'duration' => (integer)$route->duration,
                     'difficulty' => (integer)$route->difficulty,
                     'nature' => (integer)$route->nature,
                     'highway' => (integer)$route->highway,

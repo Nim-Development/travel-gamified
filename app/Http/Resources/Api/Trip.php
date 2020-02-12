@@ -31,7 +31,6 @@ class Trip extends JsonResource
                 [
                     'id' => (integer)$tour->id,
                     'name' => $tour->name,
-                    'duration' => (double)$tour->duration,
                     'created_at' => (string)$tour->created_at
                 ],
             'teams' => (!$teams) ? null : $this->insert_teams_into_trip($teams),

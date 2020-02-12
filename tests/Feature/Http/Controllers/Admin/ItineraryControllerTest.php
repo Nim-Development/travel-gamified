@@ -131,7 +131,6 @@ trait Get
                         "tour" => [
                             "id" => $tour->id,
                             "name" => $tour->name,
-                            "duration" => $tour->duration,
                             "created_at" => (string)$tour->created_at
                         ],
                         "step" => $itinerary->step,
@@ -179,7 +178,6 @@ trait Get
                         "tour" => [
                             "id" => $tour->id,
                             "name" => $tour->name,
-                            "duration" => $tour->duration,
                             "created_at" => (string)$tour->created_at
                         ],
                         "step" => $itinerary->step,
@@ -191,7 +189,7 @@ trait Get
                             "name" => $playfield->name,
                             "maps_url" => $playfield->maps_url,
                             "kilometers" => $playfield->kilometers,
-                            "hours" => $playfield->hours,
+                            "duration" => $playfield->duration,
                             "difficulty" => $playfield->difficulty,
                             "nature" => $playfield->nature,
                             "highway" => $playfield->highway,
@@ -239,7 +237,6 @@ trait Get
                         "tour" => [
                             "id" => $tour->id,
                             "name" => $tour->name,
-                            "duration" => $tour->duration,
                             "created_at" => (string)$tour->created_at
                         ],
                         "step" => $itinerary->step,
@@ -296,7 +293,6 @@ trait Get
                             "tour" => [
                                 "id",
                                 "name",
-                                "duration",
                                 "created_at"
                             ],
                             "step",
@@ -337,7 +333,6 @@ trait Get
                                 "tour" => [
                                     "id",
                                     "name",
-                                    "duration",
                                     "created_at"
                                 ],
                                 "step",
@@ -389,7 +384,6 @@ trait Get
                             "tour" => [
                                 "id",
                                 "name",
-                                "duration",
                                 "created_at"
                             ],
                             "step",
@@ -435,7 +429,6 @@ trait Get
                             "tour" => [
                                 "id",
                                 "name",
-                                "duration",
                                 "created_at"
                             ],
                             "step",
@@ -486,7 +479,6 @@ trait Get
                            "tour" => [
                                 "id",
                                 "name",
-                                "duration",
                                 "created_at"
                             ],
                            "step",
@@ -497,7 +489,7 @@ trait Get
                                "name",
                                "maps_url",
                                "kilometers",
-                               "hours",
+                               "duration",
                                "difficulty",
                                "nature",
                                "highway",
@@ -538,7 +530,6 @@ trait Get
                            "tour" => [
                                 "id",
                                 "name",
-                                "duration",
                                 "created_at"
                             ],
                            "step",
@@ -549,7 +540,7 @@ trait Get
                                "name",
                                "maps_url",
                                "kilometers",
-                               "hours",
+                               "duration",
                                "difficulty",
                                "nature",
                                "highway",
@@ -597,7 +588,6 @@ trait Get
                             "tour" => [
                                 "id",
                                 "name",
-                                "duration",
                                 "created_at"
                             ],
                            "step",
@@ -647,7 +637,6 @@ trait Get
                             "tour" => [
                                 "id",
                                 "name",
-                                "duration",
                                 "created_at"
                             ],
                            "step",
@@ -679,7 +668,7 @@ trait Post
     // $table->bigIncrements("id");
     // $table->bigInteger("tour_id");
     // $table->integer("step");
-    // $table->float("duration");
+    // $table->bigInteger("duration");
     // $table->string("playfield_type");
     // $table->bigInteger("playfield_id");
     // $table->timestamps();
@@ -702,7 +691,7 @@ trait Post
         $body = [
             "tour_id" => $this->create("Tour")->id,
             "step" => 1,
-            "duration" => 12.34,
+            "duration" => 30000,
             "playfield_type" => "city",
             "playfield_id" => $this->create("City")->id
         ];
@@ -718,7 +707,6 @@ trait Post
                     "tour" => [
                         "id",
                         "name",
-                        "duration",
                         "created_at"
                     ],
                     "id",
@@ -749,7 +737,7 @@ trait Post
         $body = [
             "tour_id" => $this->create("Tour")->id,
             "step" => 1,
-            "duration" => 12.34,
+            "duration" => 30000,
             "playfield_type" => "route",
             "playfield_id" => $this->create("Route")->id
         ];
@@ -765,7 +753,6 @@ trait Post
                     "tour" => [
                         "id",
                         "name",
-                        "duration",
                         "created_at"
                     ],
                     "step",
@@ -777,7 +764,7 @@ trait Post
                         "name",
                         "maps_url",
                         "kilometers",
-                        "hours",
+                        "duration",
                         "difficulty",
                         "nature",
                         "highway",
@@ -801,7 +788,7 @@ trait Post
         $body = [
             "tour_id" => $this->create("Tour")->id,
             "step" => 1,
-            "duration" => 12.34,
+            "duration" => 30000,
             "playfield_type" => "transit",
             "playfield_id" => $this->create("Transit", [
                 "from_city_id" => $this->create("City")->id,
@@ -820,7 +807,6 @@ trait Post
                     "tour" => [
                         "id",
                         "name",
-                        "duration",
                         "created_at"
                     ],                    
                     "step",
@@ -863,7 +849,7 @@ trait Post
         $body = [
             "tour_id" => $this->create("Tour")->id,
             "step" => 1,
-            "duration" => 12.34
+            "duration" => 30000
         ];
 
         $res = $this->json("POST", "/$this->api_base", $body);
@@ -877,7 +863,6 @@ trait Post
                     "tour" => [
                         "id",
                         "name",
-                        "duration",
                         "created_at"
                     ],
                     "step",
@@ -900,7 +885,7 @@ trait Post
         // "step" is of wrong data type
         $body = [
             "step" => 2,
-            "duration" => 12.34,
+            "duration" => 30000,
             "playfield_type" => "city",
             "playfield_id" => $this->create("City")->id
         ];
@@ -940,7 +925,7 @@ trait Post
         // "step" is of wrong data type
         $body = [
             "step" => 2,
-            "duration" => 12.34
+            "duration" => 30000
         ];
 
         $res = $this->json("POST", "/$this->api_base", $body);
@@ -973,7 +958,7 @@ trait Post
         $body = [
             "tour_id" => $this->create("Tour")->id,
             "step" => "kjashf has kjfh",
-            "duration" => 12.34,
+            "duration" => 30000,
             "playfield_type" => "city",
             "playfield_id" => $this->create("City")->id
         ];
@@ -996,7 +981,7 @@ trait Post
         // "step" is is missing
         $body = [
             "tour_id" => $this->create("Tour")->id,
-            "duration" => 12.34,
+            "duration" => 30000,
             "playfield_type" => "city",
             "playfield_id" => $this->create("City")->id
         ];
@@ -1020,7 +1005,7 @@ trait Post
         $body = [
             "tour_id" => $this->create("Tour")->id,
             "step" => 1,
-            "duration" => 12.34,
+            "duration" => 30000,
             "playfield_type" => "city",
             "playfield_id" => -1
         ];
@@ -1044,7 +1029,7 @@ trait Post
         $body = [
             "tour_id" => $this->create("Tour")->id,
             "step" => 1,
-            "duration" => 12.34,
+            "duration" => 30000,
             "playfield_type" => "route",
             "playfield_id" => -1
         ];
@@ -1068,7 +1053,7 @@ trait Post
         $body = [
             "tour_id" => $this->create("Tour")->id,
             "step" => 1,
-            "duration" => 12.34,
+            "duration" => 30000,
             "playfield_type" => "transit",
             "playfield_id" => -1
         ];
@@ -1092,7 +1077,7 @@ trait Post
         $body = [
             "tour_id" => -1,
             "step" => 1,
-            "duration" => 12.34,
+            "duration" => 30000,
             "playfield_type" => "city",
             "playfield_id" => $this->create("City")->id
         ];
@@ -1114,7 +1099,7 @@ trait Put
     // $body = [
     //     "tour_id" => $this->create("Tour")->id,
     //     "step" => 1,
-    //     "duration" => 12.34,
+    //     "duration" => 30000,
     //     "playfield_type" => "city",
     //     "playfield_id" => $this->create("City")->id
     // ];
@@ -1152,7 +1137,7 @@ trait Put
         $old_values = [
             "tour_id" => $this->create("Tour")->id,
             "step" => 1,
-            "duration" => 12.34,
+            "duration" => 30000,
             "playfield_type" => "city",
             "playfield_id" => $this->create("City")->id
         ];
@@ -1163,7 +1148,7 @@ trait Put
         // update every attribute
         $new_values = [
             "step" => 000001,
-            "duration" => 00.02,
+            "duration" => 30000,
         ];
 
         $relations = [
@@ -1192,7 +1177,7 @@ trait Put
         $this->create_user('admin');
         $old_values = [
             "step" => 1,
-            "duration" => 12.34,
+            "duration" => 30000,
         ];
 
         $old_values_to_remain_after_update = [
@@ -1207,7 +1192,7 @@ trait Put
         // update every attribute
         $new_values = [
             "step" => 000001,
-            "duration" => 00.02,
+            "duration" => 30001,
         ];
 
         // When
@@ -1241,7 +1226,7 @@ trait Put
         // "step" is of wrong data type
         $new_values = [
             "step" => "aaaaaaaa",
-            "duration" => 00.02,
+            "duration" => 30000,
         ];
 
         $relations = [
@@ -1279,7 +1264,7 @@ trait Put
         // update every attribute
         $new_values = [
             "step" => 000001,
-            "duration" => 00.02,
+            "duration" => 30000,
         ];
 
         // tour_id does not exist
@@ -1318,7 +1303,7 @@ trait Put
         // update every attribute
         $new_values = [
             "step" => 000001,
-            "duration" => 00.02,
+            "duration" => 30000,
         ];
 
         // playfield does not exist

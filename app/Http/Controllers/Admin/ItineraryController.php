@@ -105,8 +105,9 @@ class ItineraryController extends Controller
                     // Error: can't create answere for non existent challenge!
                     return response()->json(['error' => 'Can not create Itinerary for non existing Tour'], 422);
                 }else{
-                    // create Itinerary without playfield with tour
-                    $itinerary = Itinerary::createAndSortPeers($request->validated());
+                    $itinerary = Itinerary::create($request->validated());
+                    $itinerary->createAndSortPeers();
+
                 }
             }else{
                 // create Itinerary without playfield and without tour

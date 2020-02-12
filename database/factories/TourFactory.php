@@ -23,7 +23,6 @@ use Illuminate\Support\Str;
 
 $factory->define(Tour::class, function (Faker $faker) {
     return [
-        'name' => $faker->name,
-        'duration' => $faker->randomFloat($nbMaxDecimals = 2, $min = 240, $max = 720)
+        'name' => $faker->name
     ];
 });

@@ -20,7 +20,7 @@ class CreateItinerariesTable extends Migration
 
 
                 $table->integer('step')->nullable();
-                $table->float('duration');
+                $table->bigInteger('duration')->nullable();
                 $table->string('playfield_type')->nullable(); // set to null from code (db layer doesnt understand polymorphism)
                 $table->unsignedBigInteger('playfield_id')->nullable(); // set to null from code (db layer doesnt understand polymorphism)
             $table->timestamps();

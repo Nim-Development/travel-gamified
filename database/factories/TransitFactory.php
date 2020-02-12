@@ -27,6 +27,7 @@ use App\City;
 $factory->define(Transit::class, function (Faker $faker) {
     return [
         'name' => $faker->name,
+        'duration' => $faker->numberBetween($nbMaxDecimals = 2, $min = 10000, $max = 43200),
         'from_city_id' => NULL,
         'to_city_id' => NULL
     ];

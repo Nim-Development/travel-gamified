@@ -16,7 +16,6 @@ class CreateToursTable extends Migration
         Schema::create('tours', function (Blueprint $table) {
             $table->bigIncrements('id');
                 $table->string('name');
-                $table->float('duration');
             $table->timestamps();
         });
     }

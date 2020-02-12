@@ -16,6 +16,7 @@ class CreateTransitsTable extends Migration
         Schema::create('transits', function (Blueprint $table) {
             $table->bigIncrements('id');
             $table->string('name');
+            $table->bigInteger('duration')->nullable();
             $table->unsignedBigInteger('from_city_id')->nullable();
             $table->foreign('from_city_id')->references('id')->on('cities')->onDelete('set null');
 

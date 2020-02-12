@@ -22,7 +22,7 @@ class CreateRoutesTable extends Migration
             $table->string('name');
             $table->text('maps_url');
             $table->float('kilometers');
-            $table->float('hours');
+            $table->bigInteger('duration')->nullable();
             $table->integer('difficulty');
             $table->integer('nature');
             $table->integer('highway');

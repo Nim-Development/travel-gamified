@@ -21,7 +21,6 @@ class Tour extends JsonResource
         return [
             'id' => $this->id,
             'name' => $this->name,
-            'duration' => (double)$this->duration,
             'itineraries' => (!$itineraries) ? null : $this->insert_itineraries($itineraries),
             'created_at' => (string)$this->created_at,
         ];

@@ -24,7 +24,7 @@ class Route extends JsonResource
             'name' => $this->name,
             'maps_url' => $this->maps_url,
             'kilometers' => (double)$this->kilometers,
-            'hours' => (double)$this->hours,
+            'duration' => (integer)$this->duration,
             'difficulty' => (integer)$this->difficulty,
             'nature' => (integer)$this->nature,
             'highway' => (integer)$this->highway,

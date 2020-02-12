@@ -135,7 +135,6 @@ trait Get
                         "tour" => [
                             "id" => $tour->id,
                             "name" => $tour->name,
-                            "duration" => $tour->duration,
                             "created_at" => (string)$tour->created_at
                         ],
                         "teams" => [
@@ -211,7 +210,6 @@ trait Get
                             "tour" => [
                                 "id",
                                 "name",
-                                "duration",
                                 "created_at"
                             ],
                             "teams" => [
@@ -267,7 +265,6 @@ trait Get
                             "tour" => [
                                 "id",
                                 "name",
-                                "duration",
                                 "created_at"
                             ],
                             "teams" => [
@@ -327,7 +324,6 @@ trait Post
     //     [
     //         "id" => (integer)$tour->id,
     //         "name" => $tour->name,
-    //         "duration" => (double)$tour->duration,
     //         "created_at" => (string)$tour->created_at
     //     ],
     // "teams" => (!$teams) ? null : $this->insert_teams_into_trip($teams),
@@ -372,7 +368,6 @@ trait Post
                         [
                             "id",
                             "name",
-                            "duration",
                             "created_at"
                         ],
                     "teams" => [
@@ -426,7 +421,6 @@ trait Post
                         [
                             "id",
                             "name",
-                            "duration",
                             "created_at"
                         ],
                     "teams", //Null

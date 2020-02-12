@@ -26,6 +26,7 @@ class Transit extends JsonResource
         return [
             'id' => $this->id,
             'name' => $this->name,
+            'duration' => (integer)$this->duration,
             'from' => [
                 'id' => $from->id,
                 'type' => 'city',
