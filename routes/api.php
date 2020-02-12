@@ -83,6 +83,7 @@ Route::group(['middleware' => 'auth:api'], function () {
             Route::get('playfield/{playfield}', 'ItineraryController@all_by_playfield');
             Route::get('playfield/{playfield}/paginate/{qty}', 'ItineraryController@paginate_by_playfield');
             Route::post('', 'ItineraryController@store');
+            Route::put('sort/{id}', 'ItineraryController@sort');
             Route::put('{id}', 'ItineraryController@update');
             Route::delete('{id}', 'ItineraryController@destroy');
         });

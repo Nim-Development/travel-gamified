@@ -81,22 +81,33 @@ class ItineraryController extends Controller
                     return response()->json(['error' => 'Can not create Itinerary for non existing Tour'], 422);
                 }
 
-                // Create Itinerary with playfield and tour
-                $itinerary = Itinerary::create($request->validated());
+                // If tour already had itineraries, then make sure the sorting gets handled correctly.
+                if(count(Tour::find($request->tour_id)->itineraries)){
+                    $itinerary = Itinerary::create($request->validated());
+                    $itinerary->createAndSortPeers();
+                }else{
+                    // Create Itinerary with playfield and tour
+                    $itinerary = Itinerary::create($request->validated());
+                }
             }else{
                 // Create Itinerary with playfield and without a tour
                 $itinerary = Itinerary::create($request->validated());
             }
         }else{
             if($request->tour_id){
-                
                 if(!Tour::find($request->tour_id)){
                     // Error: can't create answere for non existent challenge!
                     return response()->json(['error' => 'Can not create Itinerary for non existing Tour'], 422);
                 }
 
-                // create Itinerary without playfield with tour
-                $itinerary = Itinerary::create($request->validated());
+                // If tour already had itineraries, then make sure the sorting gets handled correctly.
+                if(count(Tour::find($request->tour_id)->itineraries) > 0){
+                    // Error: can't create answere for non existent challenge!
+                    return response()->json(['error' => 'Can not create Itinerary for non existing Tour'], 422);
+                }else{
+                    // create Itinerary without playfield with tour
+                    $itinerary = Itinerary::createAndSortPeers($request->validated());
+                }
             }else{
                 // create Itinerary without playfield and without tour
                 $itinerary = Itinerary::create($request->validated());
@@ -138,6 +149,19 @@ class ItineraryController extends Controller
         } catch (\Throwable $th) {
             return response()->json(['error' => $th->getMessage()], 422);
         }
+    }
+
+    public function sort(ItineraryRequest $request, $id)
+    {
+        $tour = Tour::findOrFail($id);
+
+        // Change the step values at id
+        foreach ($request->sort_order as $idStep) {
+            Itinerary::findOrFail($idStep['id'])->update(['step' => $idStep['step']]);
+        }
+
+        // return full collection of itineraries back to dashboard (Tour component)
+        return (\App\Http\Resources\Dashboard\Itinerary::collection($tour->itineraries));
     }
     
 }

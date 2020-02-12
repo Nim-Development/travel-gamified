@@ -19,7 +19,7 @@ class CreateItinerariesTable extends Migration
                 $table->foreign('tour_id')->references('id')->on('tours')->onDelete('set null');
 
 
-                $table->integer('step');
+                $table->integer('step')->nullable();
                 $table->float('duration');
                 $table->string('playfield_type')->nullable(); // set to null from code (db layer doesnt understand polymorphism)
                 $table->unsignedBigInteger('playfield_id')->nullable(); // set to null from code (db layer doesnt understand polymorphism)

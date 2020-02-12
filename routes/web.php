@@ -17,12 +17,26 @@ Route::get('/', function () {
 
 Route::get('/sales', function(){
 
-   return view('admin.cockpit.sales');
+   return view('dashboard.cockpit.sales');
 
 })->name('sales');
 
-Route::get('/tours', function(){
 
-   return view('admin.game-development.tours');
+Route::group([
+   // 'middleware' => ['admin'], 
+   'namespace' => 'Dashboard'
+], function() {
 
-})->name('tours');
+   // Cockpits
+   Route::prefix('cockpits')->group(function () { 
+      Route::get('sales', 'CockpitController@sales')->name('sales');
+   });
+
+   // Tours
+   Route::prefix('tours')->group(function () { 
+      Route::get('', 'TourController@index')->name('tours');
+      Route::get('active',  'TourController@active')->name('tours.active');
+      Route::get('inactive', 'TourController@inactive')->name('tours.inactive');
+      Route::get('{id}', 'TourController@show')->name('tour');
+   });
+});

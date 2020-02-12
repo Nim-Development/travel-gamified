@@ -89,6 +89,7 @@ trait Get
                  ->assertExactJson([
                     "data" => [
                         "id" => $itinerary->id,
+                        "title" => null,
                         "tour" => null,
                         "step" => $itinerary->step,
                         "duration" => $itinerary->duration,
@@ -126,6 +127,7 @@ trait Get
                  ->assertExactJson([
                     "data" => [
                         "id" => $itinerary->id,
+                        "title" => $playfield->name,
                         "tour" => [
                             "id" => $tour->id,
                             "name" => $tour->name,
@@ -173,6 +175,7 @@ trait Get
                  ->assertExactJson([
                     "data" => [
                         "id" => $itinerary->id,
+                        "title" => $playfield->name,
                         "tour" => [
                             "id" => $tour->id,
                             "name" => $tour->name,
@@ -232,6 +235,7 @@ trait Get
                  ->assertExactJson([
                     "data" => [
                         "id" => $itinerary->id,
+                        "title" => $playfield->name,
                         "tour" => [
                             "id" => $tour->id,
                             "name" => $tour->name,
@@ -288,6 +292,7 @@ trait Get
                      "data" => [
                          "*" => [
                             "id",
+                            "title",
                             "tour" => [
                                 "id",
                                 "name",
@@ -328,6 +333,7 @@ trait Get
                      "data" => [
                         "*" => [ //* to say we checking keys of multiple collections
                                 "id",
+                                "title",
                                 "tour" => [
                                     "id",
                                     "name",
@@ -379,6 +385,7 @@ trait Get
                      "data" => [
                          "*" => [
                             "id",
+                            "title",
                             "tour" => [
                                 "id",
                                 "name",
@@ -424,6 +431,7 @@ trait Get
                      "data" => [
                          "*" => [
                             "id",
+                            "title",
                             "tour" => [
                                 "id",
                                 "name",
@@ -474,6 +482,7 @@ trait Get
                     "data" => [
                         "*" => [
                            "id",
+                           "title",
                            "tour" => [
                                 "id",
                                 "name",
@@ -525,6 +534,7 @@ trait Get
                     "data" => [
                         "*" => [
                            "id",
+                           "title",
                            "tour" => [
                                 "id",
                                 "name",
@@ -583,6 +593,7 @@ trait Get
                     "data" => [
                         "*" => [
                            "id",
+                           "title",
                             "tour" => [
                                 "id",
                                 "name",
@@ -632,6 +643,7 @@ trait Get
                     "data" => [
                         "*" => [
                            "id",
+                           "title",
                             "tour" => [
                                 "id",
                                 "name",
@@ -662,7 +674,7 @@ trait Get
 
 trait Post
 {
-
+    
     // 
     // $table->bigIncrements("id");
     // $table->bigInteger("tour_id");
@@ -702,12 +714,14 @@ trait Post
              ->assertJsonStructure([
                 "data" => [
                     "id",
+                    "title",
                     "tour" => [
                         "id",
                         "name",
                         "duration",
                         "created_at"
                     ],
+                    "id",
                     "step",
                     "duration",
                     "playfield" => [
@@ -747,6 +761,7 @@ trait Post
              ->assertJsonStructure([
                 "data" => [
                     "id",
+                    "title",
                     "tour" => [
                         "id",
                         "name",
@@ -801,6 +816,7 @@ trait Post
              ->assertJsonStructure([
                 "data" => [
                     "id",
+                    "title",
                     "tour" => [
                         "id",
                         "name",
@@ -857,6 +873,7 @@ trait Post
              ->assertJsonStructure([
                 "data" => [
                     "id",
+                    "title",
                     "tour" => [
                         "id",
                         "name",
@@ -895,6 +912,7 @@ trait Post
              ->assertJsonStructure([
                 "data" => [
                     "id",
+                    "title",
                     "tour",
                     "step",
                     "duration",
@@ -932,6 +950,7 @@ trait Post
              ->assertJsonStructure([
                 "data" => [
                     "id",
+                    "title",
                     "tour",
                     "step",
                     "duration",
@@ -1086,6 +1105,8 @@ trait Post
         // assert if the game has been added to the database
         $this->assertDatabaseMissing("itineraries", $body);
     }
+
+
 }
 
 trait Put
@@ -1097,6 +1118,18 @@ trait Put
     //     "playfield_type" => "city",
     //     "playfield_id" => $this->create("City")->id
     // ];
+
+
+
+    // SORT API ENDPOINT (PUT)
+    /**
+     * Api enpoint for sorting the entire itineraries array (belonging to a route)
+     * 
+     * $id << in url
+     * 
+     * Body:{"sort_order" : [{"1":4},{"2":2},{"3":1},{"4":3},{"5":0}]}
+     * 
+     */
 
     
     /**
