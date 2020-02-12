@@ -47,6 +47,11 @@ class Itinerary extends FormRequest
                 'playfield_id' => 'integer'
             ];
         }
+        if($this->is("$this->api_base/sort")){
+            return [
+                'sort_order' => 'array'
+            ];
+        }
     }
 
     /////////
