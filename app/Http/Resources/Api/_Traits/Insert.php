@@ -137,11 +137,18 @@ trait Insert {
         // function to loop trough options relation and return it as 2d array for insert.
         $itineraries_array = [];
         foreach ($itineraries as $itinerary) {
+            // convert duration to days, hours, minutes
+            \TimeConverter::secondsToDhm($itinerary->duration);
+            
             array_push($itineraries_array,
                 [
                     'id' => $itinerary->id,
                     'step' => (int)$itinerary->step,
-                    'duration' => (integer)$itinerary->duration,
+                    'duration' => [
+                        'days' => (integer) \TimeConverter::getDays(),
+                        'hours' => (integer) \TimeConverter::getHours(),
+                        'minutes' => (integer) \TimeConverter::getMinutes()
+                    ],
                     'playfield_type' => $itinerary->playfield_type,
                     'playfield_id' => $itinerary->playfield_id,
                     'created_at' => (string)$itinerary->created_at
@@ -226,13 +233,21 @@ trait Insert {
         // function to loop trough routes relation and return it as 2d array for insertion.
         $routes_array = [];
         foreach ($routes as $route) {
+            
+            // convert seconds to days, hours, minutes
+            \TimeConverter::secondsToDhm($route->duration);
+
             array_push($routes_array,
                 [
                     'id' => $route->id,
                     'name' => $route->name,
                     'maps_url' => $route->maps_url,
                     'kilometers' => (double)$route->kilometers,
-                    'duration' => (integer)$route->duration,
+                    'duration' => [
+                        'days' => (!$route->duration) ? 0 : (integer) \TimeConverter::getDays(),
+                        'hours' => (!$route->duration) ? 0 : (integer) \TimeConverter::getHours(),
+                        'minutes' => (!$route->duration) ? 0 : (integer) \TimeConverter::getMinutes()
+                    ],
                     'difficulty' => (integer)$route->difficulty,
                     'nature' => (integer)$route->nature,
                     'highway' => (integer)$route->highway,

@@ -165,6 +165,7 @@ return [
         /*
          * Package Service Providers...
          */
+        App\Providers\TimeConverterServiceProvider::class,
 
         /*
          * Application Service Providers...
@@ -183,6 +184,8 @@ return [
 
         App\Providers\GamesServiceProvider::class,
         App\Providers\PlayfieldsServiceProvider::class,
+
+        
         
     ],
 
@@ -241,6 +244,7 @@ return [
 
         'Playfields' => App\Modules\Morph\PlayfieldsFacade::class,
         'Games' => App\Modules\Morph\GamesFacade::class,
+        'TimeConverter' => App\Modules\Time\TimeConverterFacade::class
     ],
 
 ];

@@ -22,6 +22,13 @@ class Trip extends JsonResource
         $teams = $this->teams;
         $users = $this->users;
 
+        // convert seconds to days, hours, minutes
+        if(!is_null($tour)){
+            \TimeConverter::secondsToDhm($tour->duration);
+        }
+
+
+
         return [
             'id' => (integer)$this->id,
             'name' => $this->name,
@@ -31,6 +38,11 @@ class Trip extends JsonResource
                 [
                     'id' => (integer)$tour->id,
                     'name' => $tour->name,
+                    'duration' => [
+                        'days' => (!$tour->duration) ? 0 : (integer) \TimeConverter::getDays(),
+                        'hours' => (!$tour->duration) ? 0 : (integer) \TimeConverter::getHours(),
+                        'minutes' => (!$tour->duration) ? 0 : (integer) \TimeConverter::getMinutes()
+                    ],
                     'created_at' => (string)$tour->created_at
                 ],
             'teams' => (!$teams) ? null : $this->insert_teams_into_trip($teams),

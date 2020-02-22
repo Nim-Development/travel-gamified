@@ -84,6 +84,8 @@ trait Get
         // When
         $response = $this->json("GET", "/$this->api_base/".$tour->id);
 
+        \TimeConverter::secondsToDhm($tour->duration);
+
         // Then
         // assert status code
         $response->assertStatus(200)
@@ -91,6 +93,11 @@ trait Get
                      "data" => [
                         "id" => $tour->id,
                         "name" => $tour->name,
+                        "duration" => [
+                            'days' => (integer) \TimeConverter::getDays(),
+                            'hours' => (integer) \TimeConverter::getHours(),
+                            'minutes' => (integer) \TimeConverter::getMinutes(),
+                        ],
                         "itineraries" => null,
                         "created_at" => (string)$tour->created_at
                      ]
@@ -115,6 +122,11 @@ trait Get
                         "*" => [
                             "id", 
                             "name", 
+                            "duration" => [
+                                'days',
+                                'hours',
+                                'minutes'
+                            ],
                             "itineraries",
                             "created_at"
                         ]
@@ -131,6 +143,7 @@ trait Get
         $this->create_collection("Tour", [], false, 6);
 
         $response = $this->json("GET", "/$this->api_base/paginate/3");
+
         $response->assertStatus(200)
                 ->assertJsonCount(3, "data")
                 ->assertJsonStructure([
@@ -138,6 +151,11 @@ trait Get
                         "*" => [
                             "id", 
                             "name", 
+                            "duration" => [
+                                'days',
+                                'hours',
+                                'minutes'
+                            ],
                             "itineraries",
                             "created_at"
                         ]
@@ -166,6 +184,26 @@ trait Get
         $it_2 = $this->create('Itinerary', ['step' => 2, 'tour_id' => $tour->id, 'playfield_type' => 'transit']);
         $it_1 =  $this->create('Itinerary', ['step' => 1, 'tour_id' => $tour->id, 'playfield_type' => 'city']);
 
+        \TimeConverter::secondsToDhm($it_1->duration);
+        $days_it1 = \TimeConverter::getDays();
+        $hours_it1 = \TimeConverter::getHours();
+        $minutes_it1 = \TimeConverter::getMinutes();
+
+        \TimeConverter::secondsToDhm($it_2->duration);
+        $days_it2 = \TimeConverter::getDays();
+        $hours_it2 = \TimeConverter::getHours();
+        $minutes_it2 = \TimeConverter::getMinutes();
+
+        \TimeConverter::secondsToDhm($it_3->duration);
+        $days_it3 = \TimeConverter::getDays();
+        $hours_it3 = \TimeConverter::getHours();
+        $minutes_it3 = \TimeConverter::getMinutes();
+
+        \TimeConverter::secondsToDhm($tour->duration);
+        $tr_days = \TimeConverter::getDays();
+        $tr_hours = \TimeConverter::getHours();
+        $tr_minutes = \TimeConverter::getMinutes();
+
         // When
         $response = $this->json("GET", "/$this->api_base/".$tour->id);
 
@@ -176,11 +214,20 @@ trait Get
                      "data" => [
                         "id" => $tour->id,
                         "name" => $tour->name,
+                        "duration" => [
+                            'days' => (integer) $tr_days,
+                            'hours' => (integer) $tr_hours,
+                            'minutes' => (integer) $tr_minutes
+                        ],
                         'itineraries' => [
                             [
                                 'id' => $it_1->id,
                                 'step' => $it_1->step,
-                                'duration' => $it_1->duration,
+                                'duration' => [
+                                    'days' => $days_it1,
+                                    'hours' => $hours_it1,
+                                    'minutes' => $minutes_it1,
+                                ],
                                 'playfield_type' => $it_1->playfield_type,
                                 'playfield_id' => $it_1->playfield_id,
                                 'created_at' => (string)$it_1->created_at
@@ -188,7 +235,11 @@ trait Get
                             [
                                 'id' => $it_2->id,
                                 'step' => $it_2->step,
-                                'duration' => $it_2->duration,
+                                'duration' => [
+                                    'days' => $days_it2,
+                                    'hours' => $hours_it2,
+                                    'minutes' => $minutes_it2,
+                                ],
                                 'playfield_type' => $it_2->playfield_type,
                                 'playfield_id' => $it_2->playfield_id,
                                 'created_at' => (string)$it_2->created_at
@@ -196,7 +247,11 @@ trait Get
                             [
                                 'id' => $it_3->id,
                                 'step' => $it_3->step,
-                                'duration' => $it_3->duration,
+                                'duration' => [
+                                    'days' => $days_it3,
+                                    'hours' => $hours_it3,
+                                    'minutes' => $minutes_it3,
+                                ],
                                 'playfield_type' => $it_3->playfield_type,
                                 'playfield_id' => $it_3->playfield_id,
                                 'created_at' => (string)$it_3->created_at
@@ -225,6 +280,11 @@ trait Get
                         "*" => [
                             "id", 
                             "name", 
+                            "duration" => [
+                                'days',
+                                'hours',
+                                'minutes'
+                            ],
                             'itineraries',
                             "created_at"
                         ]
@@ -248,6 +308,11 @@ trait Get
                         "*" => [
                             "id", 
                             "name", 
+                            "duration" => [
+                                'days',
+                                'hours',
+                                'minutes'
+                            ],
                             'itineraries',
                             "created_at"
                         ]
@@ -285,6 +350,11 @@ trait Post
                 "data" => [
                     "id",
                     "name",
+                    "duration" => [
+                        'days',
+                        'hours',
+                        'minutes'
+                    ],
                     "itineraries",
                     "created_at"
                 ]

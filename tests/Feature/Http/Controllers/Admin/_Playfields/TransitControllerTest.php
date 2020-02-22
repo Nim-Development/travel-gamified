@@ -92,6 +92,8 @@ trait Get
         // When
         $response = $this->json("GET", "/$this->api_base/".$transit->id);
 
+        \TimeConverter::secondsToDhm($transit->duration);
+
         // Then
         // assert status code
         $response->assertStatus(200)
@@ -99,7 +101,11 @@ trait Get
                     "data" => [
                         "id" => $transit->id,
                         "name" => $transit->name,
-                        "duration" => $transit->duration,
+                        "duration" => [
+                            'days' => (integer) \TimeConverter::getDays(),
+                            'hours' => (integer) \TimeConverter::getHours(),
+                            'minutes' => (integer) \TimeConverter::getMinutes()
+                        ],
                         "from" => [
                             "id" => $from->id,
                             "type" => "city",
@@ -169,6 +175,22 @@ trait Get
         // When
         $response = $this->json("GET", "/$this->api_base/".$transit->id);
 
+
+        \TimeConverter::secondsToDhm($transit->duration); 
+        $transit_days = \TimeConverter::getDays();
+        $transit_hours = \TimeConverter::getHours();
+        $transit_minutes = \TimeConverter::getMinutes();
+
+        \TimeConverter::secondsToDhm($route_1->duration); 
+        $route_1_days = \TimeConverter::getDays();
+        $route_1_hours = \TimeConverter::getHours();
+        $route_1_minutes = \TimeConverter::getMinutes();
+
+        \TimeConverter::secondsToDhm($route_2->duration); 
+        $route_2_days = \TimeConverter::getDays();
+        $route_2_hours = \TimeConverter::getHours();
+        $route_2_minutes = \TimeConverter::getMinutes();
+
         // Then
         // assert status code
         $response->assertStatus(200)
@@ -178,7 +200,11 @@ trait Get
                     "data" => [
                         "id" => $transit->id,
                         "name" => $transit->name,
-                        "duration" => $transit->duration,
+                        "duration" => [
+                            "days" => $transit_days,
+                            "hours" => $transit_hours,
+                            "minutes" => $transit_minutes,
+                        ],
                         "from" => [
                             "id" => $from->id,
                             "type" => "city",
@@ -197,7 +223,11 @@ trait Get
                             [
                                 "id" => (integer)$route_1->id,
                                 "name" => $route_1->name,
-                                "duration" => (integer)$route_1->duration,
+                                "duration" => [
+                                    "days" => (integer)$route_1_days,
+                                    "hours" => (integer)$route_1_hours,
+                                    "minutes" => (integer)$route_1_minutes,
+                                ],
                                 "maps_url" => $route_1->maps_url,
                                 "kilometers" => (double)$route_1->kilometers,
                                 "difficulty" => (integer)$route_1->difficulty,
@@ -208,7 +238,11 @@ trait Get
                             [
                                 "id" => (integer)$route_2->id,
                                 "name" => $route_2->name,
-                                "duration" => (integer)$route_2->duration,
+                                "duration" => [
+                                    "days" => (integer)$route_2_days,
+                                    "hours" => (integer)$route_2_hours,
+                                    "minutes" => (integer)$route_2_minutes,
+                                ],
                                 "maps_url" => $route_2->maps_url,
                                 "kilometers" => (double)$route_2->kilometers,
                                 "difficulty" => (integer)$route_2->difficulty,

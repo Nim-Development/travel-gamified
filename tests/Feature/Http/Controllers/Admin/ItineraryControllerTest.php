@@ -80,6 +80,9 @@ trait Get
 
         $itinerary = $this->create("Itinerary");
 
+        // convert duration to days, hours, minutes
+        \TimeConverter::secondsToDhm($itinerary->duration);
+
         // When
         $response = $this->json("GET", "/$this->api_base/".$itinerary->id);
 
@@ -92,7 +95,11 @@ trait Get
                         "title" => null,
                         "tour" => null,
                         "step" => $itinerary->step,
-                        "duration" => $itinerary->duration,
+                        "duration" => [
+                            'days' => \TimeConverter::getDays(),
+                            'hours' => \TimeConverter::getHours(),
+                            'minutes' => \TimeConverter::getMinutes()
+                        ],
                         "playfield" => null,
                         "created_at" => (string)$itinerary->created_at,
                     ]
@@ -118,6 +125,17 @@ trait Get
             "playfield_id" => $playfield->id
         ]);
 
+        \TimeConverter::secondsToDhm($itinerary->duration);
+        $it_days = \TimeConverter::getDays();
+        $it_hours = \TimeConverter::getHours();
+        $it_minutes = \TimeConverter::getMinutes();
+
+
+        \TimeConverter::secondsToDhm($tour->duration);
+        $tr_days = \TimeConverter::getDays();
+        $tr_hours = \TimeConverter::getHours();
+        $tr_minutes = \TimeConverter::getMinutes();
+
         // When
         $response = $this->json("GET", "/$this->api_base/".$itinerary->id);
 
@@ -131,10 +149,19 @@ trait Get
                         "tour" => [
                             "id" => $tour->id,
                             "name" => $tour->name,
+                            "duration" => [
+                                "days" => $tr_days,
+                                "hours" => $tr_hours,
+                                "minutes" => $tr_minutes
+                            ],
                             "created_at" => (string)$tour->created_at
                         ],
                         "step" => $itinerary->step,
-                        "duration" => $itinerary->duration,
+                        "duration" => [
+                            'days' => $it_days,
+                            'hours' => $tr_hours,
+                            'minutes' => $it_minutes
+                        ],
                         "playfield" => [
                             "id" => $playfield->id,
                             "type" => $itinerary->playfield_type,
@@ -165,6 +192,17 @@ trait Get
             "playfield_id" => $playfield->id
         ]);
 
+        \TimeConverter::secondsToDhm($itinerary->duration);
+        $it_days = \TimeConverter::getDays();
+        $it_hours = \TimeConverter::getHours();
+        $it_minutes = \TimeConverter::getMinutes();
+
+
+        \TimeConverter::secondsToDhm($tour->duration);
+        $tr_days = \TimeConverter::getDays();
+        $tr_hours = \TimeConverter::getHours();
+        $tr_minutes = \TimeConverter::getMinutes();
+
         // When
         $response = $this->json("GET", "/$this->api_base/".$itinerary->id);
 
@@ -178,10 +216,19 @@ trait Get
                         "tour" => [
                             "id" => $tour->id,
                             "name" => $tour->name,
+                            "duration" => [
+                                "days" => $tr_days,
+                                "hours" => $tr_hours,
+                                "minutes" => $tr_minutes
+                            ],
                             "created_at" => (string)$tour->created_at
                         ],
                         "step" => $itinerary->step,
-                        "duration" => $itinerary->duration,
+                        "duration" => [
+                            'days' => $tr_days,
+                            'hours' => $it_hours,
+                            'minutes' => $it_minutes
+                        ],
                         "playfield" => [
                             "id" => $playfield->id,
                             "type" => $itinerary->playfield_type,
@@ -224,6 +271,17 @@ trait Get
             "playfield_id" => $playfield->id
         ]);
 
+        \TimeConverter::secondsToDhm($itinerary->duration);
+        $it_days = \TimeConverter::getDays();
+        $it_hours = \TimeConverter::getHours();
+        $it_minutes = \TimeConverter::getMinutes();
+
+
+        \TimeConverter::secondsToDhm($tour->duration);
+        $tr_days = \TimeConverter::getDays();
+        $tr_hours = \TimeConverter::getHours();
+        $tr_minutes = \TimeConverter::getMinutes();
+
         // When
         $response = $this->json("GET", "/$this->api_base/".$itinerary->id);
 
@@ -237,10 +295,19 @@ trait Get
                         "tour" => [
                             "id" => $tour->id,
                             "name" => $tour->name,
+                            "duration" => [
+                                "days" => $tr_days,
+                                "hours" => $tr_hours,
+                                "minutes" => $tr_minutes
+                            ],
                             "created_at" => (string)$tour->created_at
                         ],
                         "step" => $itinerary->step,
-                        "duration" => $itinerary->duration,
+                        "duration" => [
+                            'days' => $it_days,
+                            'hours' => $it_hours,
+                            'minutes' => $it_minutes
+                        ],
                         "playfield" => [
                             "id" => $playfield->id,
                             "type" => $itinerary->playfield_type,
@@ -293,10 +360,19 @@ trait Get
                             "tour" => [
                                 "id",
                                 "name",
+                                "duration" => [
+                                    'days',
+                                    'hours',
+                                    'minutes'
+                                ],
                                 "created_at"
                             ],
                             "step",
-                            "duration",
+                            "duration" => [
+                                'days',
+                                'hours',
+                                'minutes'
+                            ],
                             "playfield" => [
                                 "id",
                                 "type",
@@ -333,10 +409,19 @@ trait Get
                                 "tour" => [
                                     "id",
                                     "name",
+                                    "duration" => [
+                                        'days',
+                                        'hours',
+                                        'minutes'
+                                    ],
                                     "created_at"
                                 ],
                                 "step",
-                                "duration",
+                                "duration" => [
+                                    'days',
+                                    'hours',
+                                    'minutes'
+                                ],
                                 "playfield" => [
                                     "id",
                                     "type",
@@ -384,10 +469,19 @@ trait Get
                             "tour" => [
                                 "id",
                                 "name",
+                                "duration" => [
+                                    'days',
+                                    'hours',
+                                    'minutes'
+                                ],
                                 "created_at"
                             ],
                             "step",
-                            "duration",
+                            "duration" => [
+                                'days',
+                                'hours',
+                                'minutes'
+                            ],
                             "playfield" => [
                                 "id",
                                 "type",
@@ -429,10 +523,19 @@ trait Get
                             "tour" => [
                                 "id",
                                 "name",
+                                "duration" => [
+                                    'days',
+                                    'hours',
+                                    'minutes'
+                                ],
                                 "created_at"
                             ],
                             "step",
-                            "duration",
+                            "duration" => [
+                                'days',
+                                'hours',
+                                'minutes'
+                            ],
                             "playfield" => [
                                 "id",
                                 "type",
@@ -479,10 +582,19 @@ trait Get
                            "tour" => [
                                 "id",
                                 "name",
+                                "duration" => [
+                                    'days',
+                                    'hours',
+                                    'minutes'
+                                ],
                                 "created_at"
                             ],
                            "step",
-                           "duration",
+                           "duration" => [
+                                'days',
+                                'hours',
+                                'minutes'
+                            ],
                            "playfield" => [
                                "id",
                                "type",
@@ -530,10 +642,19 @@ trait Get
                            "tour" => [
                                 "id",
                                 "name",
+                                "duration" => [
+                                    'days',
+                                    'hours',
+                                    'minutes'
+                                ],
                                 "created_at"
                             ],
                            "step",
-                           "duration",
+                           "duration" => [
+                                'days',
+                                'hours',
+                                'minutes'
+                            ],
                            "playfield" => [
                                "id",
                                "type",
@@ -588,10 +709,19 @@ trait Get
                             "tour" => [
                                 "id",
                                 "name",
+                                "duration" => [
+                                    'days',
+                                    'hours',
+                                    'minutes'
+                                ],
                                 "created_at"
                             ],
                            "step",
-                           "duration",
+                           "duration" => [
+                                'days',
+                                'hours',
+                                'minutes'
+                            ],
                            "playfield" => [
                                "id",
                                "type",
@@ -636,11 +766,20 @@ trait Get
                            "title",
                             "tour" => [
                                 "id",
+                                "duration" => [
+                                    'days',
+                                    'hours',
+                                    'minutes'
+                                ],
                                 "name",
                                 "created_at"
                             ],
                            "step",
-                           "duration",
+                           "duration" => [
+                                'days',
+                                'hours',
+                                'minutes'
+                            ],
                            "playfield" => [
                                "id",
                                "type",
@@ -691,12 +830,19 @@ trait Post
         $body = [
             "tour_id" => $this->create("Tour")->id,
             "step" => 1,
-            "duration" => 30000,
+            
             "playfield_type" => "city",
-            "playfield_id" => $this->create("City")->id
+            "playfield_id" => $this->create("City")->id,
+
         ];
 
-        $res = $this->json("POST", "/$this->api_base", $body);
+        $duration = [
+            "days" => 3,
+            "hours" => 3,
+            "minutes" => 3
+        ];
+
+        $res = $this->json("POST", "/$this->api_base", array_merge($body, $duration));
 
         // Then
         $res->assertStatus(201)
@@ -707,10 +853,19 @@ trait Post
                     "tour" => [
                         "id",
                         "name",
+                        "duration" => [
+                            'days',
+                            'hours',
+                            'minutes'
+                        ],
                         "created_at"
                     ],
                     "id",
-                    "step",
+                    "duration" => [
+                        'days',
+                        'hours',
+                        'minutes'
+                    ],
                     "duration",
                     "playfield" => [
                         "id",
@@ -737,12 +892,19 @@ trait Post
         $body = [
             "tour_id" => $this->create("Tour")->id,
             "step" => 1,
-            "duration" => 30000,
+            
             "playfield_type" => "route",
-            "playfield_id" => $this->create("Route")->id
+            "playfield_id" => $this->create("Route")->id,
+
         ];
 
-        $res = $this->json("POST", "/$this->api_base", $body);
+        $duration = [
+            "days" => 3,
+            "hours" => 3,
+            "minutes" => 3
+        ];
+
+        $res = $this->json("POST", "/$this->api_base", array_merge($body, $duration));
 
         // Then
         $res->assertStatus(201)
@@ -753,10 +915,19 @@ trait Post
                     "tour" => [
                         "id",
                         "name",
+                        "duration" => [
+                            'days',
+                            'hours',
+                            'minutes'
+                        ],
                         "created_at"
                     ],
                     "step",
-                    "duration",
+                    "duration" => [
+                        'days',
+                        'hours',
+                        'minutes'
+                    ],
                     "playfield" => [
                         "id",
                         "type",
@@ -788,15 +959,22 @@ trait Post
         $body = [
             "tour_id" => $this->create("Tour")->id,
             "step" => 1,
-            "duration" => 30000,
+            
             "playfield_type" => "transit",
             "playfield_id" => $this->create("Transit", [
                 "from_city_id" => $this->create("City")->id,
                 "to_city_id" => $this->create("City")->id
-            ])->id
+            ])->id,
+
         ];
 
-        $res = $this->json("POST", "/$this->api_base", $body);
+        $duration = [
+            "days" => 3,
+            "hours" => 3,
+            "minutes" => 3
+        ];
+
+        $res = $this->json("POST", "/$this->api_base", array_merge($body, $duration));
 
         // Then
         $res->assertStatus(201)
@@ -807,10 +985,19 @@ trait Post
                     "tour" => [
                         "id",
                         "name",
+                        "duration" => [
+                            'days',
+                            'hours',
+                            'minutes'
+                        ],
                         "created_at"
                     ],                    
                     "step",
-                    "duration",
+                    "duration" => [
+                        'days',
+                        'hours',
+                        'minutes'
+                    ],
                     "playfield" => [
                         "id",
                         "type",
@@ -849,10 +1036,17 @@ trait Post
         $body = [
             "tour_id" => $this->create("Tour")->id,
             "step" => 1,
-            "duration" => 30000
+
         ];
 
-        $res = $this->json("POST", "/$this->api_base", $body);
+        $duration = [
+            "days" => 3,
+            "hours" => 3,
+            "minutes" => 3
+        ];
+        
+
+        $res = $this->json("POST", "/$this->api_base", array_merge($body, $duration));
 
         // Then
         $res->assertStatus(201)
@@ -863,10 +1057,66 @@ trait Post
                     "tour" => [
                         "id",
                         "name",
+                        "duration" => [
+                            'days',
+                            'hours',
+                            'minutes'
+                        ],
                         "created_at"
                     ],
                     "step",
-                    "duration",
+                    "duration" => [
+                        'days',
+                        'hours',
+                        'minutes'
+                    ],
+                    "playfield", //NULL
+                    "created_at"
+                ]
+        ]);
+
+        // assert if the game has been added to the database
+        $this->assertDatabaseHas("itineraries", $body);
+    }
+
+       /**
+     * @test
+     */
+    public function can_create_a_itinerary_without_a_duration()
+    {
+        $this->create_user('admin');
+        // "step" is of wrong data type
+        $body = [
+            "tour_id" => $this->create("Tour")->id,
+            "step" => 1,
+        ];
+
+        $duration = [
+            "days" => 3,
+            "hours" => 3,
+            "minutes" => 3
+        ];
+
+        $res = $this->json("POST", "/$this->api_base", array_merge($body, $duration));
+
+        // Then
+        $res->assertStatus(201)
+             ->assertJsonStructure([
+                "data" => [
+                    "id",
+                    "title",
+                    "tour" => [
+                        "id",
+                        "name",
+                        "duration" => [
+                            'days',
+                            'hours',
+                            'minutes'
+                        ],
+                        "created_at"
+                    ],
+                    "step",
+                    "duration", //NULL
                     "playfield", //NULL
                     "created_at"
                 ]
@@ -885,12 +1135,19 @@ trait Post
         // "step" is of wrong data type
         $body = [
             "step" => 2,
-            "duration" => 30000,
             "playfield_type" => "city",
-            "playfield_id" => $this->create("City")->id
+            "playfield_id" => $this->create("City")->id,
+
         ];
 
-        $res = $this->json("POST", "/$this->api_base", $body);
+        $duration = [
+            "days" => 3,
+            "hours" => 3,
+            "minutes" => 3
+        ];
+        
+
+        $res = $this->json("POST", "/$this->api_base", $body, array_merge($body, $duration));
 
         // Then
         $res->assertStatus(201)
@@ -900,7 +1157,11 @@ trait Post
                     "title",
                     "tour",
                     "step",
-                    "duration",
+                    "duration" => [
+                        'days',
+                        'hours',
+                        'minutes'
+                    ],
                     "playfield" => [
                         "id",
                         "type",
@@ -925,10 +1186,16 @@ trait Post
         // "step" is of wrong data type
         $body = [
             "step" => 2,
-            "duration" => 30000
         ];
 
-        $res = $this->json("POST", "/$this->api_base", $body);
+        $duration = [
+            "days" => 3,
+            "hours" => 3,
+            "minutes" => 3
+        ];
+        
+
+        $res = $this->json("POST", "/$this->api_base", array_merge($body, $duration));
 
         // Then
         $res->assertStatus(201)
@@ -938,7 +1205,11 @@ trait Post
                     "title",
                     "tour",
                     "step",
-                    "duration",
+                    "duration" => [
+                        'days',
+                        'hours',
+                        'minutes'
+                    ],
                     "playfield", //null
                     "created_at"
                 ]
@@ -958,7 +1229,7 @@ trait Post
         $body = [
             "tour_id" => $this->create("Tour")->id,
             "step" => "kjashf has kjfh",
-            "duration" => 30000,
+            
             "playfield_type" => "city",
             "playfield_id" => $this->create("City")->id
         ];
@@ -981,7 +1252,7 @@ trait Post
         // "step" is is missing
         $body = [
             "tour_id" => $this->create("Tour")->id,
-            "duration" => 30000,
+            
             "playfield_type" => "city",
             "playfield_id" => $this->create("City")->id
         ];
@@ -1005,7 +1276,7 @@ trait Post
         $body = [
             "tour_id" => $this->create("Tour")->id,
             "step" => 1,
-            "duration" => 30000,
+            
             "playfield_type" => "city",
             "playfield_id" => -1
         ];
@@ -1029,7 +1300,7 @@ trait Post
         $body = [
             "tour_id" => $this->create("Tour")->id,
             "step" => 1,
-            "duration" => 30000,
+            
             "playfield_type" => "route",
             "playfield_id" => -1
         ];
@@ -1053,7 +1324,7 @@ trait Post
         $body = [
             "tour_id" => $this->create("Tour")->id,
             "step" => 1,
-            "duration" => 30000,
+            
             "playfield_type" => "transit",
             "playfield_id" => -1
         ];
@@ -1077,7 +1348,7 @@ trait Post
         $body = [
             "tour_id" => -1,
             "step" => 1,
-            "duration" => 30000,
+            
             "playfield_type" => "city",
             "playfield_id" => $this->create("City")->id
         ];
@@ -1099,7 +1370,7 @@ trait Put
     // $body = [
     //     "tour_id" => $this->create("Tour")->id,
     //     "step" => 1,
-    //     "duration" => 30000,
+    //     
     //     "playfield_type" => "city",
     //     "playfield_id" => $this->create("City")->id
     // ];
@@ -1137,9 +1408,10 @@ trait Put
         $old_values = [
             "tour_id" => $this->create("Tour")->id,
             "step" => 1,
-            "duration" => 30000,
+            
             "playfield_type" => "city",
             "playfield_id" => $this->create("City")->id
+
         ];
 
         $old_itinerary = $this->create("Itinerary", $old_values);
@@ -1148,7 +1420,7 @@ trait Put
         // update every attribute
         $new_values = [
             "step" => 000001,
-            "duration" => 30000,
+            
         ];
 
         $relations = [
@@ -1177,7 +1449,7 @@ trait Put
         $this->create_user('admin');
         $old_values = [
             "step" => 1,
-            "duration" => 30000,
+            
         ];
 
         $old_values_to_remain_after_update = [
@@ -1191,8 +1463,7 @@ trait Put
 
         // update every attribute
         $new_values = [
-            "step" => 000001,
-            "duration" => 30001,
+            "step" => 000002
         ];
 
         // When
@@ -1215,7 +1486,6 @@ trait Put
         $old_values = [
             "tour_id" => $this->create("Tour")->id,
             "step" => 1,
-            "duration" => 12.34,
             "playfield_type" => "city",
             "playfield_id" => $this->create("City")->id
         ];
@@ -1226,7 +1496,7 @@ trait Put
         // "step" is of wrong data type
         $new_values = [
             "step" => "aaaaaaaa",
-            "duration" => 30000,
+            
         ];
 
         $relations = [
@@ -1254,7 +1524,6 @@ trait Put
         $old_values = [
             "tour_id" => $this->create("Tour")->id,
             "step" => 1,
-            "duration" => 12.34,
             "playfield_type" => "city",
             "playfield_id" => $this->create("City")->id
         ];
@@ -1263,8 +1532,8 @@ trait Put
 
         // update every attribute
         $new_values = [
-            "step" => 000001,
-            "duration" => 30000,
+            "step" => 000002,
+            
         ];
 
         // tour_id does not exist
@@ -1293,7 +1562,6 @@ trait Put
         $old_values = [
             "tour_id" => $this->create("Tour")->id,
             "step" => 1,
-            "duration" => 12.34,
             "playfield_type" => "city",
             "playfield_id" => $this->create("City")->id
         ];
@@ -1302,8 +1570,8 @@ trait Put
 
         // update every attribute
         $new_values = [
-            "step" => 000001,
-            "duration" => 30000,
+            "step" => 000002,
+            
         ];
 
         // playfield does not exist
@@ -1321,6 +1589,36 @@ trait Put
                     
         $this->assertDatabaseHas("itineraries", $old_values);
         $this->assertDatabaseMissing("itineraries", $new_values);
+    }
+
+
+    /**
+     * @test nini
+     */
+    public function can_update_the_duration_of_itinerary()
+    {
+        $this->create_user('admin');
+
+        // update every attribute
+        $new_values = [
+            "step" => 3,
+            "days" => 3,
+            "hours" => 3,
+            "minutes" => 3
+        ];
+
+        $durationInSeconds = \TimeConverter::dhmToSeconds($new_values['days'], $new_values['hours'], $new_values['minutes']);
+
+        $itinerary = $this->create('Itinerary', ['tour_id' => $this->create('Tour')->id], false);
+
+        // When
+        $response = $this->json("PUT","$this->api_base/".$itinerary->id, $new_values);
+
+        // Then
+        $response->assertStatus(200)
+                    ->assertJsonFragment($new_values);
+                    
+        $this->assertDatabaseHas("itineraries", ['duration' => $durationInSeconds]);
     }
 
 }

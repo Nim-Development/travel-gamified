@@ -42,7 +42,9 @@ class Itinerary extends FormRequest
             return [
                 'tour_id' => 'integer',
                 'step' => 'required|integer',
-                'duration' => 'required|numeric',
+                'days' => 'numeric',
+                'hours' => 'numeric',
+                'minutes' => 'numeric',
                 'playfield_type' => 'string',
                 'playfield_id' => 'integer'
             ];
@@ -63,7 +65,9 @@ class Itinerary extends FormRequest
             return [
                 'tour_id' => 'integer',
                 'step' => 'integer',
-                'duration' => 'numeric',
+                'days' => 'numeric',
+                'hours' => 'numeric',
+                'minutes' => 'numeric',
                 'playfield_type' => 'string',
                 'playfield_id' => 'integer',
                 'tour_id' => 'exists:tours,id'

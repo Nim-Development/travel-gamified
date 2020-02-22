@@ -24,6 +24,7 @@ import {
 import CitySelector from "./Selectors/CitySelector";
 import RouteSelector from "./Selectors/RouteSelector";
 import TransitSelector from "./Selectors/TransitSelector";
+import CityCreator from "./Creators/CityCreator";
 
 export default class InsertPlayfield extends Component {
     constructor(props) {
@@ -240,9 +241,25 @@ export default class InsertPlayfield extends Component {
         );
     }
 
+    handleNewPlayfield = playfield => {
+        this.props.omitNewPlayfield(
+            playfield,
+            this.state.step.type,
+            this.props.index
+        );
+    };
+
     renderCityCreator() {
-        console.log("CREATE CITY");
+        return (
+            <CityCreator
+                omitNewPlayfield={playfield =>
+                    this.handleNewPlayfield(playfield)
+                } //
+                className={"modal-lg"}
+            />
+        );
     }
+
     renderRouteCreator() {
         console.log("CREATE ROUTE");
     }

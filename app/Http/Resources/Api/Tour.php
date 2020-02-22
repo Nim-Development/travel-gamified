@@ -18,9 +18,17 @@ class Tour extends JsonResource
     {
         $itineraries = $this->itineraries;
 
+        // convert seconds to days, hours, minutes
+        \TimeConverter::secondsToDhm($this->duration);
+
         return [
             'id' => $this->id,
             'name' => $this->name,
+            'duration' => [
+                'days' => (!$this->duration) ? 0 : (integer) \TimeConverter::getDays(),
+                'hours' => (!$this->duration) ? 0 : (integer) \TimeConverter::getHours(),
+                'minutes' => (!$this->duration) ? 0 : (integer) \TimeConverter::getMinutes()
+            ],
             'itineraries' => (!$itineraries) ? null : $this->insert_itineraries($itineraries),
             'created_at' => (string)$this->created_at,
         ];

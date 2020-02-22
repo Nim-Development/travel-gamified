@@ -23,10 +23,17 @@ class Transit extends JsonResource
         $from = $this->from;
         $to = $this->to;
 
+        \TimeConverter::secondsToDhm($this->duration);
+
+
         return [
             'id' => $this->id,
             'name' => $this->name,
-            'duration' => (integer)$this->duration,
+            "duration" => [
+                'days' => (!$this->duration) ? 0 : (integer) \TimeConverter::getDays(),
+                'hours' => (!$this->duration) ? 0 : (integer) \TimeConverter::getHours(),
+                'minutes' => (!$this->duration) ? 0 : (integer) \TimeConverter::getMinutes()
+            ],
             'from' => [
                 'id' => $from->id,
                 'type' => 'city',

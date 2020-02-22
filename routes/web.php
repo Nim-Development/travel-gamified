@@ -40,3 +40,15 @@ Route::group([
       Route::get('{id}', 'TourController@show')->name('tour');
    });
 });
+
+
+Route::get('/test', function(){
+   TimeConverter::secondsToDhm(300000);
+   dd(TimeConverter::dhmToSeconds(3, 11, 20));
+   dd(
+      TimeConverter::getDays(),
+      TimeConverter::getHours(),
+      TimeConverter::getMinutes()
+   );
+});
+

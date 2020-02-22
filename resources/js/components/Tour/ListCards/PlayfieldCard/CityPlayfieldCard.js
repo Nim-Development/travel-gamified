@@ -2,20 +2,27 @@ import React, { Component } from "react";
 import { faCity } from "@fortawesome/free-solid-svg-icons";
 import { VerticalTimelineElement } from "react-vertical-timeline-component";
 import {
+    Button,
     Card,
     CardBody,
-    CardTitle,
+    Collapse,
     UncontrolledButtonDropdown,
     CardHeader,
     DropdownToggle,
     DropdownMenu,
     DropdownItem,
     Col,
-    Row
+    Row,
+    ListGroup,
+    ListGroupItem
 } from "reactstrap";
+import { Progress } from "react-sweet-progress";
+import CountUp from "react-countup";
+
 import Tooltip from "rc-tooltip";
 import Slider, { createSliderWithTooltip } from "rc-slider";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import ReactTable from "react-table";
 
 const SliderWithTooltip = createSliderWithTooltip(Slider);
 
@@ -24,43 +31,53 @@ export default class CityPlayfieldCard extends Component {
         super(props);
 
         this.state = {
-            days: 0,
-            hours: 0,
-            minutes: 0
+            accordion: [false, false, false]
         };
-
-        this.handleDurationSliderDays = this.handleDurationSliderDays.bind(
-            this
-        );
-        this.handleDurationSliderHours = this.handleDurationSliderHours.bind(
-            this
-        );
-        this.handleDurationSliderMinutes = this.handleDurationSliderMinutes.bind(
-            this
-        );
     }
 
-    handleDurationSliderDays = value => {
-        console.log(`Days: ${value}`);
+    toggleAccordion = tab => {
+        const newState = this.state.accordion;
+        newState[tab] = !newState[tab];
+
         this.setState({
-            ...this.state,
-            days: value
+            accordion: newState
         });
     };
-    handleDurationSliderHours = value => {
-        console.log(`Hours: ${value}`);
-        this.setState({
-            ...this.state,
-            hours: value
-        });
+
+    handleDurationSliderDays = days => {
+        // update the itinerary days at index in the container component
+        this.props.omitItineraryDays(days, this.props.index);
     };
-    handleDurationSliderMinutes = value => {
-        console.log(`Minutes: ${value}`);
-        this.setState({
-            ...this.state,
-            minutes: value
-        });
+    handleDurationSliderHours = hours => {
+        this.props.omitItineraryHours(hours, this.props.index);
     };
+    handleDurationSliderMinutes = minutes => {
+        this.props.omitItineraryMinutes(minutes, this.props.index);
+    };
+
+    // returns {increasing: boolean, diff: int }
+    /**
+     *
+     * increasin <- returns true if slider value is increasing
+     * diff <- returns the amount by which the value is increasing or decreasing
+     *
+     */
+    increment(value, stateValue) {
+        if (value > stateValue) {
+            return true;
+        } else if (value < stateValue) {
+            return false;
+        }
+    }
+
+    omitDurationChange() {
+        // omit the change of the card times to be added or subtracted by the tours total.
+        this.props.omitDurationChange({
+            days: this.state.days,
+            hours: this.state.hours,
+            minutes: this.state.minutes
+        });
+    }
 
     render() {
         const {
@@ -124,50 +141,445 @@ export default class CityPlayfieldCard extends Component {
                                 {text}
                             </p>
                             <Row>
-                                <Col lg={8}>
-                                    <SliderWithTooltip
-                                        tipFormatter={v => `${v} Days`}
-                                        tipProps={{
-                                            prefixCls: "rc-slider-tooltip",
-                                            placement: "top"
-                                        }}
-                                        className="mb-2"
-                                        min={0}
-                                        max={20}
-                                        value={this.state.days}
-                                        onChange={this.handleDurationSliderDays}
-                                    />
-                                    <SliderWithTooltip
-                                        tipFormatter={v => `${v} Hours`}
-                                        tipProps={{
-                                            prefixCls: "rc-slider-tooltip",
-                                            placement: "top"
-                                        }}
-                                        className="mb-2"
-                                        min={0}
-                                        max={24}
-                                        value={this.state.hours}
-                                        onChange={
-                                            this.handleDurationSliderHours
-                                        }
-                                    />
-                                    <SliderWithTooltip
-                                        tipFormatter={v => `${v} Minutes`}
-                                        tipProps={{
-                                            prefixCls: "rc-slider-tooltip",
-                                            placement: "top"
-                                        }}
-                                        className="mb-2"
-                                        min={0}
-                                        step={5}
-                                        max={60}
-                                        defaultValue={this.state.minutes}
-                                        onChange={
-                                            this.handleDurationSliderMinutes
-                                        }
-                                    />
+                                <Col lg={12}>
+                                    <div
+                                        id="accordion"
+                                        className="accordion-wrapper mb-3"
+                                    >
+                                        <Card>
+                                            <CardHeader id="headingOne">
+                                                <Button
+                                                    block
+                                                    color="link"
+                                                    className="text-left m-0 p-0"
+                                                    onClick={() =>
+                                                        this.toggleAccordion(0)
+                                                    }
+                                                    aria-expanded={
+                                                        this.state.accordion[0]
+                                                    }
+                                                    aria-controls="collapseOne"
+                                                >
+                                                    <h5 className="m-0 p-0">
+                                                        Playfield facts
+                                                    </h5>
+                                                </Button>
+                                            </CardHeader>
+                                            <Collapse
+                                                isOpen={this.state.accordion[0]}
+                                                data-parent="#accordion"
+                                                id="collapseOne"
+                                                aria-labelledby="headingOne"
+                                            >
+                                                <CardBody>
+                                                    <Col lg={{ size: 12 }}>
+                                                        <ListGroup flush>
+                                                            <ListGroupItem>
+                                                                <div className="widget-content p-0">
+                                                                    <div className="widget-content-wrapper">
+                                                                        <div className="widget-content-left mr-3">
+                                                                            <div className="icon-wrapper m-0">
+                                                                                <div className="progress-circle-wrapper">
+                                                                                    <Progress
+                                                                                        type="circle"
+                                                                                        percent={
+                                                                                            82
+                                                                                        }
+                                                                                        width="100%"
+                                                                                        theme={{
+                                                                                            active: {
+                                                                                                trailColor:
+                                                                                                    "#e1e1e1",
+                                                                                                color:
+                                                                                                    "#3ac47d"
+                                                                                            }
+                                                                                        }}
+                                                                                    />
+                                                                                </div>
+                                                                            </div>
+                                                                        </div>
+                                                                        <div className="widget-content-left">
+                                                                            <div className="widget-heading">
+                                                                                January
+                                                                                Sales
+                                                                            </div>
+                                                                            <div className="widget-subheading">
+                                                                                Lorem
+                                                                                ipsum
+                                                                                dolor
+                                                                            </div>
+                                                                        </div>
+                                                                    </div>
+                                                                </div>
+                                                            </ListGroupItem>
+                                                            <ListGroupItem>
+                                                                <div className="widget-content p-0">
+                                                                    <div className="widget-content-wrapper">
+                                                                        <div className="widget-content-left mr-3">
+                                                                            <div className="icon-wrapper m-0">
+                                                                                <div className="progress-circle-wrapper">
+                                                                                    <Progress
+                                                                                        type="circle"
+                                                                                        percent={
+                                                                                            47
+                                                                                        }
+                                                                                        width="100%"
+                                                                                        theme={{
+                                                                                            active: {
+                                                                                                trailColor:
+                                                                                                    "#e1e1e1",
+                                                                                                color:
+                                                                                                    "#f7b924"
+                                                                                            }
+                                                                                        }}
+                                                                                    />
+                                                                                </div>
+                                                                            </div>
+                                                                        </div>
+                                                                        <div className="widget-content-left">
+                                                                            <div className="widget-heading">
+                                                                                February
+                                                                                Sales
+                                                                            </div>
+                                                                            <div className="widget-subheading">
+                                                                                Maecenas
+                                                                                tempus,
+                                                                                tellus
+                                                                            </div>
+                                                                        </div>
+                                                                    </div>
+                                                                </div>
+                                                            </ListGroupItem>
+                                                            <ListGroupItem>
+                                                                <div className="widget-content p-0">
+                                                                    <div className="widget-content-wrapper">
+                                                                        <div className="widget-content-left mr-3">
+                                                                            <div className="icon-wrapper m-0">
+                                                                                <div className="progress-circle-wrapper">
+                                                                                    <Progress
+                                                                                        type="circle"
+                                                                                        percent={
+                                                                                            62
+                                                                                        }
+                                                                                        width="100%"
+                                                                                        theme={{
+                                                                                            active: {
+                                                                                                trailColor:
+                                                                                                    "#e1e1e1",
+                                                                                                color:
+                                                                                                    "#d92550"
+                                                                                            }
+                                                                                        }}
+                                                                                    />
+                                                                                </div>
+                                                                            </div>
+                                                                        </div>
+                                                                        <div className="widget-content-left">
+                                                                            <div className="widget-heading">
+                                                                                March
+                                                                                Sales
+                                                                            </div>
+                                                                            <div className="widget-subheading">
+                                                                                Donec
+                                                                                vitae
+                                                                                sapien
+                                                                            </div>
+                                                                        </div>
+                                                                    </div>
+                                                                </div>
+                                                            </ListGroupItem>
+                                                        </ListGroup>
+                                                    </Col>
+                                                </CardBody>
+                                            </Collapse>
+                                        </Card>
+                                        <Card>
+                                            <CardHeader
+                                                className="b-radius-0"
+                                                id="headingTwo"
+                                            >
+                                                <Button
+                                                    block
+                                                    color="link"
+                                                    className="text-left m-0 p-0"
+                                                    onClick={() =>
+                                                        this.toggleAccordion(1)
+                                                    }
+                                                    aria-expanded={
+                                                        this.state.accordion[1]
+                                                    }
+                                                    aria-controls="collapseTwo"
+                                                >
+                                                    <h5 className="m-0 p-0">
+                                                        Challenges
+                                                    </h5>
+                                                </Button>
+                                            </CardHeader>
+                                            <Collapse
+                                                isOpen={this.state.accordion[1]}
+                                                data-parent="#accordion"
+                                                id="collapseTwo"
+                                            >
+                                                <CardBody>
+                                                    {/* Table */}
+                                                    <Col lg={12}>
+                                                        <ReactTable
+                                                            data={
+                                                                this.props
+                                                                    .challenges
+                                                            }
+                                                            minRows={5}
+                                                            columns={[
+                                                                {
+                                                                    columns: [
+                                                                        {
+                                                                            Header:
+                                                                                "Name",
+                                                                            accessor:
+                                                                                "name",
+                                                                            Cell: row => (
+                                                                                <div>
+                                                                                    <div className="widget-content p-0">
+                                                                                        <div className="widget-content-wrapper">
+                                                                                            <div className="widget-content-left mr-3">
+                                                                                                <div className="widget-content-left">
+                                                                                                    {/* <img
+                                                                                    width={
+                                                                                        52
+                                                                                    }
+                                                                                    className="rounded-circle"
+                                                                                    src={
+                                                                                        avatar2
+                                                                                    }
+                                                                                    alt=""
+                                                                                /> */}
+                                                                                                </div>
+                                                                                            </div>
+                                                                                            <div className="widget-content-left flex2">
+                                                                                                <div className="widget-heading">
+                                                                                                    {
+                                                                                                        row.value
+                                                                                                    }
+                                                                                                </div>
+                                                                                            </div>
+                                                                                        </div>
+                                                                                    </div>
+                                                                                </div>
+                                                                            )
+                                                                        },
+                                                                        {
+                                                                            Header:
+                                                                                "Type",
+                                                                            accessor:
+                                                                                "type"
+                                                                        },
+                                                                        {
+                                                                            Header:
+                                                                                "Created At",
+                                                                            accessor:
+                                                                                "created_at"
+                                                                        }
+                                                                    ]
+                                                                },
+                                                                {
+                                                                    columns: [
+                                                                        {
+                                                                            Header:
+                                                                                "Actions",
+                                                                            accessor:
+                                                                                "actions",
+                                                                            Cell: row => (
+                                                                                <div className="d-block w-100 text-center">
+                                                                                    <UncontrolledButtonDropdown>
+                                                                                        <DropdownToggle
+                                                                                            caret
+                                                                                            className="btn-icon btn-icon-only btn btn-link"
+                                                                                            color="link"
+                                                                                        >
+                                                                                            <i className="lnr-menu-circle btn-icon-wrapper" />
+                                                                                        </DropdownToggle>
+                                                                                        <DropdownMenu className="rm-pointers dropdown-menu-hover-link">
+                                                                                            <DropdownItem
+                                                                                                header
+                                                                                            >
+                                                                                                Action
+                                                                                            </DropdownItem>
+                                                                                            <DropdownItem
+                                                                                            // onClick={() =>
+                                                                                            //     this.openTour(
+                                                                                            //         row
+                                                                                            //             .original
+                                                                                            //             .id
+                                                                                            //     )
+                                                                                            // }
+                                                                                            >
+                                                                                                <i className="dropdown-icon lnr-inbox">
+                                                                                                    {" "}
+                                                                                                </i>
+                                                                                                <span>
+                                                                                                    Details
+                                                                                                </span>
+                                                                                            </DropdownItem>
+                                                                                            <DropdownItem>
+                                                                                                <i className="dropdown-icon lnr-file-empty">
+                                                                                                    {" "}
+                                                                                                </i>
+                                                                                                <span>
+                                                                                                    Delete
+                                                                                                </span>
+                                                                                            </DropdownItem>
+                                                                                            <DropdownItem
+                                                                                                divider
+                                                                                            />
+                                                                                            <DropdownItem>
+                                                                                                <i className="dropdown-icon lnr-picture">
+                                                                                                    {" "}
+                                                                                                </i>
+                                                                                                <span>
+                                                                                                    Blabla
+                                                                                                </span>
+                                                                                            </DropdownItem>
+                                                                                        </DropdownMenu>
+                                                                                    </UncontrolledButtonDropdown>
+                                                                                </div>
+                                                                            )
+                                                                        }
+                                                                    ]
+                                                                }
+                                                            ]}
+                                                            defaultPageSize={10}
+                                                            className="-striped -highlight"
+                                                        />
+                                                    </Col>
+                                                </CardBody>
+                                            </Collapse>
+                                        </Card>
+                                        <Card>
+                                            <CardHeader id="headingThree">
+                                                <Button
+                                                    block
+                                                    color="link"
+                                                    className="text-left m-0 p-0"
+                                                    onClick={() =>
+                                                        this.toggleAccordion(2)
+                                                    }
+                                                    aria-expanded={
+                                                        this.state.accordion[2]
+                                                    }
+                                                    aria-controls="collapseThree"
+                                                >
+                                                    <h5 className="m-0 p-0">
+                                                        Edit Duration
+                                                    </h5>
+                                                </Button>
+                                            </CardHeader>
+                                            <Collapse
+                                                isOpen={this.state.accordion[2]}
+                                                data-parent="#accordion"
+                                                id="collapseThree"
+                                            >
+                                                <CardBody>
+                                                    <Col
+                                                        lg={{ size: 12 }}
+                                                        style={{ offset: 3 }}
+                                                        className="pl-2"
+                                                    >
+                                                        <SliderWithTooltip
+                                                            tipFormatter={v =>
+                                                                `${v} Days`
+                                                            }
+                                                            tipProps={{
+                                                                prefixCls:
+                                                                    "rc-slider-tooltip",
+                                                                placement: "top"
+                                                            }}
+                                                            className="mb-2"
+                                                            min={0}
+                                                            max={20}
+                                                            value={
+                                                                this.props.days
+                                                            }
+                                                            onChange={
+                                                                this
+                                                                    .handleDurationSliderDays
+                                                            }
+                                                        />
+                                                        <SliderWithTooltip
+                                                            tipFormatter={v =>
+                                                                `${v} Hours`
+                                                            }
+                                                            tipProps={{
+                                                                prefixCls:
+                                                                    "rc-slider-tooltip",
+                                                                placement: "top"
+                                                            }}
+                                                            className="mb-2"
+                                                            min={0}
+                                                            max={24}
+                                                            value={
+                                                                this.props.hours
+                                                            }
+                                                            onChange={
+                                                                this
+                                                                    .handleDurationSliderHours
+                                                            }
+                                                        />
+                                                        <SliderWithTooltip
+                                                            tipFormatter={v =>
+                                                                `${v} Minutes`
+                                                            }
+                                                            tipProps={{
+                                                                prefixCls:
+                                                                    "rc-slider-tooltip",
+                                                                placement: "top"
+                                                            }}
+                                                            className="mb-2"
+                                                            min={0}
+                                                            step={5}
+                                                            max={60}
+                                                            value={
+                                                                this.props
+                                                                    .minutes
+                                                            }
+                                                            onChange={
+                                                                this
+                                                                    .handleDurationSliderMinutes
+                                                            }
+                                                        />
+                                                        <div
+                                                            style={{
+                                                                fontSize: "16px"
+                                                            }}
+                                                        >
+                                                            <strong>
+                                                                {
+                                                                    this.props
+                                                                        .days
+                                                                }
+                                                            </strong>{" "}
+                                                            days,{" "}
+                                                            <strong>
+                                                                {
+                                                                    this.props
+                                                                        .hours
+                                                                }
+                                                            </strong>{" "}
+                                                            hours,{" "}
+                                                            <strong>
+                                                                {
+                                                                    this.props
+                                                                        .minutes
+                                                                }
+                                                            </strong>{" "}
+                                                            minutes.
+                                                        </div>
+                                                    </Col>
+                                                </CardBody>
+                                            </Collapse>
+                                        </Card>
+                                    </div>
                                 </Col>
-                                <Col lg={4}>
+                                {/* <Col lg={4}>
                                     <ul>
                                         <li>
                                             <strong>Days:</strong>{" "}
@@ -182,7 +594,7 @@ export default class CityPlayfieldCard extends Component {
                                             {this.state.minutes}
                                         </li>
                                     </ul>
-                                </Col>
+                                </Col> */}
                             </Row>
                         </CardBody>
                     </Card>

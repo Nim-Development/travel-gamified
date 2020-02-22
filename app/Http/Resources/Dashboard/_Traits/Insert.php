@@ -17,13 +17,19 @@ trait Insert {
         // function to loop trough options relation and return it as 2d array for insert.
         $itineraries_array = [];
         foreach ($itineraries as $itinerary) {
+            // convert duration to days, hours, minutes
+            \TimeConverter::secondsToDhm($itinerary->duration);
 
             $playfield = $itinerary->playfield;
             array_push($itineraries_array,
                 [
                     'id' => $itinerary->id,
                     'step' => (int)$itinerary->step,
-                    'duration' => (integer)$itinerary->duration,
+                    'duration' => [
+                        'days' => (integer) \TimeConverter::getDays(),
+                        'hours' => (integer) \TimeConverter::getHours(),
+                        'minutes' => (integer) \TimeConverter::getMinutes()
+                    ],
                     'playfield' => (!$playfield) ? null : $this->insert_playfield($itinerary->playfield_type, $playfield),
                     'created_at' => (string)$itinerary->created_at
                 ]

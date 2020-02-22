@@ -123,6 +123,8 @@ trait Get
         // When
         $response = $this->json("GET", "/$this->api_base/".$trip->id);
 
+        \TimeConverter::secondsToDhm($tour->duration);
+        
         // Then
         // assert status code
         $response->assertStatus(200)
@@ -135,6 +137,11 @@ trait Get
                         "tour" => [
                             "id" => $tour->id,
                             "name" => $tour->name,
+                            "duration" => [
+                                'days' => (integer) \TimeConverter::getDays(),
+                                'hours' => (integer) \TimeConverter::getHours(),
+                                'minutes' => (integer) \TimeConverter::getMinutes()
+                            ],
                             "created_at" => (string)$tour->created_at
                         ],
                         "teams" => [
@@ -210,6 +217,11 @@ trait Get
                             "tour" => [
                                 "id",
                                 "name",
+                                "duration" => [
+                                    "days",
+                                    "hours",
+                                    "minutes"
+                                ],
                                 "created_at"
                             ],
                             "teams" => [
@@ -265,6 +277,11 @@ trait Get
                             "tour" => [
                                 "id",
                                 "name",
+                                "duration" => [
+                                    "days",
+                                    "hours",
+                                    "minutes"
+                                ],
                                 "created_at"
                             ],
                             "teams" => [
@@ -368,6 +385,11 @@ trait Post
                         [
                             "id",
                             "name",
+                            "duration" => [
+                                "days",
+                                "hours",
+                                "minutes"
+                            ],
                             "created_at"
                         ],
                     "teams" => [
@@ -421,6 +443,11 @@ trait Post
                         [
                             "id",
                             "name",
+                            "duration" => [
+                                "days",
+                                "hours",
+                                "minutes"
+                            ],
                             "created_at"
                         ],
                     "teams", //Null
