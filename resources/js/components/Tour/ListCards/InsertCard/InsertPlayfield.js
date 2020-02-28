@@ -22,7 +22,6 @@ import {
 } from "reactstrap";
 
 import CitySelector from "./Selectors/CitySelector";
-import RouteSelector from "./Selectors/RouteSelector";
 import TransitSelector from "./Selectors/TransitSelector";
 import CityCreator from "./Creators/CityCreator";
 
@@ -41,7 +40,6 @@ export default class InsertPlayfield extends Component {
                 createOrSelect: null
             },
             cities: this.props.cities,
-            routes: this.props.routes,
             transits: this.props.transits
         };
         // this.submitPlayfield = this.submitPlayfield.bind(this);
@@ -83,9 +81,6 @@ export default class InsertPlayfield extends Component {
                             case "city":
                                 return this.renderCityCreator();
                                 break;
-                            case "route":
-                                return this.renderRouteCreator();
-                                break;
                             case "transit":
                                 return this.renderTransitCreator();
                                 break;
@@ -99,9 +94,6 @@ export default class InsertPlayfield extends Component {
                         switch (step.type) {
                             case "city":
                                 return this.renderCitySelector();
-                                break;
-                            case "route":
-                                return this.renderRouteSelector();
                                 break;
                             case "transit":
                                 return this.renderTransitSelector();
@@ -164,27 +156,6 @@ export default class InsertPlayfield extends Component {
                                 {" "}
                             </span>
                             City
-                        </Button>
-                    </Col>
-                    <Col xl="4" sm="6">
-                        <Button
-                            className="btn-icon-vertical btn-square btn-transition"
-                            outline
-                            color="warning"
-                            onClick={() =>
-                                this.setState({
-                                    step: {
-                                        action: STEP_2,
-                                        type: "route"
-                                    }
-                                })
-                            }
-                        >
-                            <i className="lnr-map-marker btn-icon-wrapper"> </i>
-                            <span className="badge badge-warning badge-dot badge-dot-inside">
-                                {" "}
-                            </span>
-                            Route
                         </Button>
                     </Col>
                 </Row>
@@ -260,9 +231,6 @@ export default class InsertPlayfield extends Component {
         );
     }
 
-    renderRouteCreator() {
-        console.log("CREATE ROUTE");
-    }
     renderTransitCreator() {
         console.log("CREATE TRANSIT");
     }
@@ -272,16 +240,6 @@ export default class InsertPlayfield extends Component {
             <CitySelector
                 playfield={this.state.playfield}
                 cities={this.state.cities}
-                omitSelectChange={() => this.handleSelectChange}
-                omitPlayfield={() => this.omitPlayfield}
-            />
-        );
-    }
-    renderRouteSelector() {
-        return (
-            <RouteSelector
-                playfield={this.state.playfield}
-                routes={this.state.routes}
                 omitSelectChange={() => this.handleSelectChange}
                 omitPlayfield={() => this.omitPlayfield}
             />

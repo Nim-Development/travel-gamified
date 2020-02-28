@@ -252,7 +252,6 @@ class Tour extends React.Component {
                         <InsertPlayfield
                             index={index}
                             cities={this.state.cities}
-                            routes={this.state.routes}
                             transits={this.state.transits}
                             omitPlayfield={this.addPopulatedPlayfield}
                             omitDelete={this.deleteItinerary}
@@ -367,50 +366,6 @@ class Tour extends React.Component {
                                 created_at: "14 agust 2044"
                             }
                         ]}
-                    />
-                );
-            case "route":
-                // return transit card
-                return (
-                    <RoutePlayfieldCard
-                        id={itinerary.id}
-                        index={index}
-                        omitDelete={this.deleteItinerary}
-                        omitItineraryDays={(days, index) =>
-                            this.updateItineraryDays(days, index)
-                        }
-                        omitItineraryHours={(hours, index) =>
-                            this.updateItineraryHours(hours, index)
-                        }
-                        omitItineraryMinutes={(minutes, index) =>
-                            this.updateItineraryMinutes(minutes, index)
-                        }
-                        name={itinerary.playfield.name}
-                        type={itinerary.playfield.type}
-                        maps_url={itinerary.maps_url}
-                        days={itinerary.duration.days}
-                        hours={itinerary.duration.hours}
-                        minutes={itinerary.duration.minutes}
-                        created_at={itinerary.created_at}
-                        text={itinerary.text}
-                        challenges={[
-                            {
-                                name: "Crazy city dive",
-                                type: "text answere",
-                                created_at: "12 feb 2049"
-                            },
-                            {
-                                name: "Food mania",
-                                type: "media upload",
-                                created_at: "12 jan 1988"
-                            },
-                            {
-                                name: "Faster than this?!",
-                                type: "multiple choice",
-                                created_at: "14 agust 2044"
-                            }
-                        ]}
-                        route
                     />
                 );
             default:
