@@ -20,7 +20,8 @@ class CreateRoutesTable extends Migration
             $table->foreign('transit_id')->references('id')->on('transits')->onDelete('set null');
 
             $table->string('name');
-            $table->text('maps_url');
+            $table->text('maps_url')->nullable();
+            $table->json('polyline')->nullable();
             $table->float('kilometers');
             $table->bigInteger('duration')->nullable();
             $table->integer('difficulty');

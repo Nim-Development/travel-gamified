@@ -39,6 +39,12 @@ Route::group([
       Route::get('inactive', 'TourController@inactive')->name('tours.inactive');
       Route::get('{id}', 'TourController@show')->name('tour');
    });
+
+   // Routes
+   Route::prefix('routes')->group(function () { 
+      Route::get('', 'RouteController@index')->name('routes');
+      Route::get('{id}', 'RouteController@show')->name('route');
+   });
 });
 
 

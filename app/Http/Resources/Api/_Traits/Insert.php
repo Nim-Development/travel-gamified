@@ -242,6 +242,7 @@ trait Insert {
                     'id' => $route->id,
                     'name' => $route->name,
                     'maps_url' => $route->maps_url,
+                    'polyline' => $route->polyline,
                     'kilometers' => (double)$route->kilometers,
                     'duration' => [
                         'days' => (!$route->duration) ? 0 : (integer) \TimeConverter::getDays(),

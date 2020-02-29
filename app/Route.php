@@ -22,7 +22,7 @@ class Route extends Model
         return $this->morphMany('App\Challenge', 'playfield');
     }
 
-    protected $fillable = [ 'transit_id', 'name', 'maps_url', 'kilometers', 'duration', 'difficulty', 'nature', 'highway'];
+    protected $fillable = [ 'transit_id', 'name', 'maps_url', 'polyline', 'kilometers', 'duration', 'difficulty', 'nature', 'highway'];
     
 
     // clean up relationships at deletion of this model. 

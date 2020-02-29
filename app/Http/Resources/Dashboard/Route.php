@@ -17,7 +17,9 @@ class Route extends JsonResource
      */
     public function toArray($request)
     {
+
         $transit = $this->transit;
+        \TimeConverter::secondsToDhm($this->duration);
 
         return [
             'label' => $this->name,
@@ -25,12 +27,17 @@ class Route extends JsonResource
                 'id' => $this->id,
                 'name' => $this->name,
                 'maps_url' => $this->maps_url,
+                'polyline' => $this->polyline,
                 'kilometers' => (double)$this->kilometers,
-                'duration' => (integer)$this->duration,
+                'duration' => [
+                    'days' => (!$this->duration) ? 0 : (integer) \TimeConverter::getDays(),
+                    'hours' => (!$this->duration) ? 0 : (integer) \TimeConverter::getHours(),
+                    'minutes' => (!$this->duration) ? 0 : (integer) \TimeConverter::getMinutes()
+                ],
                 'difficulty' => (integer)$this->difficulty,
                 'nature' => (integer)$this->nature,
                 'highway' => (integer)$this->highway,
-                'transit_id' => (!$transit) ? null : $this->transit->id,
+                'transit' => (!$transit) ? null : $this->insert_labeled_transit_in_route($this->transit),
                 'created_at' => (string)$this->created_at,
             ]
         ];

@@ -183,3 +183,12 @@ Route::group(['middleware' => 'auth:api'], function () {
     // });
 
 });
+
+
+
+/////////////////////////////////////////////
+// Untested Dashboard Maps application API //
+/////////////////////////////////////////////
+Route::prefix('map')->group(function () {
+    Route::get('', 'MapController@refresh');
+});

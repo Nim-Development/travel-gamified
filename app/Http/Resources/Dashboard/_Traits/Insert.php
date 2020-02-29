@@ -105,6 +105,7 @@ trait Insert {
                     'id' => $route->id,
                     'name' => $route->name,
                     'maps_url' => $route->maps_url,
+                    'polygon' => $route->polygon,
                     'kilometers' => (double)$route->kilometers,
                     'duration' => (integer)$route->duration,
                     'difficulty' => (integer)$route->difficulty,
@@ -115,6 +116,36 @@ trait Insert {
             );
         }
         return $routes_array;
+    }
+
+
+    public function insert_labeled_transit_in_route($transit)
+    {
+        if($transit == null){ return null; }
+
+        return [
+            'label' => $transit->name,
+            'value' => [
+                'id' => $transit->id,
+                'duration' => (integer)$transit->duration,
+                'name' => $transit->name,
+                'from' => (!$transit->from) ? null : [
+                    'id' => $transit->from->id,
+                    'type' => 'city',
+                    'short_code' => $transit->from->short_code,
+                    'name' => $transit->from->name,
+                    'created_at' => (string)$transit->from->created_at
+                ],
+                'to' => (!$transit->to) ? null : [
+                    'id' => $transit->to->id,
+                    'type' => 'city',
+                    'short_code' => $transit->to->short_code,
+                    'name' => $transit->to->name,
+                    'created_at' => (string)$transit->to->created_at
+                ],
+                'created_at' => (string)$transit->created_at
+            ]
+        ];
     }
 
     

@@ -164,19 +164,19 @@
                         <li>
                             <a href="components-tabs.html">
                                 <i class="metismenu-icon">
-                                </i>City
+                                </i>Cities
                             </a>
                         </li>
                         <li>
                             <a href="components-tabs.html">
                                 <i class="metismenu-icon">
-                                </i>Transit
+                                </i>Transits
                             </a>
                         </li>
-                        <li>
-                            <a href="components-tabs.html">
+                        <li class="{{ (\Request::route()->getName() == 'routes') ? 'mm-active' : '' }}">
+                            <a href="{{ route('routes') }}">
                                 <i class="metismenu-icon">
-                                </i>Route
+                                </i>Routes
                             </a>
                         </li>
                     </ul>

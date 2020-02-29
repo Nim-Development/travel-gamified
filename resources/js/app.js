@@ -14,5 +14,8 @@ require("./includes/main-2");
  * or customize the JavaScript scaffolding to fit your unique needs.
  */
 
-require("./components/Tour/Tour.js");
 require("./components/Tours.js");
+require("./components/Tour/Tour.js");
+
+require("./components/Routes.js");
+require("./components/Route/Route.js");
