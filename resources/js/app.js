@@ -19,3 +19,8 @@ require("./components/Tour/Tour.js");
 
 require("./components/Routes.js");
 require("./components/Route/Route.js");
+require("./components/Route/NewRoute.js");
+
+require("./components/Transits.js");
+// require("./components/Route/Route.js");
+// require("./components/Route/NewRoute.js");

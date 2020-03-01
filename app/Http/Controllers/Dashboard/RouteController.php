@@ -23,4 +23,10 @@ class RouteController extends Controller
         $transits = (TransitResource::collection(Transit::all()))->toResponse(app('request'))->getData();
         return view('dashboard.game-development.route', compact('route', 'transits'));
     }
+
+    public function new()
+    {
+        $transits = (TransitResource::collection(Transit::all()))->toResponse(app('request'))->getData();
+        return view('dashboard.game-development.new_route', compact('transits'));
+    }
 }

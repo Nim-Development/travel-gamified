@@ -43,7 +43,15 @@ Route::group([
    // Routes
    Route::prefix('routes')->group(function () { 
       Route::get('', 'RouteController@index')->name('routes');
+      Route::get('/new', 'RouteController@new')->name('routes.new');
       Route::get('{id}', 'RouteController@show')->name('route');
+   });
+
+   // Transits
+   Route::prefix('transits')->group(function () { 
+      Route::get('', 'TransitController@index')->name('transits');
+      Route::get('/new', 'TransitController@new')->name('transits.new');
+      Route::get('{id}', 'TransitController@show')->name('transit');
    });
 });
 

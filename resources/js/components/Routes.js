@@ -12,8 +12,11 @@ import {
     UncontrolledButtonDropdown,
     DropdownItem,
     DropdownMenu,
-    DropdownToggle
+    DropdownToggle,
+    Button,
+    CardHeader
 } from "reactstrap";
+
 import ReactTable from "react-table";
 
 export default class Routes extends Component {
@@ -22,6 +25,10 @@ export default class Routes extends Component {
         this.state = {
             routes: props.routes
         };
+    }
+
+    newRoute() {
+        window.location = window.location.origin + `/routes/new`;
     }
 
     // Route to single tour
@@ -50,6 +57,14 @@ export default class Routes extends Component {
                     <Row>
                         <Col md="12">
                             <Card className="main-card mb-3">
+                                <CardHeader>
+                                    <Button
+                                        onClick={() => this.newRoute()}
+                                        className="brn btn-success"
+                                    >
+                                        New Route
+                                    </Button>
+                                </CardHeader>
                                 <CardBody>
                                     <ReactTable
                                         data={data}
